@@ -1,6 +1,7 @@
 package com.example.covidcare;
 
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.IBinder;
@@ -11,7 +12,16 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 public class DeviceDiscoveryService extends Service {
-    private MediaPlayer player;
+    private static final String TAG = "DeviceDiscoveryService";
+
+
+    private BluetoothAdapter bluetoothAdapter;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    }
 
     @Nullable
     @Override
@@ -20,15 +30,10 @@ public class DeviceDiscoveryService extends Service {
     }
 
     @Override
-    public void onDestroy() {
-        player.stop();
+    public void onDestroy(){
+
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        player = MediaPlayer.create(this, Settings.System.DEFAULT_ALARM_ALERT_URI);
-        player.setLooping(true);
-        player.start();
-        return START_STICKY;
-    }
+
+
 }
