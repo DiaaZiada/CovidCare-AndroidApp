@@ -62,11 +62,11 @@ public class MainActivity extends AppCompatActivity {
         deviceList.setAdapter( listAdapter );
 
         checkBluetoothState();
-// start scanning ...
         ScanButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 checkBluetoothState();
+                mService.onResume();
             }
 
         } );
@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setObservers() {
-        Log.d(TAG, "-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1");
 
         mViewModel.getBinder().observe(this, new Observer<MyService.MyBinder>() {
 
@@ -108,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         if (mService != null) {
             mService.checkBluetoothState();
             String state = mService.getBluetoothAdapterStatus();
+            mService.startDiscovering();
             Toast.makeText(this, state, Toast.LENGTH_SHORT).show();
             if (state.equals("need enable")){
                 Intent enableIntent = new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE );
@@ -200,11 +200,21 @@ public class MainActivity extends AppCompatActivity {
         Intent serviceIntent = new Intent(this, MyService.class);
         startService(serviceIntent);
         bindService();
+
     }
 
     private void bindService(){
         Intent serviceBindIntent =  new Intent(this, MyService.class);
         bindService(serviceBindIntent, mViewModel.getServiceConnection(), Context.BIND_AUTO_CREATE);
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // stop receiving devices
+        mService.onPause();
+    }
+
+
 
 }

@@ -74,7 +74,9 @@ public class MyService extends Service {
                 // device : represent the nearest device ...
                 BluetoothDevice device = intent.getParcelableExtra( BluetoothDevice.EXTRA_DEVICE );
                 // adding the devices into array list of strings
-                listAdapter.add(device.getName()  +"\n" + device.getAddress());
+//                listAdapter.add(device.getName()  +"\n" + device.getAddress());
+                Log.d(TAG, device.getName()  +"\n" + device.getAddress()+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+
                 status = "found a device";
             }else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals( action )) {
                 status = "scanning devices ...";
@@ -108,7 +110,7 @@ public class MyService extends Service {
 
 
     public void startDiscovering(){
-        listAdapter.clear();
+//        listAdapter.clear();
         mBluetoothAdapter.startDiscovery();
     }
 
