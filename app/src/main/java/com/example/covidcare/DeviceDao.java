@@ -23,6 +23,6 @@ public interface DeviceDao {
     @Query("DELETE FROM device_table")
     void deleteAllDevices();
 
-    @Query("SELECT * FROM device_table ORDER BY `order` DESC")
+    @Query("SELECT * FROM device_table ORDER BY name DESC")
     LiveData<List<Device>> getAllDevices();
 }
