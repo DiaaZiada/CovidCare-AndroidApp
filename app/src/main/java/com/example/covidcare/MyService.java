@@ -16,8 +16,6 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.Nullable;
 
 
-
-
 public class MyService extends Service {
 
     private static final String TAG = "MyService";
@@ -27,6 +25,9 @@ public class MyService extends Service {
     private Handler mHandler;
     private ArrayAdapter<String> listAdapter;
     String status, bluetoothAdapterStatus;
+
+
+
     public class MyBinder extends Binder {
         MyService getService(){
             return MyService.this;
