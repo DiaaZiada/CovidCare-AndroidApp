@@ -25,10 +25,10 @@ public class ModelView extends AndroidViewModel {
     public void delete(Device device) {
         repository.delete(device);
     }
-    public void deleteAllNotes() {
-        repository.deleteAllNotes();
+    public void deleteAllDevices() {
+        repository.deleteAllDevices();
     }
-    public LiveData<List<Device>> getAllNotes() {
+    public LiveData<List<Device>> getAllDevices() {
         return allDevices;
     }
 }

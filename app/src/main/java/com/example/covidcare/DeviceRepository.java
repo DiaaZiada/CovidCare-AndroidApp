@@ -17,46 +17,47 @@ public class DeviceRepository {
         deviceDao = database.deviceDao();
         allDevices = deviceDao.getAllDevices();
     }
+
     public void insert(Device device) {
         new InsertDeviceAsyncTask(deviceDao).execute(device);
     }
     public void update(Device device) {
-        new UpdateNoteAsyncTask(deviceDao).execute(device);
+        new UpdateDeviceAsyncTask(deviceDao).execute(device);
     }
     public void delete(Device device) {
-        new DeleteNoteAsyncTask(deviceDao).execute(device);
+        new DeleteDeviceAsyncTask(deviceDao).execute(device);
     }
-    public void deleteAllNotes() {
+    public void deleteAllDevices() {
         new DeleteAllDevicesAsyncTask(deviceDao).execute();
     }
     public LiveData<List<Device>> getAllDevices() {
         return allDevices;
     }
     private static class InsertDeviceAsyncTask extends AsyncTask<Device, Void, Void> {
-        private DeviceDao noteDao;
-        private InsertDeviceAsyncTask(DeviceDao deviceDao) {
-            this.noteDao = noteDao;
-        }
-        @Override
-        protected Void doInBackground(Device... devices) {
-            noteDao.insert(devices[0]);
-            return null;
-        }
-    }
-    private static class UpdateNoteAsyncTask extends AsyncTask<Device, Void, Void> {
-        private DeviceDao noteDao;
-        private UpdateNoteAsyncTask(DeviceDao noteDao) {
-            this.noteDao = noteDao;
-        }
-        @Override
-        protected Void doInBackground(Device... devices) {
-            noteDao.update(devices[0]);
-            return null;
-        }
-    }
-    private static class DeleteNoteAsyncTask extends AsyncTask<Device, Void, Void> {
         private DeviceDao deviceDao;
-        private DeleteNoteAsyncTask(DeviceDao deviceDao) {
+        private InsertDeviceAsyncTask(DeviceDao deviceDao) {
+            this.deviceDao = deviceDao;
+        }
+        @Override
+        protected Void doInBackground(Device... devices) {
+            deviceDao.insert(devices[0]);
+            return null;
+        }
+    }
+    private static class UpdateDeviceAsyncTask extends AsyncTask<Device, Void, Void> {
+        private DeviceDao deviceDao;
+        private UpdateDeviceAsyncTask(DeviceDao deviceDao) {
+            this.deviceDao = deviceDao;
+        }
+        @Override
+        protected Void doInBackground(Device... devices) {
+            deviceDao.update(devices[0]);
+            return null;
+        }
+    }
+    private static class DeleteDeviceAsyncTask extends AsyncTask<Device, Void, Void> {
+        private DeviceDao deviceDao;
+        private DeleteDeviceAsyncTask(DeviceDao deviceDao) {
             this.deviceDao = deviceDao;
         }
         @Override
@@ -66,13 +67,13 @@ public class DeviceRepository {
         }
     }
     private static class DeleteAllDevicesAsyncTask extends AsyncTask<Void, Void, Void> {
-        private DeviceDao noteDao;
-        private DeleteAllDevicesAsyncTask(DeviceDao noteDao) {
-            this.noteDao = noteDao;
+        private DeviceDao deviceDao;
+        private DeleteAllDevicesAsyncTask(DeviceDao deviceDao) {
+            this.deviceDao = deviceDao;
         }
         @Override
         protected Void doInBackground(Void... voids) {
-            noteDao.deleteAllDevices();
+            deviceDao.deleteAllDevices();
             return null;
         }
     }

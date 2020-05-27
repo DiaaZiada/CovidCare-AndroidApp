@@ -56,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         deviceModelView = ViewModelProviders.of(this).get(ModelView.class);
-        deviceModelView.getAllNotes().observe(this, new Observer<List<Device>>() {
+        deviceModelView.getAllDevices().observe(this, new Observer<List<Device>>() {
             @Override
-            public void onChanged(@Nullable List<Device> notes) {
+            public void onChanged(@Nullable List<Device> devices) {
                 Toast.makeText(MainActivity.this, "onChanged", Toast.LENGTH_SHORT).show();
             }
         });
@@ -81,9 +81,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 //                checkBluetoothState();
-//                Device dev = new Device("diaa","mmmsdf", 1);
-
-                deviceModelView.insert( new Device("diaa","mmmsdf", 1));
+                Device dev = new Device("diaa","mmmsdf", "1");
+                deviceModelView.insert(dev);
 //                mService.onResume();
 
             }

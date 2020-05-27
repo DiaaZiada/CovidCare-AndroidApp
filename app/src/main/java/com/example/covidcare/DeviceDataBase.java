@@ -2,7 +2,6 @@ package com.example.covidcare;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -10,7 +9,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Device.class}, version = 1, exportSchema = false)
+@Database(entities = {Device.class}, version = 2)
 public abstract class DeviceDataBase extends RoomDatabase {
 
     private  static  DeviceDataBase instance;
@@ -19,7 +18,7 @@ public abstract class DeviceDataBase extends RoomDatabase {
     public static synchronized DeviceDataBase getInstance(Context context){
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
-                    DeviceDataBase.class, "note_database")
+                    DeviceDataBase.class, "device_database")
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallback)
                     .build();
@@ -27,7 +26,7 @@ public abstract class DeviceDataBase extends RoomDatabase {
         return instance;
     }
 
-    private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
+    private static Callback roomCallback = new Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
@@ -41,9 +40,9 @@ public abstract class DeviceDataBase extends RoomDatabase {
         }
         @Override
         protected Void doInBackground(Void... voids) {
-            deviceDao.insert(new Device("Title 1", "Description 1", 1));
-            deviceDao.insert(new Device("Title 2", "Description 2", 2));
-            deviceDao.insert(new Device("Title 3", "Description 3", 3));
+            deviceDao.insert(new Device("Title 1", "Description 1", "1"));
+            deviceDao.insert(new Device("Title 2", "Description 2", "1"));
+            deviceDao.insert(new Device("Title 3", "Description 3", "1"));
             return null;
         }
     }

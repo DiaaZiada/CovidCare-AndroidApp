@@ -9,12 +9,12 @@ public class Device {
     private int id;
     private String name;
     private String macAddress;
-    private int order;
+    private String time;
 
-    public Device(String name, String macAddress, int order) {
+    public Device(String name, String macAddress, String time) {
         this.name = name;
         this.macAddress = macAddress;
-        this.order = order;
+        this.time = time;
     }
 
     public void setId(int id) {
@@ -33,7 +33,7 @@ public class Device {
         return macAddress;
     }
 
-    public int getOrder() {
-        return order;
+    public String  getTime() {
+        return time;
     }
 }
