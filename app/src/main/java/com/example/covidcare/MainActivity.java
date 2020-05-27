@@ -53,7 +53,11 @@ public class MainActivity extends AppCompatActivity {
         mViewModel.getAllDevices().observe(this, new Observer<List<Device>>() {
             @Override
             public void onChanged(@Nullable List<Device> devices) {
-                Toast.makeText(MainActivity.this, "onChanged", Toast.LENGTH_SHORT).show();
+                for (int i=0; i<devices.size(); i++) {
+                    Device dev = devices.get(i);
+                    Log.d(TAG, i+"\t"+dev.getName() +"\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaa");
+                }
+                Toast.makeText(MainActivity.this,  devices.get(devices.size()-1).getTime()+ devices.get(devices.size()-1).getMacAddress(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -65,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 checkBluetoothState();
-                Device dev = new Device("diaa","mmmsdf", "1");
-                mViewModel.insert(dev);
+//                Device dev = new Device("diaa","mmmsdf", "1");
+//                mViewModel.insert(dev);
                 mService.onResume();
 
             }
@@ -87,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "onChanged: bound to service.");
                     mService = myBinder.getService();
+                    mService.setDeviceRepository(mViewModel.getRepository());
                 }
             }
         });

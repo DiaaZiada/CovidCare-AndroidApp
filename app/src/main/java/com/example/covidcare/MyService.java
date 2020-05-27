@@ -15,6 +15,9 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.Nullable;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 
 public class MyService extends Service {
 
@@ -22,9 +25,18 @@ public class MyService extends Service {
 
     private BluetoothAdapter mBluetoothAdapter;
     private final IBinder mBinder = new MyBinder();
-    private Handler mHandler;
-    private ArrayAdapter<String> listAdapter;
+//    private Handler mHandler;
+//    private ArrayAdapter<String> listAdapter;
     String status, bluetoothAdapterStatus;
+    private static DeviceRepository deviceRepository;
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private LocalDateTime now = LocalDateTime.now();
+//   System.out.println(dtf.format(now));
+    public void setDeviceRepository(DeviceRepository deviceRepo) {
+        if (deviceRepository == null)
+            deviceRepository = deviceRepo;
+    }
+
 
 
 
@@ -37,7 +49,7 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mHandler = new Handler();
+//        mHandler = new Handler();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
@@ -76,7 +88,10 @@ public class MyService extends Service {
                 BluetoothDevice device = intent.getParcelableExtra( BluetoothDevice.EXTRA_DEVICE );
                 // adding the devices into array list of strings
 //                listAdapter.add(device.getName()  +"\n" + device.getAddress());
-                Log.d(TAG, device.getName()  +"\n" + device.getAddress()+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+                Device dev = new Device(device.getName(), device.getAddress(), dtf.format(now).toString());
+                deviceRepository.insert(dev);
+
+                Log.d(TAG, device.getName()  +"+" + dev.getMacAddress() + dev.getTime()+dev.getTime()+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzinsersion");
 
                 status = "found a device";
             }else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals( action )) {
@@ -100,9 +115,10 @@ public class MyService extends Service {
     public String getStatus(){
         return status;
     }
-    public ArrayAdapter<String> getListAdapter(){
-        return listAdapter;
-    }
+
+//    public ArrayAdapter<String> getListAdapter(){
+//        return listAdapter;
+//    }
 
     public String getBluetoothAdapterStatus(){
         return bluetoothAdapterStatus;
@@ -114,9 +130,6 @@ public class MyService extends Service {
 //        listAdapter.clear();
         mBluetoothAdapter.startDiscovery();
     }
-
-
-
 
     public void onPause() {
         unregisterReceiver( devicesFoundReceiver );
