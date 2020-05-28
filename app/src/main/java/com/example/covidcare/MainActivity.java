@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -23,6 +22,8 @@ import androidx.lifecycle.ViewModelProviders;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
+
+import table.Device;
 
 public class MainActivity extends AppCompatActivity {
 

@@ -12,6 +12,19 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
+import dao.DeviceDao;
+import dao.MeetingDao;
+import dao.SummaryDao;
+import dao.UserDao;
+import db.DeviceDataBase;
+import db.MeetingDataBase;
+import db.SummaryDataBase;
+import db.UserDataBase;
+import table.Device;
+import table.Meeting;
+import table.Summary;
+import table.User;
+
 public class Repository {
     private static final String TAG = "DeviceRepository";
 

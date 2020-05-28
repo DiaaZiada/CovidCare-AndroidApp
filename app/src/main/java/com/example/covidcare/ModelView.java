@@ -9,6 +9,10 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+import table.Device;
+import table.Meeting;
+import table.User;
+
 public class ModelView extends AndroidViewModel {
     private static final String TAG = "ModelView";
 

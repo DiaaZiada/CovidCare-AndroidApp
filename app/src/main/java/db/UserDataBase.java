@@ -1,4 +1,4 @@
-package com.example.covidcare;
+package db;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -9,16 +9,20 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Device.class}, version = 3)
-public abstract class DeviceDataBase extends RoomDatabase {
+import table.User;
 
-    private  static  DeviceDataBase instance;
-    public  abstract  DeviceDao deviceDao();
+import dao.UserDao;
 
-    public static synchronized DeviceDataBase getInstance(Context context){
-        if (instance == null) {
+@Database(entities = {User.class}, version = 1)
+public abstract class UserDataBase extends RoomDatabase {
+
+    private static UserDataBase instance;
+    public abstract UserDao userDao();
+
+    public static synchronized UserDataBase getInstance(Context context){
+        if(instance == null){
             instance = Room.databaseBuilder(context.getApplicationContext(),
-                    DeviceDataBase.class, "device_database")
+                    UserDataBase.class, "user_database")
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallback)
                     .build();
@@ -33,16 +37,16 @@ public abstract class DeviceDataBase extends RoomDatabase {
             new PopulateDbAsyncTask(instance).execute();
         }
     };
+
     private static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void> {
-        private DeviceDao deviceDao;
-        private PopulateDbAsyncTask(DeviceDataBase db) {
-            deviceDao = db.deviceDao();
+        private UserDao userDao;
+        private PopulateDbAsyncTask(UserDataBase db) {
+            userDao = db.userDao();
         }
         @Override
         protected Void doInBackground(Void... voids) {
             return null;
         }
     }
-
 
 }

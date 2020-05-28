@@ -1,23 +1,21 @@
-package com.example.covidcare;
+package table;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "meeting_table")
-public class Meeting {
+@Entity(tableName = "device_table")
+public class Device {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private String status;
+    private String name;
     private String macAddress;
     private String time;
-    private String location;
 
-    public Meeting(String status, String macAddress, String time, String location) {
-        this.status = status;
+    public Device(String name, String macAddress, String time) {
+        this.name = name;
         this.macAddress = macAddress;
         this.time = time;
-        this.location = location;
     }
 
     public void setId(int id) {
@@ -28,22 +26,15 @@ public class Meeting {
         return id;
     }
 
-    public String getStatus() {
-        return status;
+    public String getName() {
+        return name;
     }
 
     public String getMacAddress() {
         return macAddress;
     }
 
-    public String getTime() {
+    public String  getTime() {
         return time;
     }
-
-    public String getLocation() {
-        return location;
-    }
-
-
-
 }

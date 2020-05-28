@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import table.Device;
+
 
 public class MyService extends Service {
 

@@ -1,4 +1,4 @@
-package com.example.covidcare;
+package db;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -9,10 +9,13 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import table.Meeting;
+import dao.MeetingDao;
+
 @Database(entities = {Meeting.class}, version = 1)
 public abstract class MeetingDataBase extends RoomDatabase {
     private  static  MeetingDataBase instance;
-    public  abstract  MeetingDao meetingDao();
+    public  abstract MeetingDao meetingDao();
 
     public static synchronized MeetingDataBase getInstance(Context context){
         if (instance == null) {
