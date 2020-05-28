@@ -12,12 +12,93 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
-public class DeviceRepository {
+public class Repository {
     private static final String TAG = "DeviceRepository";
     private DeviceDao deviceDao;
+    private  UserDao userDao;
     private LiveData<List<Device>> allDevices;
-
+    private LiveData<List<User>> allUsers;
     private MutableLiveData<MyService.MyBinder> mBinder = new MutableLiveData<>();
+
+    public Repository(Application application) {
+        DeviceDataBase deviceDatabase = DeviceDataBase.getInstance(application);
+        deviceDao = deviceDatabase.deviceDao();
+        allDevices = deviceDao.getAllDevices();
+
+//        UserDataBase userDataBase = UserDataBase.getInstance(application);
+//        userDao = userDataBase.userDao();
+//        allUsers = userDao.getAllUsers();
+
+
+    }
+
+    /*User DataBase*/
+
+    public void userInsert(User user) {
+        new InsertUserAsyncTask(userDao).execute(user);
+    }
+    public void userUpdate(User user) {
+        new UpdateUserAsyncTask(userDao).execute(user);
+    }
+    public void userDelete(User user) {
+        new DeleteUserAsyncTask(userDao).execute(user);
+    }
+    public void AllUsers() {
+        new DeleteAllUsersAsyncTask(userDao).execute();
+    }
+    public LiveData<List<User>> getAllUsers() {
+        return allUsers;
+    }
+    private static class InsertUserAsyncTask extends AsyncTask<User, Void, Void> {
+        private UserDao userDao;
+        private InsertUserAsyncTask(UserDao userDao) {
+            this.userDao = userDao;
+        }
+        @Override
+        protected Void doInBackground(User... users) {
+            userDao.insert(users[0]);
+            return null;
+        }
+    }
+    private static class UpdateUserAsyncTask extends AsyncTask<User, Void, Void> {
+        private UserDao userDao;
+        private UpdateUserAsyncTask(UserDao userDao) {
+            this.userDao = userDao;
+        }
+        @Override
+        protected Void doInBackground(User... users) {
+            userDao.update(users[0]);
+            return null;
+        }
+    }
+    private static class DeleteUserAsyncTask extends AsyncTask<User, Void, Void> {
+        private UserDao userDao;
+        private DeleteUserAsyncTask(UserDao userDao) {
+            this.userDao = userDao;
+        }
+        @Override
+        protected Void doInBackground(User... users) {
+            userDao.delete(users[0]);
+            return null;
+        }
+    }
+    private static class DeleteAllUsersAsyncTask extends AsyncTask<Void, Void, Void> {
+        private UserDao userDao;
+        private DeleteAllUsersAsyncTask(UserDao userDao) {
+            this.userDao = userDao;
+        }
+        @Override
+        protected Void doInBackground(Void... voids) {
+            userDao.deleteAllUsers();
+            return null;
+        }
+    }
+
+    /*End User DataBase*/
+
+
+
+    /* BlueTooth Service*/
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -45,21 +126,22 @@ public class DeviceRepository {
         return mBinder;
     }
 
+    /* End BlueTooth Service*/
 
 
-    public DeviceRepository(Application application) {
-        DeviceDataBase database = DeviceDataBase.getInstance(application);
-        deviceDao = database.deviceDao();
-        allDevices = deviceDao.getAllDevices();
-    }
 
-    public void insert(Device device) {
+
+
+
+    /*Device DataBase*/
+
+    public void deviceInsert(Device device) {
         new InsertDeviceAsyncTask(deviceDao).execute(device);
     }
-    public void update(Device device) {
+    public void deviceUpdate(Device device) {
         new UpdateDeviceAsyncTask(deviceDao).execute(device);
     }
-    public void delete(Device device) {
+    public void deviceDelete(Device device) {
         new DeleteDeviceAsyncTask(deviceDao).execute(device);
     }
     public void deleteAllDevices() {
@@ -112,4 +194,6 @@ public class DeviceRepository {
             return null;
         }
     }
+
+    /*End Device DataBase*/
 }

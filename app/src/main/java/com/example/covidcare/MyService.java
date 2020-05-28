@@ -8,10 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.Nullable;
 
@@ -28,11 +26,11 @@ public class MyService extends Service {
 //    private Handler mHandler;
 //    private ArrayAdapter<String> listAdapter;
     String status, bluetoothAdapterStatus;
-    private static DeviceRepository deviceRepository;
+    private static Repository deviceRepository;
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private LocalDateTime now = LocalDateTime.now();
 //   System.out.println(dtf.format(now));
-    public void setDeviceRepository(DeviceRepository deviceRepo) {
+    public void setDeviceRepository(Repository deviceRepo) {
         if (deviceRepository == null)
             deviceRepository = deviceRepo;
     }
@@ -90,7 +88,7 @@ public class MyService extends Service {
 //                listAdapter.add(device.getName()  +"\n" + device.getAddress());
                 mBluetoothAdapter.getAddress();
                 Device dev = new Device(device.getName(), device.getAddress(), dtf.format(now).toString());
-                deviceRepository.insert(dev);
+                deviceRepository.deviceInsert(dev);
 
                 Log.d(TAG, mBluetoothAdapter.getAddress()+"\t"+mBluetoothAdapter.getName()+"\t"+device.getName()  +"+" + dev.getMacAddress() + dev.getTime()+dev.getTime()+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzinsersion");
 
