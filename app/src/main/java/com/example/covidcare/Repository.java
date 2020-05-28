@@ -14,10 +14,15 @@ import java.util.List;
 
 public class Repository {
     private static final String TAG = "DeviceRepository";
+
     private DeviceDao deviceDao;
-    private  UserDao userDao;
+    private UserDao userDao;
+    private MeetingDao meetingDao;
+
     private LiveData<List<Device>> allDevices;
     private LiveData<List<User>> allUsers;
+    private LiveData<List<Meeting>> allMeetings;
+
     private MutableLiveData<MyService.MyBinder> mBinder = new MutableLiveData<>();
 
     public Repository(Application application) {
@@ -25,12 +30,80 @@ public class Repository {
         deviceDao = deviceDatabase.deviceDao();
         allDevices = deviceDao.getAllDevices();
 
-//        UserDataBase userDataBase = UserDataBase.getInstance(application);
-//        userDao = userDataBase.userDao();
-//        allUsers = userDao.getAllUsers();
+        UserDataBase userDataBase = UserDataBase.getInstance(application);
+        userDao = userDataBase.userDao();
+        allUsers = userDao.getAllUsers();
 
-
+        MeetingDataBase meetingDataBase = MeetingDataBase.getInstance(application);
+        meetingDao = meetingDataBase.meetingDao();
+        allMeetings = meetingDao.getAllMeetings();
     }
+
+    /*Meeting DataBase*/
+    public void meetingInsert(Meeting meeting) {
+        new InsertMeetingAsyncTask(meetingDao).execute(meeting);
+    }
+    public void meetingUpdate(Meeting meeting) {
+        new UpdateMeetingAsyncTask(meetingDao).execute(meeting);
+    }
+    public void meetingDelete(Meeting meeting) {
+        new DeleteMeetingAsyncTask(meetingDao).execute(meeting);
+    }
+    public void deleteAllMeetings() {
+        new DeleteAllMeetingsAsyncTask(meetingDao).execute();
+    }
+    public LiveData<List<Meeting>> getAllMeetings() {
+        return allMeetings;
+    }
+
+    private static class InsertMeetingAsyncTask extends AsyncTask<Meeting, Void, Void> {
+        private MeetingDao meetingDao;
+        private InsertMeetingAsyncTask(MeetingDao meetingDao) {
+            this.meetingDao = meetingDao;
+        }
+        @Override
+        protected Void doInBackground(Meeting... meetings) {
+            meetingDao.insert(meetings[0]);
+            return null;
+        }
+    }
+    private static class UpdateMeetingAsyncTask extends AsyncTask<Meeting, Void, Void> {
+        private MeetingDao meetingDao;
+        private UpdateMeetingAsyncTask(MeetingDao meetingDao) {
+            this.meetingDao = meetingDao;
+        }
+        @Override
+        protected Void doInBackground(Meeting... meetings) {
+            meetingDao.update(meetings[0]);
+            return null;
+        }
+    }
+    private static class DeleteMeetingAsyncTask extends AsyncTask<Meeting, Void, Void> {
+        private MeetingDao meetingDao;
+        private DeleteMeetingAsyncTask(MeetingDao meetingDao) {
+            this.meetingDao = meetingDao;
+        }
+        @Override
+        protected Void doInBackground(Meeting... meetings) {
+            meetingDao.delete(meetings[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteAllMeetingsAsyncTask extends AsyncTask<Void, Void, Void> {
+        private MeetingDao meetingDao;
+        private DeleteAllMeetingsAsyncTask(MeetingDao meetingDao) {
+            this.meetingDao = meetingDao;
+        }
+        @Override
+        protected Void doInBackground(Void... voids) {
+            meetingDao.deleteAllMeetings();
+            return null;
+        }
+    }
+
+
+    /*End Meeting DataBase*/
 
     /*User DataBase*/
 
@@ -43,7 +116,7 @@ public class Repository {
     public void userDelete(User user) {
         new DeleteUserAsyncTask(userDao).execute(user);
     }
-    public void AllUsers() {
+    public void deletAllUsers() {
         new DeleteAllUsersAsyncTask(userDao).execute();
     }
     public LiveData<List<User>> getAllUsers() {
