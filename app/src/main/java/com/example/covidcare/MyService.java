@@ -88,10 +88,11 @@ public class MyService extends Service {
                 BluetoothDevice device = intent.getParcelableExtra( BluetoothDevice.EXTRA_DEVICE );
                 // adding the devices into array list of strings
 //                listAdapter.add(device.getName()  +"\n" + device.getAddress());
+                mBluetoothAdapter.getAddress();
                 Device dev = new Device(device.getName(), device.getAddress(), dtf.format(now).toString());
                 deviceRepository.insert(dev);
 
-                Log.d(TAG, device.getName()  +"+" + dev.getMacAddress() + dev.getTime()+dev.getTime()+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzinsersion");
+                Log.d(TAG, mBluetoothAdapter.getAddress()+"\t"+mBluetoothAdapter.getName()+"\t"+device.getName()  +"+" + dev.getMacAddress() + dev.getTime()+dev.getTime()+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzinsersion");
 
                 status = "found a device";
             }else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals( action )) {
