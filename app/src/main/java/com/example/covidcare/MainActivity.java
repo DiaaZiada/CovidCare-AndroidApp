@@ -73,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 checkBluetoothState();
-//                Device dev = new Device("diaa","mmmsdf", "1");
-//                mViewModel.insert(dev);
                 mService.onResume();
 
             }

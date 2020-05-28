@@ -40,9 +40,6 @@ public abstract class DeviceDataBase extends RoomDatabase {
         }
         @Override
         protected Void doInBackground(Void... voids) {
-            deviceDao.insert(new Device("Title 1", "Description 1", "1"));
-            deviceDao.insert(new Device("Title 2", "Description 2", "1"));
-            deviceDao.insert(new Device("Title 3", "Description 3", "1"));
             return null;
         }
     }

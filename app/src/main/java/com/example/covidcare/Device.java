@@ -1,4 +1,5 @@
 package com.example.covidcare;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
