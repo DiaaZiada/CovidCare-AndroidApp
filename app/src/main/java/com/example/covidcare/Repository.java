@@ -18,10 +18,12 @@ public class Repository {
     private DeviceDao deviceDao;
     private UserDao userDao;
     private MeetingDao meetingDao;
+    private SummaryDao summaryDao;
 
     private LiveData<List<Device>> allDevices;
     private LiveData<List<User>> allUsers;
     private LiveData<List<Meeting>> allMeetings;
+    private LiveData<List<Summary>> allSummaries;
 
     private MutableLiveData<MyService.MyBinder> mBinder = new MutableLiveData<>();
 
@@ -37,7 +39,79 @@ public class Repository {
         MeetingDataBase meetingDataBase = MeetingDataBase.getInstance(application);
         meetingDao = meetingDataBase.meetingDao();
         allMeetings = meetingDao.getAllMeetings();
+
+        SummaryDataBase summaryDataBase = SummaryDataBase.getInstance(application);
+        summaryDao = summaryDataBase.summaryDao();
+        allSummaries = summaryDao.getAllSummaries();
     }
+
+
+    /*Summary DataBase*/
+
+    public void summaryInsert(Summary summary) {
+        new InsertSummaryAsyncTask(summaryDao).execute(summary);
+    }
+    public void summaryUpdate(Summary summary) {
+        new UpdateSummaryAsyncTask(summaryDao).execute(summary);
+    }
+    public void summaryDelete(Summary summary) {
+        new DeleteSummaryAsyncTask(summaryDao).execute(summary);
+    }
+    public void deleteAllSummaries() {
+        new DeleteAllSummariesAsyncTask(summaryDao).execute();
+    }
+    public LiveData<List<Summary>> getAllSummaries() {
+        return allSummaries;
+    }
+
+    private static class InsertSummaryAsyncTask extends AsyncTask<Summary, Void, Void> {
+        private SummaryDao summaryDao;
+        private InsertSummaryAsyncTask(SummaryDao summaryDao) {
+            this.summaryDao = summaryDao;
+        }
+        @Override
+        protected Void doInBackground(Summary... summaries) {
+            summaryDao.insert(summaries[0]);
+            return null;
+        }
+    }
+    private static class UpdateSummaryAsyncTask extends AsyncTask<Summary, Void, Void> {
+        private SummaryDao summaryDao;
+        private UpdateSummaryAsyncTask(SummaryDao summaryDao) {
+            this.summaryDao = summaryDao;
+        }
+        @Override
+        protected Void doInBackground(Summary... summaries) {
+            summaryDao.update(summaries[0]);
+            return null;
+        }
+    }
+    private static class DeleteSummaryAsyncTask extends AsyncTask<Summary, Void, Void> {
+        private SummaryDao summaryDao;
+        private DeleteSummaryAsyncTask(SummaryDao summaryDao) {
+            this.summaryDao = summaryDao;
+        }
+        @Override
+        protected Void doInBackground(Summary... summaries) {
+            summaryDao.delete(summaries[0]);
+            return null;
+        }
+    }
+    private static class DeleteAllSummariesAsyncTask extends AsyncTask<Void, Void, Void> {
+        private SummaryDao summaryDao;
+        private DeleteAllSummariesAsyncTask(SummaryDao summaryDao) {
+            this.summaryDao = summaryDao;
+        }
+        @Override
+        protected Void doInBackground(Void... voids) {
+            summaryDao.deleteAllSummaries();
+            return null;
+        }
+    }
+
+    /*End Summary DataBase*/
+
+
 
     /*Meeting DataBase*/
     public void meetingInsert(Meeting meeting) {
@@ -200,10 +274,6 @@ public class Repository {
     }
 
     /* End BlueTooth Service*/
-
-
-
-
 
 
     /*Device DataBase*/
