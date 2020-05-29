@@ -30,7 +30,6 @@ public class MyService extends Service {
     String status, bluetoothAdapterStatus;
     private static Repository deviceRepository;
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-    private LocalDateTime now = LocalDateTime.now();
 //   System.out.println(dtf.format(now));
     public void setDeviceRepository(Repository deviceRepo) {
         if (deviceRepository == null)
@@ -88,6 +87,8 @@ public class MyService extends Service {
                 BluetoothDevice device = intent.getParcelableExtra( BluetoothDevice.EXTRA_DEVICE );
                 // adding the devices into array list of strings
 //                listAdapter.add(device.getName()  +"\n" + device.getAddress());
+                LocalDateTime now = LocalDateTime.now();
+
                 mBluetoothAdapter.getAddress();
                 Device dev = new Device(device.getName(), device.getAddress(), dtf.format(now).toString());
                 deviceRepository.deviceInsert(dev);

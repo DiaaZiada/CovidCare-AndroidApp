@@ -2,6 +2,7 @@ package adapter;
 
 import android.content.Context;
 import android.icu.util.MeasureUnit;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,14 @@ import androidx.annotation.NonNull;
 
 import com.example.covidcare.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import utils.MeetingInfo;
 
@@ -25,6 +33,9 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
     private Context mContext;
     private int mResource;
     private int lastPosition = -1;
+    private DateTimeFormatter dtf= DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH);
+    private LocalDateTime now;
 
     private static class ViewHolder {
         TextView time;
@@ -44,6 +55,8 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         String time = getItem(position).getTime();
         String status = getItem(position).getStatus();
         String location = getItem(position).getLocation();
+
+        time = getNumberOfDays(time);
 
         MeetingInfo meetingInfo = new MeetingInfo(time, status, location);
 
@@ -77,11 +90,31 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         result.startAnimation(animation);
         lastPosition = position;
         
-        holder.time.setText(meetingInfo.getTime());
+        holder.time.setText(meetingInfo.getTime()+" Days Ago");
         holder.status.setText(meetingInfo.getStatus());
         holder.locaton.setText(meetingInfo.getLocation());
 
         return convertView;
+    }
+
+    private String getNumberOfDays(String time){
+        now = LocalDateTime.now();
+        String nowString = dtf.format(now).toString();
+
+        Date firstDate = null;
+        Date secondDate = null;
+        try {
+            firstDate = sdf.parse(nowString);
+            secondDate = sdf.parse(time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, time+"\t"+nowString);
+        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+        return String.valueOf(diff);
+
     }
 
 }

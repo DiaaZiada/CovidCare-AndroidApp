@@ -26,8 +26,8 @@ public class MeetingInfoActivity extends AppCompatActivity {
         //Create the MeetingInfo objects
         ArrayList<MeetingInfo> peopleList = new ArrayList<>();
 
-        for (int i=0; i<50; i++ )
-            peopleList.add(new MeetingInfo("12-20-1998","Health","36,5465654, 25,65465468"));
+        for (int i=31; i>0; i--)
+            peopleList.add(new MeetingInfo("2020/04/"+i+" 10:20:14","Health","36,5465654, 25,65465468"));
 
         MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(this, R.layout.adabter_view_list, peopleList);
         mListView.setAdapter(adapter);
