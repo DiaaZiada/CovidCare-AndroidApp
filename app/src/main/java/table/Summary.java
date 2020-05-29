@@ -11,11 +11,13 @@ public class Summary {
     private int unknown;
     private int infected;
     private int treated;
+    private  int healthy;
 
-    public Summary(int unknown, int infected, int treated) {
+    public Summary(int unknown, int infected, int treated, int healthy) {
         this.unknown = unknown;
         this.infected = infected;
         this.treated = treated;
+        this.healthy = healthy;
     }
 
     public void setId(int id) {
@@ -36,5 +38,9 @@ public class Summary {
 
     public int getTreated() {
         return treated;
+    }
+
+    public int getHealthy() {
+        return healthy;
     }
 }
