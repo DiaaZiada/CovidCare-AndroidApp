@@ -229,12 +229,12 @@ public class MainActivity extends AppCompatActivity {
         bindService(serviceBindIntent, mViewModel.getServiceConnection(), Context.BIND_AUTO_CREATE);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mService.onPause();
-    }
-
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        mService.onPause();
+//    }
+//
 
 
 }
