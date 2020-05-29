@@ -95,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.meetingInfo:
                 Toast.makeText(this, "meeting Info selected", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, MeetingInfoActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.updataStatus:
                 Toast.makeText(this, "updata Status selected", Toast.LENGTH_SHORT).show();
