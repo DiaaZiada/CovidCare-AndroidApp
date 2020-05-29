@@ -58,8 +58,8 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
             LayoutInflater inflater = LayoutInflater.from(mContext);
             convertView = inflater.inflate(mResource, parent, false);
             holder= new ViewHolder();
-            holder.time = (TextView) convertView.findViewById(R.id.textView1);
-            holder.status = (TextView) convertView.findViewById(R.id.textView2);
+            holder.status = (TextView) convertView.findViewById(R.id.textView1);
+            holder.time = (TextView) convertView.findViewById(R.id.textView2);
             holder.locaton = (TextView) convertView.findViewById(R.id.textView3);
 
             result = convertView;
@@ -76,7 +76,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
                 (position > lastPosition) ? R.anim.load_down_anim : R.anim.load_up_anim);
         result.startAnimation(animation);
         lastPosition = position;
-
+        
         holder.time.setText(meetingInfo.getTime());
         holder.status.setText(meetingInfo.getStatus());
         holder.locaton.setText(meetingInfo.getLocation());
