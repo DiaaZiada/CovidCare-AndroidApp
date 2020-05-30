@@ -45,16 +45,16 @@ public class ModelView extends AndroidViewModel {
     }
 
     /* Meeting */
-    public void insert(Meeting meeting) {
+    public void meetingInsert(Meeting meeting) {
         repository.meetingInsert(meeting);
     }
-    public void update(Meeting meeting) {
+    public void meetingUpdate(Meeting meeting) {
         repository.meetingUpdate(meeting);
     }
-    public void delete(Meeting meeting) {
+    public void meetinDdelete(Meeting meeting) {
         repository.meetingDelete(meeting);
     }
-    public void deleteAllMeetings(){
+    public void meetingDeleteAllMeetings(){
         repository.deleteAllMeetings();
     }
     public LiveData<List<Meeting>> getAllMeetings() {
@@ -64,13 +64,13 @@ public class ModelView extends AndroidViewModel {
 
 
     /* User */
-    public void insert(User user) {
+    public void userInsert(User user) {
         repository.userInsert(user);
     }
-    public void update(User user) {
+    public void userUpdate(User user) {
         repository.userUpdate(user);
     }
-    public void delete(User user) {
+    public void userDelete(User user) {
         repository.userDelete(user);
     }
     public void deleteAllUsers() {
@@ -86,13 +86,13 @@ public class ModelView extends AndroidViewModel {
 
 
     /* Device */
-    public void insert(Device device) {
+    public void deviceInsert(Device device) {
         repository.deviceInsert(device);
     }
-    public void update(Device device) {
+    public void deviceUpdate(Device device) {
         repository.deviceUpdate(device);
     }
-    public void delete(Device device) {
+    public void deviceDelete(Device device) {
         repository.deviceDelete(device);
     }
     public void deleteAllDevices() {

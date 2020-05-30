@@ -19,14 +19,19 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import java.net.NetworkInterface;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import table.Device;
+import table.User;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,39 +45,41 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_ENABLE_BLUETOOTH = 11;
 
 
-
     private Button ScanButton;
 
     private ArrayAdapter<String> listAdapter;
 
     // Vars
     private MyService mService;
-
-
-
-
     private ModelView mViewModel;
+
+    private Map<String, Integer> status2Index;
+    private Map<Integer, String> index2Status;
+
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        Log.d(TAG,mBluetoothAdapter.getAddress() +mBluetoothAdapter.getName()+"\t"+getMacAddr()+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n\n\n\n");
         Toast.makeText(MainActivity.this, mBluetoothAdapter.getAddress(), Toast.LENGTH_SHORT).show();
 
         mViewModel = ViewModelProviders.of(this).get(ModelView.class);
-        mViewModel.getAllDevices().observe(this, new Observer<List<Device>>() {
-            @Override
-            public void onChanged(@Nullable List<Device> devices) {
-                for (int i=0; i<devices.size(); i++) {
-                    Device dev = devices.get(i);
-                    Log.d(TAG, i+"\t"+dev.getName() +"\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaa");
-                }
-//                Toast.makeText(MainActivity.this,  devices.get(devices.size()-1).getTime()+ devices.get(devices.size()-1).getMacAddress(), Toast.LENGTH_SHORT).show();
-            }
-        });
 
+        status2Index = new HashMap<String, Integer>();
+        index2Status = new HashMap<Integer, String>();
+
+        status2Index.put("unknown", 0);
+        status2Index.put("Health", 1);
+        status2Index.put("Infected", 2);
+        status2Index.put("treated", 3);
+
+        index2Status.put(0, "unknown");
+        index2Status.put(1, "Health");
+        index2Status.put(2, "Infected");
+        index2Status.put(3, "treated");
 
         setObservers();
 
@@ -93,7 +100,13 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == UPDATE_STATUS_REQUEST && resultCode == RESULT_OK) {
             int index = data.getIntExtra(StatusActivity.EXTRA_NEW_INDEX, 0);
-            Toast.makeText(this, "Note saved"+index, Toast.LENGTH_SHORT).show();
+            String status = index2Status.get(index);
+            int id = user.getId();
+            User updatedUser = new User(user.getName(), status, user.getMacAddress());
+            updatedUser.setId(user.getId());
+            mViewModel.userUpdate(updatedUser);
+            user = updatedUser;
+            Toast.makeText(this, "Note saved" + index, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Note not saved", Toast.LENGTH_SHORT).show();
         }
@@ -105,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -115,10 +129,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.updataStatus:
                 Intent statusIntent = new Intent(MainActivity.this, StatusActivity.class);
-                statusIntent.putExtra(EXTRA_INDEX, 0);
+                int indx = status2Index.get(user.getStatus());
+                statusIntent.putExtra(EXTRA_INDEX, indx);
                 startActivityForResult(statusIntent, UPDATE_STATUS_REQUEST);
-
-
                 Toast.makeText(this, "updata Status selected", Toast.LENGTH_SHORT).show();
                 return true;
             default:
@@ -170,12 +183,34 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mViewModel.getAllUsers().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(@Nullable List<User> users) {
+                if (users.size() == 0) {
+                    user = new User("unknown", "unknown", getMacAddr());
+                    mViewModel.userInsert(user);
+                } else {
+                    user = users.get(0);
+                }
+            }
+        });
+
+        mViewModel.getAllDevices().observe(this, new Observer<List<Device>>() {
+            @Override
+            public void onChanged(@Nullable List<Device> devices) {
+                for (int i = 0; i < devices.size(); i++) {
+                    Device dev = devices.get(i);
+                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                }
+            }
+        });
     }
 
     private boolean checkCoarseLocationPermission() {
-        if (ContextCompat.checkSelfPermission( this, Manifest.permission.ACCESS_COARSE_LOCATION )
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions( this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_ACCESS_COARSE_LOCATION );
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_ACCESS_COARSE_LOCATION);
             return false;
         } else {
             return true;
@@ -188,9 +223,9 @@ public class MainActivity extends AppCompatActivity {
             String state = mService.getBluetoothAdapterStatus();
             mService.startDiscovering();
             Toast.makeText(this, state, Toast.LENGTH_SHORT).show();
-            if (state.equals("need enable")){
-                Intent enableIntent = new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE );
-                startActivityForResult( enableIntent, REQUEST_ENABLE_BLUETOOTH );
+            if (state.equals("need enable")) {
+                Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
             }
         }
     }
@@ -198,19 +233,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult( requestCode, permissions, grantResults );
-        switch (requestCode){
-            case REQUEST_ACCESS_COARSE_LOCATION :
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText( this, "allowed", Toast.LENGTH_SHORT ).show();
-                }else{
-                    Toast.makeText( this, "forbidden", Toast.LENGTH_SHORT ).show();
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_ACCESS_COARSE_LOCATION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "allowed", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "forbidden", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
     }
-
-
 
 
     @Override
@@ -224,20 +257,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(mViewModel.getBinder() != null){
+        if (mViewModel.getBinder() != null) {
             unbindService(mViewModel.getServiceConnection());
         }
     }
 
-    private void startService(){
+    private void startService() {
         Intent serviceIntent = new Intent(this, MyService.class);
         startService(serviceIntent);
         bindService();
 
     }
 
-    private void bindService(){
-        Intent serviceBindIntent =  new Intent(this, MyService.class);
+    private void bindService() {
+        Intent serviceBindIntent = new Intent(this, MyService.class);
         bindService(serviceBindIntent, mViewModel.getServiceConnection(), Context.BIND_AUTO_CREATE);
     }
 
