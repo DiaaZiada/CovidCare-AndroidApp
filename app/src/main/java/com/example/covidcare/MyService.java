@@ -33,7 +33,10 @@ public class MyService extends Service {
     private static Repository deviceRepository;
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     //   System.out.println(dtf.format(now));
+    private boolean startService = true;
+
     MediaPlayer player;
+
 
     public void setDeviceRepository(Repository deviceRepo) {
         if (deviceRepository == null)
@@ -131,19 +134,25 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //getting systems default ringtone
-        player = MediaPlayer.create(this,
-                Settings.System.DEFAULT_ALARM_ALERT_URI);
-        //setting loop play to true
-        //this will make the ringtone continuously playing
-        player.setLooping(true);
+        if (startService) {
+            player = MediaPlayer.create(this,
+                    Settings.System.DEFAULT_ALARM_ALERT_URI);
+            //setting loop play to true
+            //this will make the ringtone continuously playing
+            player.setLooping(true);
 
-        //staring the player
-        player.start();
+            //staring the player
+            player.start();
 
-        //we have some options for service
-        //start sticky means service will be explicity started and stopped
-        startDiscovering();
-        return START_STICKY;
+            //we have some options for service
+            //start sticky means service will be explicity started and stopped
+            onResume();
+            startDiscovering();
+
+            startService = false;
+
+        }
+            return START_STICKY;
 
     }
 
@@ -155,6 +164,7 @@ public class MyService extends Service {
 
     public void onPause() {
         unregisterReceiver(devicesFoundReceiver);
+        player.stop();
     }
 
 
@@ -163,7 +173,18 @@ public class MyService extends Service {
         registerReceiver(devicesFoundReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED));
         registerReceiver(devicesFoundReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED));
 
-
+//        player = MediaPlayer.create(this,
+//                Settings.System.DEFAULT_ALARM_ALERT_URI);
+//        //setting loop play to true
+//        //this will make the ringtone continuously playing
+//        player.setLooping(true);
+//
+//        //staring the player
+//        player.start();
+//
+//        //we have some options for service
+//        //start sticky means service will be explicity started and stopped
+//        startDiscovering();
     }
 
 
