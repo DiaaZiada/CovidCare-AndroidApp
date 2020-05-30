@@ -11,6 +11,7 @@ import java.util.List;
 
 import table.Device;
 import table.Meeting;
+import table.Summary;
 import table.User;
 
 public class ModelView extends AndroidViewModel {
@@ -24,13 +25,14 @@ public class ModelView extends AndroidViewModel {
     private LiveData<List<Device>> allDevices;
     private LiveData<List<User>> allUsers;
     private LiveData<List<Meeting>> allMeetings;
+    private LiveData<List<Summary>> allSummaries;
 
 
-    public ServiceConnection getServiceConnection(){
+    public ServiceConnection getServiceConnection() {
         return repository.getServiceConnection();
     }
 
-    public LiveData<MyService.MyBinder> getBinder(){
+    public LiveData<MyService.MyBinder> getBinder() {
         return repository.getBinder();
     }
 
@@ -42,21 +44,48 @@ public class ModelView extends AndroidViewModel {
         allDevices = repository.getAllDevices();
         allUsers = repository.getAllUsers();
         allMeetings = repository.getAllMeetings();
+        allSummaries = repository.getAllSummaries();
     }
+
+    /* Summary */
+    public void summaryInsert(Summary summary) {
+        repository.summaryInsert(summary);
+    }
+
+    public void summaryUpdate(Summary summary) {
+        repository.summaryUpdate(summary);
+    }
+
+    public void summaryDelete(Summary summary) {
+        repository.summaryDelete(summary);
+    }
+
+    public void DeleteAllSummaries() {
+        repository.deleteAllMeetings();
+    }
+
+    public LiveData<List<Summary>> getAllSummaries() {
+        return allSummaries;
+    }
+    /* End Summary*/
 
     /* Meeting */
     public void meetingInsert(Meeting meeting) {
         repository.meetingInsert(meeting);
     }
+
     public void meetingUpdate(Meeting meeting) {
         repository.meetingUpdate(meeting);
     }
-    public void meetinDdelete(Meeting meeting) {
+
+    public void meetinDelete(Meeting meeting) {
         repository.meetingDelete(meeting);
     }
-    public void meetingDeleteAllMeetings(){
+
+    public void meetingDeleteAllMeetings() {
         repository.deleteAllMeetings();
     }
+
     public LiveData<List<Meeting>> getAllMeetings() {
         return allMeetings;
     }
@@ -67,37 +96,42 @@ public class ModelView extends AndroidViewModel {
     public void userInsert(User user) {
         repository.userInsert(user);
     }
+
     public void userUpdate(User user) {
         repository.userUpdate(user);
     }
+
     public void userDelete(User user) {
         repository.userDelete(user);
     }
+
     public void deleteAllUsers() {
         repository.deletAllUsers();
     }
+
     public LiveData<List<User>> getAllUsers() {
         return allUsers;
     }
     /* End User*/
 
 
-
-
-
     /* Device */
     public void deviceInsert(Device device) {
         repository.deviceInsert(device);
     }
+
     public void deviceUpdate(Device device) {
         repository.deviceUpdate(device);
     }
+
     public void deviceDelete(Device device) {
         repository.deviceDelete(device);
     }
+
     public void deleteAllDevices() {
         repository.deleteAllDevices();
     }
+
     public LiveData<List<Device>> getAllDevices() {
         return allDevices;
     }

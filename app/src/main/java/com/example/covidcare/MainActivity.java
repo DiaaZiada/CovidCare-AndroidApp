@@ -19,8 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -31,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import table.Device;
+import table.Summary;
 import table.User;
 
 public class MainActivity extends AppCompatActivity {
@@ -51,12 +50,13 @@ public class MainActivity extends AppCompatActivity {
 
     // Vars
     private MyService mService;
-    private ModelView mViewModel;
+    private ModelView modelView;
 
     private Map<String, Integer> status2Index;
     private Map<Integer, String> index2Status;
 
     private User user;
+    private Summary summary;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Toast.makeText(MainActivity.this, mBluetoothAdapter.getAddress(), Toast.LENGTH_SHORT).show();
 
-        mViewModel = ViewModelProviders.of(this).get(ModelView.class);
+        modelView = ViewModelProviders.of(this).get(ModelView.class);
 
         status2Index = new HashMap<String, Integer>();
         index2Status = new HashMap<Integer, String>();
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             int id = user.getId();
             User updatedUser = new User(user.getName(), status, user.getMacAddress());
             updatedUser.setId(user.getId());
-            mViewModel.userUpdate(updatedUser);
+            modelView.userUpdate(updatedUser);
             user = updatedUser;
             Toast.makeText(this, "Note saved" + index, Toast.LENGTH_SHORT).show();
         } else {
@@ -166,9 +166,10 @@ public class MainActivity extends AppCompatActivity {
         return "02:00:00:00:00:00";
     }
 
+
     private void setObservers() {
 
-        mViewModel.getBinder().observe(this, new Observer<MyService.MyBinder>() {
+        modelView.getBinder().observe(this, new Observer<MyService.MyBinder>() {
 
             @Override
             public void onChanged(@Nullable MyService.MyBinder myBinder) {
@@ -179,29 +180,44 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "onChanged: bound to service.");
                     mService = myBinder.getService();
-                    mService.setDeviceRepository(mViewModel.getRepository());
+                    mService.setDeviceRepository(modelView.getRepository());
                 }
             }
         });
 
-        mViewModel.getAllUsers().observe(this, new Observer<List<User>>() {
+
+        modelView.getAllDevices().observe(this, new Observer<List<Device>>() {
+            @Override
+            public void onChanged(@Nullable List<Device> devices) {
+                for (int i = 0; i < devices.size(); i++) {
+                    Device dev = devices.get(i);
+                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                }
+            }
+        });
+
+
+        modelView.getAllUsers().observe(this, new Observer<List<User>>() {
             @Override
             public void onChanged(@Nullable List<User> users) {
                 if (users.size() == 0) {
                     user = new User("unknown", "unknown", getMacAddr());
-                    mViewModel.userInsert(user);
+                    modelView.userInsert(user);
                 } else {
                     user = users.get(0);
                 }
             }
         });
 
-        mViewModel.getAllDevices().observe(this, new Observer<List<Device>>() {
+
+        modelView.getAllSummaries().observe(this, new Observer<List<Summary>>() {
             @Override
-            public void onChanged(@Nullable List<Device> devices) {
-                for (int i = 0; i < devices.size(); i++) {
-                    Device dev = devices.get(i);
-                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+            public void onChanged(@Nullable List<Summary> summaries) {
+                if (summaries.size() == 0) {
+                    summary = new Summary(0, 0, 0, 0);
+                    modelView.summaryInsert(summary);
+                } else {
+                    summary = summaries.get(0);
                 }
             }
         });
@@ -257,8 +273,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (mViewModel.getBinder() != null) {
-            unbindService(mViewModel.getServiceConnection());
+        if (modelView.getBinder() != null) {
+            unbindService(modelView.getServiceConnection());
         }
     }
 
@@ -271,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void bindService() {
         Intent serviceBindIntent = new Intent(this, MyService.class);
-        bindService(serviceBindIntent, mViewModel.getServiceConnection(), Context.BIND_AUTO_CREATE);
+        bindService(serviceBindIntent, modelView.getServiceConnection(), Context.BIND_AUTO_CREATE);
     }
 
 //    @Override
