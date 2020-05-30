@@ -5,6 +5,12 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,10 +28,13 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import java.io.IOException;
 import java.net.NetworkInterface;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import table.Device;
@@ -89,10 +98,66 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 checkBluetoothState();
                 mService.onResume();
+                Log.d(TAG, "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN\t\tNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
 
+                Log.d(TAG, String.valueOf(ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) + String.valueOf(ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED));
+                LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    Log.e(TAG, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+
+                    return;
+                }           locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, (LocationListener) MainActivity.this);
+                Criteria criteria = new Criteria();
+                String bestProvider = locationManager.getBestProvider(criteria, true);
+                Location location = locationManager.getLastKnownLocation(bestProvider);
+
+                if (location == null) {
+                    Toast.makeText(getApplicationContext(), "GPS signal not found", Toast.LENGTH_SHORT).show();
+                }
+                if (location != null) {
+                    Log.e("locatin", "location--" + location);
+
+                    Log.e("latitude at beginning",
+                            "@@@@@@@@@@@@@@@" + location.getLatitude());
+                    onLocationChanged(location);
+                }
+                Log.e(TAG, "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL\t\tLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
             }
 
         });
+    }
+
+
+
+
+
+    public void onLocationChanged(Location location) {
+        Geocoder geocoder;
+        List<Address> addresses;
+        geocoder = new Geocoder(this, Locale.getDefault());
+
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+
+        Log.e("latitude", "latitude--" + latitude);
+        try {
+            Log.e("latitude", "inside latitude--" + latitude);
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && addresses.size() > 0) {
+                String address = addresses.get(0).getAddressLine(0);
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+                String postalCode = addresses.get(0).getPostalCode();
+                String knownName = addresses.get(0).getFeatureName();
+
+                Log.d(TAG, state + " , " + city + " , " + country);
+                Log.d(TAG, address + " , " + knownName + " , " + postalCode);
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override
