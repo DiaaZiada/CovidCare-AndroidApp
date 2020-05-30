@@ -32,6 +32,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    public static final int UPDATE_STATUS_REQUEST = 1;
+    public static final String EXTRA_INDEX = "com.example.covidcare.MainActivity.EXTRA_INDEX";
+
+
     public static final int REQUEST_ACCESS_COARSE_LOCATION = 1;
     public static final int REQUEST_ENABLE_BLUETOOTH = 11;
 
@@ -85,6 +89,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == UPDATE_STATUS_REQUEST && resultCode == RESULT_OK) {
+            int index = data.getIntExtra(StatusActivity.EXTRA_NEW_INDEX, 0);
+            Toast.makeText(this, "Note saved"+index, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Note not saved", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
@@ -95,10 +110,15 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.meetingInfo:
                 Toast.makeText(this, "meeting Info selected", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, MeetingInfoActivity.class);
-                startActivity(intent);
+                Intent meetingIntent = new Intent(MainActivity.this, MeetingInfoActivity.class);
+                startActivity(meetingIntent);
                 return true;
             case R.id.updataStatus:
+                Intent statusIntent = new Intent(MainActivity.this, StatusActivity.class);
+                statusIntent.putExtra(EXTRA_INDEX, 0);
+                startActivityForResult(statusIntent, UPDATE_STATUS_REQUEST);
+
+
                 Toast.makeText(this, "updata Status selected", Toast.LENGTH_SHORT).show();
                 return true;
             default:
@@ -175,15 +195,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 //
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult( requestCode, resultCode, data );
-        if(requestCode == REQUEST_ENABLE_BLUETOOTH){
-            checkBluetoothState();
-        }
-    }
-//
-//
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult( requestCode, permissions, grantResults );
