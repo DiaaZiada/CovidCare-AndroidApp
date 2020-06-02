@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -31,6 +32,7 @@ import androidx.lifecycle.ViewModelProviders;
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +68,16 @@ public class MainActivity extends AppCompatActivity {
 
     private User user;
     private Summary summary;
-    private boolean startService=true;
+    private boolean startService = true;
+
+    private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
+
+    /**
+     * Permissions that need to be explicitly requested from end user.
+     */
+    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
+            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,76 +101,54 @@ public class MainActivity extends AppCompatActivity {
         index2Status.put(2, "Infected");
         index2Status.put(3, "treated");
 
-//        setObservers();
+        checkPermissions();
+        checkBluetoothState();
+//        checkCoarseLocationPermission();
+
+
+        setObservers();
 
         ScanButton = findViewById(R.id.button);
         ScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 checkBluetoothState();
-//                if (startService){
-//                    mService.onResume();
-//                    startService = false;
-//                }
-//                Log.d(TAG, "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN\t\tNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
-//
-//                Log.d(TAG, String.valueOf(ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) + String.valueOf(ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED));
-//                LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-//                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                    Log.e(TAG, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-//
-//                    return;
-//                }           locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, (LocationListener) MainActivity.this);
-//                Criteria criteria = new Criteria();
-//                String bestProvider = locationManager.getBestProvider(criteria, true);
-//                Location location = locationManager.getLastKnownLocation(bestProvider);
-//
-//                if (location == null) {
-//                    Toast.makeText(getApplicationContext(), "GPS signal not found", Toast.LENGTH_SHORT).show();
-//                }
-//                if (location != null) {
-//                    Log.e("locatin", "location--" + location);
-//
-//                    Log.e("latitude at beginning",
-//                            "@@@@@@@@@@@@@@@" + location.getLatitude());
-//                    onLocationChanged(location);
-//                }
-//                Log.e(TAG, "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL\t\tLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+//                checkCoarseLocationPermission();
             }
 
         });
     }
-
-
-
-
-
-    public void onLocationChanged(Location location) {
-        Geocoder geocoder;
-        List<Address> addresses;
-        geocoder = new Geocoder(this, Locale.getDefault());
-
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-
-        Log.e("latitude", "latitude--" + latitude);
-        try {
-            Log.e("latitude", "inside latitude--" + latitude);
-            addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            if (addresses != null && addresses.size() > 0) {
-                String address = addresses.get(0).getAddressLine(0);
-                String city = addresses.get(0).getLocality();
-                String state = addresses.get(0).getAdminArea();
-                String country = addresses.get(0).getCountryName();
-                String postalCode = addresses.get(0).getPostalCode();
-                String knownName = addresses.get(0).getFeatureName();
-
-                Log.d(TAG, state + " , " + city + " , " + country);
-                Log.d(TAG, address + " , " + knownName + " , " + postalCode);
+    protected void checkPermissions() {
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_PERMISSIONS:
+                for (int index = permissions.length - 1; index >= 0; --index) {
+                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
+                        // exit the app if one permission is not granted
+                        Toast.makeText(this, "Required permission '" + permissions[index]
+                                + "' not granted, exiting", Toast.LENGTH_LONG).show();
+                        finish();
+                        return;
+                    }
+                }
+                // all permissions were granted
+//                initialize();
+                break;
         }
     }
 
@@ -248,22 +237,12 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "onChanged: bound to service.");
                     mService = myBinder.getService();
+                    checkBluetoothState();
+//                    checkCoarseLocationPermission();
 //                    mService.setDeviceRepository(modelView.getRepository());
                 }
             }
         });
-
-
-//        modelView.getAllDevices().observe(this, new Observer<List<Device>>() {
-//            @Override
-//            public void onChanged(@Nullable List<Device> devices) {
-//                for (int i = 0; i < devices.size(); i++) {
-//                    Device dev = devices.get(i);
-////                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-//                }
-//            }
-//        });
-
 
         modelView.getAllUsers().observe(this, new Observer<List<User>>() {
             @Override
@@ -291,43 +270,53 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private boolean checkCoarseLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_ACCESS_COARSE_LOCATION);
-            return false;
-        } else {
-            return true;
-        }
-    }
+//    private boolean checkCoarseLocationPermission() {
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_ACCESS_COARSE_LOCATION);
+//            return false;
+//        } else {
+//            return true;
+//        }
+//    }
 
     private void checkBluetoothState() {
         if (mService != null) {
             mService.checkBluetoothState();
             String state = mService.getBluetoothAdapterStatus();
             mService.startDiscovering();
-            Toast.makeText(this, state, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, state + "aaaaaaaaaaaa", Toast.LENGTH_SHORT).show();
             if (state.equals("need enable")) {
                 Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
+
+                ActivityCompat.requestPermissions(MainActivity.this, new
+                        String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 555);
+
+
+//                checkCoarseLocationPermission();
             }
         }
     }
 //
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_ACCESS_COARSE_LOCATION:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "allowed", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "forbidden", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                                           int[] grantResults) {
+//        switch (requestCode) {
+//            case 1: {
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    if (ContextCompat.checkSelfPermission(MainActivity.this,
+//                            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//                        Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+//                    }
+//                } else {
+//                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+//                }
+//                return;
+//            }
+//        }
+//    }
 
 
     @Override

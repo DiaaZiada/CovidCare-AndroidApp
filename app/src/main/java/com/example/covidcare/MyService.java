@@ -64,17 +64,9 @@ public class MyService extends LifecycleService {
 
             }
 
-//                    @Override
-//                    public void onSuccess(Location location) {
-//                    }
-        });
-//        task.getResult();
-    }
-//    public void setDeviceRepository(Repository deviceRepo) {
-//        if (deviceRepository == null)
-//            deviceRepository = deviceRepo;
-//    }
 
+        });
+    }
 
     public class MyBinder extends Binder {
         MyService getService() {
@@ -85,8 +77,6 @@ public class MyService extends LifecycleService {
     @Override
     public void onCreate() {
         super.onCreate();
-//        mHandler = new Handler();
-//        getLocation();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
     }
@@ -122,20 +112,13 @@ public class MyService extends LifecycleService {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // device : represent the nearest device ...
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // adding the devices into array list of strings
-//                listAdapter.add(device.getName()  +"\n" + device.getAddress());
                 LocalDateTime now = LocalDateTime.now();
 
                 mBluetoothAdapter.getAddress();
                 Device dev = new Device(device.getName(), device.getAddress(), dtf.format(now).toString());
                 deviceRepository.deviceInsert(dev);
-//                getLocation(String address,String name, String macadd, String time  );
                 getLocation(dev.getName(), dev.getMacAddress(),dev.getTime());
-
-//                Log.d(TAG, mBluetoothAdapter.getAddress() + "\t" + mBluetoothAdapter.getName() + "\t" + device.getName() + "+" + dev.getMacAddress() + dev.getTime() + dev.getTime() + location+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzinsersion");
-
                 status = "found a device";
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 status = "scanning devices ...";
@@ -158,10 +141,6 @@ public class MyService extends LifecycleService {
         return status;
     }
 
-//    public ArrayAdapter<String> getListAdapter(){
-//        return listAdapter;
-//    }
-
     public String getBluetoothAdapterStatus() {
         return bluetoothAdapterStatus;
     }
@@ -169,21 +148,13 @@ public class MyService extends LifecycleService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //getting systems default ringtone
         super.onStartCommand(intent, flags, startId);
         deviceRepository = Repository.getInstance();
         if (startService) {
             player = MediaPlayer.create(this,
                     Settings.System.DEFAULT_ALARM_ALERT_URI);
-            //setting loop play to true
-            //this will make the ringtone continuously playing
             player.setLooping(true);
-
-            //staring the player
             player.start();
-
-            //we have some options for service
-            //start sticky means service will be explicity started and stopped
             onResume();
             startDiscovering();
             setObserver();
@@ -196,7 +167,6 @@ public class MyService extends LifecycleService {
     }
 
     public void startDiscovering() {
-//        listAdapter.clear();
 
         mBluetoothAdapter.startDiscovery();
     }
@@ -211,19 +181,6 @@ public class MyService extends LifecycleService {
         registerReceiver(devicesFoundReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
         registerReceiver(devicesFoundReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED));
         registerReceiver(devicesFoundReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED));
-
-//        player = MediaPlayer.create(this,
-//                Settings.System.DEFAULT_ALARM_ALERT_URI);
-//        //setting loop play to true
-//        //this will make the ringtone continuously playing
-//        player.setLooping(true);
-//
-//        //staring the player
-//        player.start();
-//
-//        //we have some options for service
-//        //start sticky means service will be explicity started and stopped
-//        startDiscovering();
     }
 
 
