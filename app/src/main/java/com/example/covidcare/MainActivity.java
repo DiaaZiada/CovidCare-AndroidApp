@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
             public void onChanged(@Nullable List<Device> devices) {
                 for (int i = 0; i < devices.size(); i++) {
                     Device dev = devices.get(i);
-                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+//                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                 }
             }
         });
