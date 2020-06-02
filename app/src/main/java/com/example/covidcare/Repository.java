@@ -40,7 +40,20 @@ public class Repository {
 
     private MutableLiveData<MyService.MyBinder> mBinder = new MutableLiveData<>();
 
-    public Repository(Application application) {
+    private static Repository instance;
+
+    public static Repository getInstance(Application application){
+        if (instance == null)
+            instance = new Repository(application);
+        return  instance;
+    }
+    public static Repository getInstance(){
+        return  instance;
+    }
+
+
+
+    private Repository(Application application) {
         DeviceDataBase deviceDatabase = DeviceDataBase.getInstance(application);
         deviceDao = deviceDatabase.deviceDao();
         allDevices = deviceDao.getAllDevices();

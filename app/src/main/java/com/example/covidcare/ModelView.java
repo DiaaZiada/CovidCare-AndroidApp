@@ -39,7 +39,7 @@ public class ModelView extends AndroidViewModel {
 
     public ModelView(@NonNull Application application) {
         super(application);
-        repository = new Repository(application);
+        repository = Repository.getInstance(application);
 
         allDevices = repository.getAllDevices();
         allUsers = repository.getAllUsers();

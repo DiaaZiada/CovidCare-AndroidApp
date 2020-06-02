@@ -17,6 +17,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.Observer;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -31,7 +32,7 @@ import java.util.List;
 import table.Device;
 
 
-public class MyService extends Service {
+public class MyService extends LifecycleService {
 
     private static final String TAG = "MyService";
 
@@ -69,10 +70,10 @@ public class MyService extends Service {
         });
 //        task.getResult();
     }
-    public void setDeviceRepository(Repository deviceRepo) {
-        if (deviceRepository == null)
-            deviceRepository = deviceRepo;
-    }
+//    public void setDeviceRepository(Repository deviceRepo) {
+//        if (deviceRepository == null)
+//            deviceRepository = deviceRepo;
+//    }
 
 
     public class MyBinder extends Binder {
@@ -93,6 +94,7 @@ public class MyService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        super.onBind(intent);
         return mBinder;
     }
 
@@ -168,6 +170,8 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //getting systems default ringtone
+        super.onStartCommand(intent, flags, startId);
+        deviceRepository = Repository.getInstance();
         if (startService) {
             player = MediaPlayer.create(this,
                     Settings.System.DEFAULT_ALARM_ALERT_URI);
@@ -182,11 +186,12 @@ public class MyService extends Service {
             //start sticky means service will be explicity started and stopped
             onResume();
             startDiscovering();
+            setObserver();
 
             startService = false;
 
         }
-            return START_STICKY;
+        return START_STICKY;
 
     }
 
@@ -242,7 +247,7 @@ public class MyService extends Service {
             public void onChanged(@Nullable List<Device> devices) {
                 for (int i = 0; i < devices.size(); i++) {
                     Device dev = devices.get(i);
-//                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa999");
                 }
             }
         });

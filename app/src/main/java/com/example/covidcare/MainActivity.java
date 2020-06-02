@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         index2Status.put(2, "Infected");
         index2Status.put(3, "treated");
 
-        setObservers();
+//        setObservers();
 
         ScanButton = findViewById(R.id.button);
         ScanButton.setOnClickListener(new View.OnClickListener() {
@@ -248,21 +248,21 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "onChanged: bound to service.");
                     mService = myBinder.getService();
-                    mService.setDeviceRepository(modelView.getRepository());
+//                    mService.setDeviceRepository(modelView.getRepository());
                 }
             }
         });
 
 
-        modelView.getAllDevices().observe(this, new Observer<List<Device>>() {
-            @Override
-            public void onChanged(@Nullable List<Device> devices) {
-                for (int i = 0; i < devices.size(); i++) {
-                    Device dev = devices.get(i);
-//                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-                }
-            }
-        });
+//        modelView.getAllDevices().observe(this, new Observer<List<Device>>() {
+//            @Override
+//            public void onChanged(@Nullable List<Device> devices) {
+//                for (int i = 0; i < devices.size(); i++) {
+//                    Device dev = devices.get(i);
+////                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+//                }
+//            }
+//        });
 
 
         modelView.getAllUsers().observe(this, new Observer<List<User>>() {
