@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                     if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
                         // exit the app if one permission is not granted
                         Toast.makeText(this, "Required permission '" + permissions[index]
-                                + "' not granted, exiting", Toast.LENGTH_LONG).show();
+                                + " not granted, exiting", Toast.LENGTH_LONG).show();
                         finish();
                         return;
                     }
