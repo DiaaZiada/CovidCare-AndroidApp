@@ -270,15 +270,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    private boolean checkCoarseLocationPermission() {
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_ACCESS_COARSE_LOCATION);
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
 
     private void checkBluetoothState() {
         if (mService != null) {

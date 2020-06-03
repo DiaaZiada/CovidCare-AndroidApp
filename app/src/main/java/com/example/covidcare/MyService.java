@@ -154,7 +154,7 @@ public class MyService extends LifecycleService {
             player = MediaPlayer.create(this,
                     Settings.System.DEFAULT_ALARM_ALERT_URI);
             player.setLooping(true);
-            player.start();
+//            player.start();
             onResume();
             startDiscovering();
             setObserver();
