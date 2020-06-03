@@ -19,11 +19,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
@@ -72,11 +75,12 @@ public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
 
+    private SwitchCompat btnLocationSwitch;
     /**
      * Permissions that need to be explicitly requested from end user.
      */
-    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
-            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,26 +105,39 @@ public class MainActivity extends AppCompatActivity {
         index2Status.put(2, "Infected");
         index2Status.put(3, "treated");
 
-        checkPermissions();
-        checkBluetoothState();
-//        checkCoarseLocationPermission();
-
 
         setObservers();
+
 
         ScanButton = findViewById(R.id.button);
         ScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkBluetoothState();
-//                checkCoarseLocationPermission();
+
             }
 
         });
+
+        btnLocationSwitch = (SwitchCompat) findViewById(R.id.btnLocationSwitch);
+        btnLocationSwitch.setChecked(checkPermissions());
+        btnLocationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    requestPermissions();
+                    Toast.makeText(getBaseContext(), "True", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getBaseContext(), "False", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
-    protected void checkPermissions() {
-        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+    private boolean checkPermissions(){
+        return !(ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED);
+    }
+    protected void requestPermissions() {
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 ActivityCompat.requestPermissions(MainActivity.this,
@@ -129,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
-        }
+
     }
 
     @Override
@@ -146,8 +163,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                 }
-                // all permissions were granted
-//                initialize();
+
                 break;
         }
     }
@@ -238,8 +254,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "onChanged: bound to service.");
                     mService = myBinder.getService();
                     checkBluetoothState();
-//                    checkCoarseLocationPermission();
-//                    mService.setDeviceRepository(modelView.getRepository());
+//
                 }
             }
         });
@@ -281,11 +296,10 @@ public class MainActivity extends AppCompatActivity {
                 Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
 
-                ActivityCompat.requestPermissions(MainActivity.this, new
-                        String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 555);
+//                ActivityCompat.requestPermissions(MainActivity.this, new
+//                        String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 555);
 
 
-//                checkCoarseLocationPermission();
             }
         }
     }
