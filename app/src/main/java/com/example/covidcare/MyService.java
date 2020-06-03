@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -24,6 +25,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -213,10 +216,15 @@ public class MyService extends LifecycleService {
             public void onChanged(@Nullable List<Device> devices) {
                 for (int i = 0; i < devices.size(); i++) {
                     Device dev = devices.get(i);
+                    Log.e(TAG,String.valueOf(isNetworkConnected())+"\tnetnetnetnetnetnetnetnetnetnetnetnetnetnet");
+
                     Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\t"+dev.getLatitude()+"\t"+dev.getLongitude()+ "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa999");
                 }
             }
         });
-
+    }
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
     }
 }
