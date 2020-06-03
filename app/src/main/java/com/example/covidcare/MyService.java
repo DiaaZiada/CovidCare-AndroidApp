@@ -1,6 +1,5 @@
 package com.example.covidcare;
 
-import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -53,7 +52,8 @@ public class MyService extends LifecycleService {
         addLocation = bool;
     }
 
-    private void getLocation(final String name, final String macadd, final String time) {
+    private void saveDeviceMeetingInfo(final String name, final String macAddress, final String time) {
+
         if (addLocation) {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -65,14 +65,17 @@ public class MyService extends LifecycleService {
                 @Override
                 public void onSuccess(Object o) {
                     location = String.valueOf(((Location) o).getLatitude()) + "\t" + String.valueOf(((Location) o).getLongitude());
-                    Log.e(TAG, "location \t" + name + "\t" + macadd + "\t" + time + "\t" + String.valueOf(((Location) o).getLatitude()) + "\t" + String.valueOf(((Location) o).getLongitude()));
-
+                    Log.e(TAG, "location \t" + name + "\t" + macAddress + "\t" + time + "\t" + String.valueOf(((Location) o).getLatitude()) + "\t" + String.valueOf(((Location) o).getLongitude()));
+                    Device dev = new Device(name, macAddress, time, ((Location) o).getLatitude(),((Location) o).getLongitude());
+                    deviceRepository.deviceInsert(dev);
                 }
 
 
             });
         }else{
-            Log.e(TAG, "Nooooooo location \t" + name + "\t" + macadd + "\t" + time + "\t");
+            Device dev = new Device(name, macAddress, time, -1,-1);
+            deviceRepository.deviceInsert(dev);
+            Log.e(TAG, "Nooooooo location \t" + name + "\t" + macAddress + "\t" + time + "\t");
 
         }
     }
@@ -123,11 +126,8 @@ public class MyService extends LifecycleService {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 LocalDateTime now = LocalDateTime.now();
+                saveDeviceMeetingInfo(device.getName(), device.getAddress(), dtf.format(now).toString());
 
-                mBluetoothAdapter.getAddress();
-                Device dev = new Device(device.getName(), device.getAddress(), dtf.format(now).toString());
-                deviceRepository.deviceInsert(dev);
-                getLocation(dev.getName(), dev.getMacAddress(), dev.getTime());
                 status = "found a device";
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 status = "scanning devices ...";
@@ -136,7 +136,6 @@ public class MyService extends LifecycleService {
             }
         }
     };
-
 
     public boolean getIsBluetoothDiscovering() {
         return mBluetoothAdapter.isDiscovering();
@@ -214,7 +213,7 @@ public class MyService extends LifecycleService {
             public void onChanged(@Nullable List<Device> devices) {
                 for (int i = 0; i < devices.size(); i++) {
                     Device dev = devices.get(i);
-                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa999");
+                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\t"+dev.getLatitude()+"\t"+dev.getLongitude()+ "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa999");
                 }
             }
         });

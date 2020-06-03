@@ -12,7 +12,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import table.Device;
 import dao.DeviceDao;
 
-@Database(entities = {Device.class}, version = 3)
+@Database(entities = {Device.class}, version = 4)
 public abstract class DeviceDataBase extends RoomDatabase {
 
     private  static  DeviceDataBase instance;

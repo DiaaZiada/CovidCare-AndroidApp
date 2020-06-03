@@ -11,11 +11,15 @@ public class Device {
     private String name;
     private String macAddress;
     private String time;
+    private double latitude;
+    private double longitude;
 
-    public Device(String name, String macAddress, String time) {
+    public Device(String name, String macAddress, String time, double latitude, double longitude) {
         this.name = name;
         this.macAddress = macAddress;
         this.time = time;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public void setId(int id) {
@@ -34,7 +38,15 @@ public class Device {
         return macAddress;
     }
 
-    public String  getTime() {
+    public String getTime() {
         return time;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
     }
 }
