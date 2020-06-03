@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private Summary summary;
     private boolean startService = true;
 
+    private int isAddLocation = -1;
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
 
     private SwitchCompat btnLocationSwitch;
@@ -119,15 +120,28 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnLocationSwitch = (SwitchCompat) findViewById(R.id.btnLocationSwitch);
-        btnLocationSwitch.setChecked(checkPermissions());
+//        btnLocationSwitch.setChecked(checkPermissions());
         btnLocationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    int id = user.getId();
                     requestPermissions();
+
+                    User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), true);
+                    updatedUser.setId(user.getId());
+                    modelView.userUpdate(updatedUser);
+
                     Toast.makeText(getBaseContext(), "True", Toast.LENGTH_SHORT).show();
+//                    mService.setAddLocation(true);
+                    isAddLocation = 1;
                 } else {
                     Toast.makeText(getBaseContext(), "False", Toast.LENGTH_SHORT).show();
+//                    mService.setAddLocation(false);
+                    User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
+                    updatedUser.setId(user.getId());
+                    modelView.userUpdate(updatedUser);
+                    isAddLocation = 0;
                 }
             }
         });
@@ -141,10 +155,10 @@ public class MainActivity extends AppCompatActivity {
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_ASK_PERMISSIONS);
             } else {
                 ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_ASK_PERMISSIONS);
             }
 
     }
@@ -159,7 +173,14 @@ public class MainActivity extends AppCompatActivity {
                         // exit the app if one permission is not granted
                         Toast.makeText(this, "Required permission '" + permissions[index]
                                 + " not granted, exiting", Toast.LENGTH_LONG).show();
-                        finish();
+
+//                        finish();
+
+                        mService.setAddLocation(false);
+                        User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
+                        updatedUser.setId(user.getId());
+                        modelView.userUpdate(updatedUser);
+                        isAddLocation = 0;
                         return;
                     }
                 }
@@ -175,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
             int index = data.getIntExtra(StatusActivity.EXTRA_NEW_INDEX, 0);
             String status = index2Status.get(index);
             int id = user.getId();
-            User updatedUser = new User(user.getName(), status, user.getMacAddress());
+            User updatedUser = new User(user.getName(), status, user.getMacAddress(), user.getAddLocation());
             updatedUser.setId(user.getId());
             modelView.userUpdate(updatedUser);
             user = updatedUser;
@@ -253,6 +274,10 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "onChanged: bound to service.");
                     mService = myBinder.getService();
+                    if(isAddLocation != -1){
+                        mService.setAddLocation(isAddLocation==1);
+
+                    }
                     checkBluetoothState();
 //
                 }
@@ -263,10 +288,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable List<User> users) {
                 if (users.size() == 0) {
-                    user = new User("unknown", "unknown", getMacAddr());
+                    user = new User("unknown", "unknown", getMacAddr(), false);
                     modelView.userInsert(user);
                 } else {
                     user = users.get(0);
+                    if (user.getAddLocation()){
+                        isAddLocation = 1;
+                    }else
+                        isAddLocation = 0;
+
+                    btnLocationSwitch.setChecked(isAddLocation==1);
+                    if (mService != null)
+                        mService.setAddLocation(isAddLocation==1);
+
                 }
             }
         });

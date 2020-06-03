@@ -13,7 +13,7 @@ import table.User;
 
 import dao.UserDao;
 
-@Database(entities = {User.class}, version = 1)
+@Database(entities = {User.class}, version = 2)
 public abstract class UserDataBase extends RoomDatabase {
 
     private static UserDataBase instance;

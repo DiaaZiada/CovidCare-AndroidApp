@@ -11,12 +11,15 @@ public class User {
     private String name;
     private String status;
     private String macAddress;
+    private boolean addLocation;
 
-    public User(String name, String status, String macAddress) {
+    public User(String name, String status, String macAddress, boolean addLocation) {
         this.name = name;
         this.status = status;
         this.macAddress = macAddress;
+        this.addLocation = addLocation;
     }
+
 
     public void setId(int id) {
         this.id = id;
@@ -36,5 +39,9 @@ public class User {
 
     public String getMacAddress() {
         return macAddress;
+    }
+
+    public boolean getAddLocation() {
+        return addLocation;
     }
 }

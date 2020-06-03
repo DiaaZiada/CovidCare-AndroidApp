@@ -45,27 +45,36 @@ public class MyService extends LifecycleService {
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     //   System.out.println(dtf.format(now));
     private boolean startService = true;
+    private boolean addLocation = false;
     private String location = "";
     MediaPlayer player;
 
-    private  void getLocation(final String name, final String macadd, final String time  ){
+    public void setAddLocation(boolean bool) {
+        addLocation = bool;
+    }
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    private void getLocation(final String name, final String macadd, final String time) {
+        if (addLocation) {
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            return;
-        }
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        Task task = fusedLocationProviderClient.getLastLocation();
-        task.addOnSuccessListener(new OnSuccessListener() {
-            @Override
-            public void onSuccess(Object o) {
-                location =String.valueOf(((Location) o).getLatitude())+"\t"+String.valueOf(((Location) o).getLongitude());
-                Log.e(TAG,name+"\t"+macadd+"\t"+time+"\t"+ String.valueOf(((Location) o).getLatitude())+"\t"+String.valueOf(((Location) o).getLongitude()));
-
+                return;
             }
+            FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+            Task task = fusedLocationProviderClient.getLastLocation();
+            task.addOnSuccessListener(new OnSuccessListener() {
+                @Override
+                public void onSuccess(Object o) {
+                    location = String.valueOf(((Location) o).getLatitude()) + "\t" + String.valueOf(((Location) o).getLongitude());
+                    Log.e(TAG, "location \t" + name + "\t" + macadd + "\t" + time + "\t" + String.valueOf(((Location) o).getLatitude()) + "\t" + String.valueOf(((Location) o).getLongitude()));
+
+                }
 
 
-        });
+            });
+        }else{
+            Log.e(TAG, "Nooooooo location \t" + name + "\t" + macadd + "\t" + time + "\t");
+
+        }
     }
 
     public class MyBinder extends Binder {
@@ -118,7 +127,7 @@ public class MyService extends LifecycleService {
                 mBluetoothAdapter.getAddress();
                 Device dev = new Device(device.getName(), device.getAddress(), dtf.format(now).toString());
                 deviceRepository.deviceInsert(dev);
-                getLocation(dev.getName(), dev.getMacAddress(),dev.getTime());
+                getLocation(dev.getName(), dev.getMacAddress(), dev.getTime());
                 status = "found a device";
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 status = "scanning devices ...";
@@ -198,7 +207,8 @@ public class MyService extends LifecycleService {
         Log.d(TAG, "onDestroy: called.");
         onPause();
     }
-    private void setObserver(){
+
+    private void setObserver() {
         deviceRepository.getAllDevices().observe(this, new Observer<List<Device>>() {
             @Override
             public void onChanged(@Nullable List<Device> devices) {
