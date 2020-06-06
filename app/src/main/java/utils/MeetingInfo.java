@@ -3,35 +3,31 @@ package utils;
 public class MeetingInfo {
     private String time;
     private String status;
-    private String location;
+    private double latitude;
+    private double logitude;
 
-    public MeetingInfo(String time, String status, String location) {
+    public MeetingInfo(String time, String status, double latitude, double logitude) {
         this.time = time;
         this.status = status;
-        this.location = location;
+        this.latitude = latitude;
+        this.logitude = logitude;
     }
 
     public String getTime() {
         return time;
     }
 
-    public void setTime(String time) {
-        this.time = time;
-    }
-
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
+    public double getLogitude() {
+        return logitude;
     }
 }
+
+

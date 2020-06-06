@@ -54,11 +54,12 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
     public View getView(int position, View convertView, ViewGroup parent) {
         String time = getItem(position).getTime();
         String status = getItem(position).getStatus();
-        String location = getItem(position).getLocation();
+        double latitude = getItem(position).getLatitude();
+        double longitude = getItem(position).getLogitude();
 
         time = getNumberOfDays(time);
 
-        MeetingInfo meetingInfo = new MeetingInfo(time, status, location);
+        MeetingInfo meetingInfo = new MeetingInfo(time, status, latitude, longitude);
 
         //create the view result for showing the animation
         final View result;
@@ -92,7 +93,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         
         holder.time.setText(meetingInfo.getTime()+" Days Ago");
         holder.status.setText(meetingInfo.getStatus());
-        holder.locaton.setText(meetingInfo.getLocation());
+        holder.locaton.setText(String.valueOf(meetingInfo.getLatitude())+" "+ String.valueOf(meetingInfo.getLogitude()));
 
         return convertView;
     }

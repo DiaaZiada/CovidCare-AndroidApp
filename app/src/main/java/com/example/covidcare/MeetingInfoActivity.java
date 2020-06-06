@@ -78,8 +78,7 @@ public class MeetingInfoActivity extends AppCompatActivity {
         public void onChanged(@Nullable List<Meeting> meetings) {
            meetingsInfo.clear();
            for (int i = meetings.size()-1; i>=0; i--) {
-               meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLocation()));
-
+               meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(),meetings.get(i).getLongitude()));
            }
             MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MeetingInfoActivity.this, R.layout.adabter_view_list, meetingsInfo);
             mListView.setAdapter(adapter);

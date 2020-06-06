@@ -12,7 +12,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import table.Meeting;
 import dao.MeetingDao;
 
-@Database(entities = {Meeting.class}, version = 1)
+@Database(entities = {Meeting.class}, version = 2)
 public abstract class MeetingDataBase extends RoomDatabase {
     private  static  MeetingDataBase instance;
     public  abstract MeetingDao meetingDao();

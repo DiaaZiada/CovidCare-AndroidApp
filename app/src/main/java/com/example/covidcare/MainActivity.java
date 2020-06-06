@@ -42,6 +42,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import requests.RequestsModel;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import table.Device;
 import table.Summary;
 import table.User;
@@ -91,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Toast.makeText(MainActivity.this, mBluetoothAdapter.getAddress(), Toast.LENGTH_SHORT).show();
 
+
+//        RequestsModel requestsModel = RequestsModel.getInstance();
         modelView = ViewModelProviders.of(this).get(ModelView.class);
 
         status2Index = new HashMap<String, Integer>();

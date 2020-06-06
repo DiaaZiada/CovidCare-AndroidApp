@@ -9,15 +9,15 @@ public class Meeting {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String status;
-    private String macAddress;
     private String time;
-    private String location;
+    private double latitude;
+    private double longitude;
 
-    public Meeting(String status, String macAddress, String time, String location) {
+    public Meeting(String status, String time, double latitude, double longitude) {
         this.status = status;
-        this.macAddress = macAddress;
         this.time = time;
-        this.location = location;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public void setId(int id) {
@@ -32,18 +32,15 @@ public class Meeting {
         return status;
     }
 
-    public String getMacAddress() {
-        return macAddress;
-    }
-
     public String getTime() {
         return time;
     }
 
-    public String getLocation() {
-        return location;
+    public double getLatitude() {
+        return latitude;
     }
 
-
-
+    public double getLongitude() {
+        return longitude;
+    }
 }

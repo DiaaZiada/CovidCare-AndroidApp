@@ -26,11 +26,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 
+import requests.MacAddress;
+import requests.RequestsModel;
 import table.Device;
 
 
@@ -49,13 +53,17 @@ public class MyService extends LifecycleService {
     private boolean startService = true;
     private boolean addLocation = false;
     private String location = "";
+    private RequestsModel requestsModel;
+    private String macAddress;
     MediaPlayer player;
+
 
     public void setAddLocation(boolean bool) {
         addLocation = bool;
     }
 
     private void saveDeviceMeetingInfo(final String name, final String macAddress, final String time) {
+        Log.e(TAG, "found ad DV VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV");
 
         if (addLocation) {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -69,14 +77,14 @@ public class MyService extends LifecycleService {
                 public void onSuccess(Object o) {
                     location = String.valueOf(((Location) o).getLatitude()) + "\t" + String.valueOf(((Location) o).getLongitude());
                     Log.e(TAG, "location \t" + name + "\t" + macAddress + "\t" + time + "\t" + String.valueOf(((Location) o).getLatitude()) + "\t" + String.valueOf(((Location) o).getLongitude()));
-                    Device dev = new Device(name, macAddress, time, ((Location) o).getLatitude(),((Location) o).getLongitude());
+                    Device dev = new Device(name, macAddress, time, ((Location) o).getLatitude(), ((Location) o).getLongitude());
                     deviceRepository.deviceInsert(dev);
                 }
 
 
             });
-        }else{
-            Device dev = new Device(name, macAddress, time, -1,-1);
+        } else {
+            Device dev = new Device(name, macAddress, time, -1, -1);
             deviceRepository.deviceInsert(dev);
             Log.e(TAG, "Nooooooo location \t" + name + "\t" + macAddress + "\t" + time + "\t");
 
@@ -93,6 +101,8 @@ public class MyService extends LifecycleService {
     public void onCreate() {
         super.onCreate();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        requestsModel = RequestsModel.getInstance();
+        macAddress = getMacAddr();
 
     }
 
@@ -212,19 +222,45 @@ public class MyService extends LifecycleService {
 
     private void setObserver() {
         deviceRepository.getAllDevices().observe(this, new Observer<List<Device>>() {
+
             @Override
             public void onChanged(@Nullable List<Device> devices) {
-                for (int i = 0; i < devices.size(); i++) {
-                    Device dev = devices.get(i);
-                    Log.e(TAG,String.valueOf(isNetworkConnected())+"\tnetnetnetnetnetnetnetnetnetnetnetnetnetnet");
-
-                    Log.d(TAG, i + "\t" + dev.getName() + "\t" + dev.getMacAddress() + "\t" + dev.getTime() + "\t"+dev.getLatitude()+"\t"+dev.getLongitude()+ "\taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa999");
-                }
+                Log.e(TAG, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa8888887 " + devices.size());
+                if (devices.size() > 0)
+                    requestsModel.addMeeting(devices, macAddress);
             }
         });
     }
+
     private boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
     }
+
+    public static String getMacAddr() {
+        try {
+            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface nif : all) {
+                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
+
+                byte[] macBytes = nif.getHardwareAddress();
+                if (macBytes == null) {
+                    return "";
+                }
+
+                StringBuilder res1 = new StringBuilder();
+                for (byte b : macBytes) {
+                    res1.append(Integer.toHexString(b & 0xFF) + ":");
+                }
+
+                if (res1.length() > 0) {
+                    res1.deleteCharAt(res1.length() - 1);
+                }
+                return res1.toString();
+            }
+        } catch (Exception ex) {
+        }
+        return "02:00:00:00:00:00";
+    }
+
 }
