@@ -11,7 +11,7 @@
         android:textAlignment="center"
         android:text="TextView1"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="70dp"
         android:id="@+id/textView1"
         android:layout_weight="66.6"/>
 
@@ -28,11 +28,11 @@
             android:layout_height="30dp"
             android:id="@+id/textView2"/>
 
-        <TextView
+        <Button
             android:gravity="center"
             android:text="TextView3"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="40dp"
             android:id="@+id/textView3"
             android:layout_below="@+id/textView2"/>
     </LinearLayout>

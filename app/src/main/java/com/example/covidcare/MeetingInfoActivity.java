@@ -15,10 +15,13 @@ import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import adapter.MeetingInfoListAdapter;
+import requests.RequestsModel;
 import table.Device;
 import table.Meeting;
 import table.Summary;
@@ -34,11 +37,15 @@ public class MeetingInfoActivity extends AppCompatActivity {
     private ModelView modelView;
     private Summary summary;
     private ArrayList<MeetingInfo> meetingsInfo;
+    private RequestsModel requestsModel;
 
     private TextView nHealth, nInfected, nTreated, nUnknown;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestsModel = RequestsModel.getInstance();
+
         setContentView(R.layout.meeting_info);
         Log.d(TAG, "onCreate: Started.");
         mListView = (ListView) findViewById(R.id.listView);
@@ -52,8 +59,12 @@ public class MeetingInfoActivity extends AppCompatActivity {
         nTreated = findViewById(R.id.nTreated);
         nUnknown = findViewById(R.id.nUnknown);
 
+//        requestsModel.getMeetings(getMacAddr());
+
 
     }
+
+
     private void setObservers() {
         modelView.getAllSummaries().observe(this, new Observer<List<Summary>>() {
             @Override
@@ -77,7 +88,7 @@ public class MeetingInfoActivity extends AppCompatActivity {
         @Override
         public void onChanged(@Nullable List<Meeting> meetings) {
            meetingsInfo.clear();
-           for (int i = meetings.size()-1; i>=0; i--) {
+           for (int i =0; i< meetings.size(); i++) {
                meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(),meetings.get(i).getLongitude()));
            }
             MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MeetingInfoActivity.this, R.layout.adabter_view_list, meetingsInfo);
@@ -85,6 +96,31 @@ public class MeetingInfoActivity extends AppCompatActivity {
         }
     });
 }
+    public static String getMacAddr() {
+        try {
+            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface nif : all) {
+                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
+
+                byte[] macBytes = nif.getHardwareAddress();
+                if (macBytes == null) {
+                    return "";
+                }
+
+                StringBuilder res1 = new StringBuilder();
+                for (byte b : macBytes) {
+                    res1.append(Integer.toHexString(b & 0xFF) + ":");
+                }
+
+                if (res1.length() > 0) {
+                    res1.deleteCharAt(res1.length() - 1);
+                }
+                return res1.toString();
+            }
+        } catch (Exception ex) {
+        }
+        return "02:00:00:00:00:00";
+    }
 
 
 }

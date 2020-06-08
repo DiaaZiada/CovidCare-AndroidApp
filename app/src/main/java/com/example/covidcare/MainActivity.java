@@ -42,12 +42,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import adapter.MeetingInfoListAdapter;
 import requests.RequestsModel;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import table.Device;
+import table.Meeting;
 import table.Summary;
 import table.User;
+import utils.MeetingInfo;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_ENABLE_BLUETOOTH = 11;
 
 
-    private Button ScanButton;
+    private Button ScanButton, btnRelaod;
 
     private ArrayAdapter<String> listAdapter;
 
@@ -80,9 +83,8 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
 
     private SwitchCompat btnLocationSwitch;
-    /**
-     * Permissions that need to be explicitly requested from end user.
-     */
+    private RequestsModel requestsModel;
+
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
@@ -91,12 +93,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Toast.makeText(MainActivity.this, mBluetoothAdapter.getAddress(), Toast.LENGTH_SHORT).show();
 
 
 //        RequestsModel requestsModel = RequestsModel.getInstance();
         modelView = ViewModelProviders.of(this).get(ModelView.class);
+        requestsModel = RequestsModel.getInstance();
 
         status2Index = new HashMap<String, Integer>();
         index2Status = new HashMap<Integer, String>();
@@ -114,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
         setObservers();
 
+        requestsModel.getMeetings(getMacAddr());
 
         ScanButton = findViewById(R.id.button);
         ScanButton.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
+
 
         btnLocationSwitch = (SwitchCompat) findViewById(R.id.btnLocationSwitch);
 //        btnLocationSwitch.setChecked(checkPermissions());
@@ -306,6 +313,8 @@ public class MainActivity extends AppCompatActivity {
                     if (mService != null)
                         mService.setAddLocation(isAddLocation==1);
 
+                    requestsModel.updateStatus(user, getMacAddr());
+
                 }
             }
         });
@@ -322,6 +331,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        modelView.getAllDevices().observe(this, new Observer<List<Device>>() {
+            @Override
+            public void onChanged(List<Device> devices) {
+
+            }
+        });
     }
 
 
@@ -334,34 +349,16 @@ public class MainActivity extends AppCompatActivity {
             if (state.equals("need enable")) {
                 Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
-
-//                ActivityCompat.requestPermissions(MainActivity.this, new
-//                        String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 555);
-
-
             }
         }
     }
-//
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                                           int[] grantResults) {
-//        switch (requestCode) {
-//            case 1: {
-//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    if (ContextCompat.checkSelfPermission(MainActivity.this,
-//                            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//                        Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
-//                    }
-//                } else {
-//                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
-//                }
-//                return;
-//            }
-//        }
-//    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        requestsModel.getMeetings(getMacAddr());
 
+    }
 
     @Override
     protected void onResume() {

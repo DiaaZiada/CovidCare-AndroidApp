@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,7 +41,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
     private static class ViewHolder {
         TextView time;
         TextView status;
-        TextView locaton;
+        Button locaton;
     }
 
     public MeetingInfoListAdapter(Context context, int resource, ArrayList<MeetingInfo> objects) {
@@ -57,7 +58,13 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         double latitude = getItem(position).getLatitude();
         double longitude = getItem(position).getLogitude();
 
+
+
+
         time = getNumberOfDays(time);
+
+
+
 
         MeetingInfo meetingInfo = new MeetingInfo(time, status, latitude, longitude);
 
@@ -74,7 +81,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
             holder= new ViewHolder();
             holder.status = (TextView) convertView.findViewById(R.id.textView1);
             holder.time = (TextView) convertView.findViewById(R.id.textView2);
-            holder.locaton = (TextView) convertView.findViewById(R.id.textView3);
+            holder.locaton = (Button) convertView.findViewById(R.id.textView3);
 
             result = convertView;
 
@@ -90,11 +97,19 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
                 (position > lastPosition) ? R.anim.load_down_anim : R.anim.load_up_anim);
         result.startAnimation(animation);
         lastPosition = position;
-        
-        holder.time.setText(meetingInfo.getTime()+" Days Ago");
+
+
+
+
+        holder.time.setText("From " + meetingInfo.getTime()+" ago");
         holder.status.setText(meetingInfo.getStatus());
         holder.locaton.setText(String.valueOf(meetingInfo.getLatitude())+" "+ String.valueOf(meetingInfo.getLogitude()));
-
+        holder.locaton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG, String.valueOf(holder.locaton.getText()));
+            }
+        });
         return convertView;
     }
 
@@ -112,9 +127,15 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         }
         Log.d(TAG, time+"\t"+nowString);
         long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
-        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+        long seconds = diffInMillies/1000;
+        int day = (int)TimeUnit.SECONDS.toDays(seconds);
+        long hours = TimeUnit.SECONDS.toHours(seconds) - (day *24);
+        long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds)* 60);
+        long second = TimeUnit.SECONDS.toSeconds(seconds) - (TimeUnit.SECONDS.toMinutes(seconds) *60);
 
-        return String.valueOf(diff);
+//        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+        return String.valueOf(day)+"d:"+String.valueOf(hours)+"h:"+String.valueOf(minute)+"m";
 
     }
 

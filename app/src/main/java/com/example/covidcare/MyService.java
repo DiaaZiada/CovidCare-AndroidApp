@@ -225,7 +225,6 @@ public class MyService extends LifecycleService {
 
             @Override
             public void onChanged(@Nullable List<Device> devices) {
-                Log.e(TAG, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa8888887 " + devices.size());
                 if (devices.size() > 0)
                     requestsModel.addMeeting(devices, macAddress);
             }
