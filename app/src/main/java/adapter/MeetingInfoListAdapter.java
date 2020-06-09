@@ -1,6 +1,7 @@
 package adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.icu.util.MeasureUnit;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.example.covidcare.MainActivity;
+import com.example.covidcare.MapActivity;
+import com.example.covidcare.MeetingInfoActivity;
 import com.example.covidcare.R;
 
 import java.text.ParseException;
@@ -37,6 +41,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
     private DateTimeFormatter dtf= DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH);
     private LocalDateTime now;
+    private int i=0;
 
     private static class ViewHolder {
         TextView time;
@@ -103,13 +108,17 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
 
         holder.time.setText("From " + meetingInfo.getTime()+" ago");
         holder.status.setText(meetingInfo.getStatus());
-        holder.locaton.setText(String.valueOf(meetingInfo.getLatitude())+" "+ String.valueOf(meetingInfo.getLogitude()));
-        holder.locaton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e(TAG, String.valueOf(holder.locaton.getText()));
-            }
-        });
+        holder.locaton.setText("View Location");
+        holder.locaton.setId(i);
+        i++;
+//        holder.locaton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.e(TAG, String.valueOf(holder.locaton.getText()));
+////                Intent intent = new Intent(MeetingInfoActivity.this, MapActivity.class);
+////                startActivity(intent);
+//            }
+//        });
         return convertView;
     }
 

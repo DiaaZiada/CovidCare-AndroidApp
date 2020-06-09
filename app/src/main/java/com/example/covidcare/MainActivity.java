@@ -1,6 +1,7 @@
 package com.example.covidcare;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,6 +33,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.io.IOException;
 import java.net.NetworkInterface;
@@ -62,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int REQUEST_ACCESS_COARSE_LOCATION = 1;
     public static final int REQUEST_ENABLE_BLUETOOTH = 11;
-
+    private static final int ERROR_DIALOG_REQUEST = 9001;
 
     private Button ScanButton, btnRelaod;
 
@@ -94,11 +99,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+
+
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Toast.makeText(MainActivity.this, mBluetoothAdapter.getAddress(), Toast.LENGTH_SHORT).show();
 
 
-//        RequestsModel requestsModel = RequestsModel.getInstance();
         modelView = ViewModelProviders.of(this).get(ModelView.class);
         requestsModel = RequestsModel.getInstance();
 
@@ -120,15 +126,18 @@ public class MainActivity extends AppCompatActivity {
 
         requestsModel.getMeetings(getMacAddr());
 
-        ScanButton = findViewById(R.id.button);
-        ScanButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-
-        });
-
+////        ScanButton = findViewById(R.id.button);
+//        ScanButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (isServicesOK()) {
+//                    Intent intent = new Intent(MainActivity.this, MapActivity.class);
+//                    startActivity(intent);
+//
+//                }
+//            }
+//
+//        });
 
 
         btnLocationSwitch = (SwitchCompat) findViewById(R.id.btnLocationSwitch);
@@ -159,19 +168,40 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private boolean checkPermissions(){
+    public boolean isServicesOK() {
+        Log.d(TAG, "isServicesOK: checking google services version");
+
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
+
+        if (available == ConnectionResult.SUCCESS) {
+            //everything is fine and the user can make map requests
+            Log.d(TAG, "isServicesOK: Google Play Services is working");
+            return true;
+        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
+            //an error occured but we can resolve it
+            Log.d(TAG, "isServicesOK: an error occured but we can fix it");
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        } else {
+            Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
+        }
+        return false;
+    }
+
+    private boolean checkPermissions() {
         return !(ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED);
     }
+
     protected void requestPermissions() {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_ASK_PERMISSIONS);
-            } else {
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_ASK_PERMISSIONS);
-            }
+        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION)) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_ASK_PERMISSIONS);
+        } else {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_ASK_PERMISSIONS);
+        }
 
     }
 
@@ -286,8 +316,8 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "onChanged: bound to service.");
                     mService = myBinder.getService();
-                    if(isAddLocation != -1){
-                        mService.setAddLocation(isAddLocation==1);
+                    if (isAddLocation != -1) {
+                        mService.setAddLocation(isAddLocation == 1);
 
                     }
                     checkBluetoothState();
@@ -304,14 +334,14 @@ public class MainActivity extends AppCompatActivity {
                     modelView.userInsert(user);
                 } else {
                     user = users.get(0);
-                    if (user.getAddLocation()){
+                    if (user.getAddLocation()) {
                         isAddLocation = 1;
-                    }else
+                    } else
                         isAddLocation = 0;
 
-                    btnLocationSwitch.setChecked(isAddLocation==1);
+                    btnLocationSwitch.setChecked(isAddLocation == 1);
                     if (mService != null)
-                        mService.setAddLocation(isAddLocation==1);
+                        mService.setAddLocation(isAddLocation == 1);
 
                     requestsModel.updateStatus(user, getMacAddr());
 
