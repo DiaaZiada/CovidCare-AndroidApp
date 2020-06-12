@@ -18,9 +18,9 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="312dp"
-        android:layout_marginTop="117dp"
+        android:layout_marginTop="89dp"
         android:layout_marginEnd="27dp"
-        android:layout_marginBottom="587dp" />
+        android:layout_marginBottom="615dp" />
 
     <TextView
         android:id="@+id/textView11"
@@ -30,10 +30,10 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="101dp"
-        android:layout_marginEnd="205dp"
-        android:layout_marginBottom="606dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="83dp"
+        android:layout_marginEnd="206dp"
+        android:layout_marginBottom="624dp"
         android:text="Save Locations"
         android:textColor="#000000"
         android:textSize="16sp"
@@ -48,9 +48,9 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="125dp"
+        android:layout_marginTop="109dp"
         android:layout_marginEnd="127dp"
-        android:layout_marginBottom="590dp"
+        android:layout_marginBottom="606dp"
         android:text="Whiether to save meetings locations or not"
         android:textSize="12sp" />
 
@@ -62,10 +62,10 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="27dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="18dp"
         android:layout_marginEnd="290dp"
-        android:layout_marginBottom="680dp"
+        android:layout_marginBottom="689dp"
         android:text="My Status"
         android:textColor="#000000"
         android:textSize="16sp"
@@ -79,12 +79,13 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="45dp"
         android:layout_marginEnd="197dp"
-        android:layout_marginBottom="645dp"
+        android:layout_marginBottom="656dp"
         android:text="Select your COVID status from the dropdown list"
         android:textSize="12sp" />
+
 
     <Spinner
         android:id="@+id/spinner"
@@ -95,34 +96,75 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="266dp"
-        android:layout_marginTop="37dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="659dp" />
+        android:layout_marginTop="21dp"
+        android:layout_marginEnd="9dp"
+        android:layout_marginBottom="675dp" />
 
     <TextView
         android:id="@+id/textView13"
-        android:layout_width="162dp"
-        android:layout_height="27dp"
+        android:layout_width="190dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="169dp"
-        android:layout_marginEnd="234dp"
-        android:layout_marginBottom="535dp"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="134dp"
+        android:layout_marginEnd="208dp"
         android:text="Meetings Statistics"
         android:textColor="#000000"
         android:textSize="18sp"
         android:textStyle="bold" />
 
+
     <androidx.cardview.widget.CardView
+        android:id="@+id/cvtreat"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="162dp"
-        android:layout_marginTop="632dp"
+        android:layout_below="@+id/textView13"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="56dp"
+        android:layout_toEndOf="@+id/cvinfect"
+        app:cardCornerRadius="10dp">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/treated_background"
+            app:srcCompat="@mipmap/treated_foreground" />
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvinfect"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/textView13"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="15dp"
+        android:layout_toEndOf="@+id/cvhealth"
+        app:cardCornerRadius="10dp">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/infected_background"
+            app:srcCompat="@mipmap/infected_foreground" />
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvhealth"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/textView13"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="15dp"
+        
+        android:layout_toEndOf="@+id/cvun"
         app:cardCornerRadius="10dp">
 
         <ImageView
@@ -134,46 +176,14 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cvun"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_below="@+id/textView13"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="162dp"
-        android:layout_marginTop="632dp"
-        app:cardCornerRadius="10dp">
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="15dp"
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/infected_background"
-            app:srcCompat="@mipmap/infected_foreground" />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="162dp"
-        android:layout_marginTop="632dp"
-        app:cardCornerRadius="10dp">
-
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/treated_background"
-            app:srcCompat="@mipmap/treated_foreground" />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="30dp"
-        android:layout_marginBottom="470dp"
         app:cardCornerRadius="10dp">
 
         <ImageView
@@ -184,6 +194,105 @@
             app:srcCompat="@mipmap/unknown_foreground" />
     </androidx.cardview.widget.CardView>
 
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/cvun"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="55dp"
+        android:layout_marginTop="60dp"
+        android:text="Unknown"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/cvhealth"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="60dp"
+android:layout_toEndOf="@+id/textView14"
+        android:text="Healthy"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/cvinfect"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="60dp"
+android:layout_toEndOf="@+id/textView15"
+        android:text="Infected"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/textView17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/cvtreat"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="dp"
+        android:layout_toEndOf="@+id/textView16"
+        android:gravity="center"
+        android:text="Treated"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/no_un"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView14"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="6dp"
+        android:text="0"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/no_health"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView15"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_toEndOf="@+id/textView14"
+        android:text="0"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/no_infected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView16"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_toEndOf="@+id/textView15"
+        android:text="0"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/no_treated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView17"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_toEndOf="@+id/textView16"
+        android:gravity="center"
+        android:text="0"
+        android:textColor="#000000" />
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/cvtreat"
+        android:layout_marginTop="110dp" />
 
 
 </RelativeLayout>
