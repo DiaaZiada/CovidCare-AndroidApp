@@ -89,9 +89,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<MeetingInfo> meetingsInfo;
 
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,10 +129,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     updatedUser.setId(user.getId());
                     modelView.userUpdate(updatedUser);
 
-                    Toast.makeText(getBaseContext(), "True", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getBaseContext(), "True", // Toast.LENGTH_SHORT).show();
                     isAddLocation = 1;
                 } else {
-                    Toast.makeText(getBaseContext(), "False", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getBaseContext(), "False", // Toast.LENGTH_SHORT).show();
                     User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
                     updatedUser.setId(user.getId());
                     modelView.userUpdate(updatedUser);
@@ -180,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
         } else {
-            Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
+//            // Toast.makeText(this, "You can't make map requests", // Toast.LENGTH_SHORT).show();
         }
         return false;
     }
@@ -210,8 +207,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 for (int index = permissions.length - 1; index >= 0; --index) {
                     if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
                         // exit the app if one permission is not granted
-                        Toast.makeText(this, "Required permission '" + permissions[index]
-                                + " not granted, exiting", Toast.LENGTH_LONG).show();
+                        // Toast.makeText(this, "Required permission '" + permissions[index]
+//                                + " not granted, exiting", // Toast.LENGTH_LONG).show();
 
                         mService.setAddLocation(false);
                         User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
@@ -237,9 +234,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             updatedUser.setId(user.getId());
             modelView.userUpdate(updatedUser);
             user = updatedUser;
-            Toast.makeText(this, "Note saved" + index, Toast.LENGTH_SHORT).show();
+            // Toast.makeText(this, "Note saved" + index, // Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "Note not saved", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(this, "Note not saved", // Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -334,8 +331,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
                     map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
                 }
-                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), meetings.get(0).getStatus(),9999,9999));
-                map.put(meetings.get(0).getStatus(), map.getOrDefault(meetings.get(0).getStatus(), 0) + 1);
+                String status = "healthy";
+                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
+                map.put(status, map.getOrDefault(status, 0) + 1);
+
+                status = "infected";
+                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
+                map.put(status, map.getOrDefault(status, 0) + 1);
+
+                status = "infected";
+                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
+                map.put(status, map.getOrDefault(status, 0) + 1);
+
+                status = "healthy";
+                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
+                map.put(status, map.getOrDefault(status, 0) + 1);
+
+                status = "infected";
+                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
+                map.put(status, map.getOrDefault(status, 0) + 1);
+
+                status = "infected";
+                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
+                map.put(status, map.getOrDefault(status, 0) + 1);
+                status = "healthy";
+                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
+                map.put(status, map.getOrDefault(status, 0) + 1);
+
+                status = "infected";
+                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
+                map.put(status, map.getOrDefault(status, 0) + 1);
+
+                status = "infected";
+                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
+                map.put(status, map.getOrDefault(status, 0) + 1);
+
 
                 MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MainActivity.this, R.layout.adabter_view_list, meetingsInfo);
                 mListView.setAdapter(adapter);
@@ -401,7 +431,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String text = parent.getItemAtPosition(position).toString();
-        Toast.makeText(parent.getContext(),text, Toast.LENGTH_LONG).show();
+        // Toast.makeText(parent.getContext(), text, // Toast.LENGTH_LONG).show();
 
     }
 

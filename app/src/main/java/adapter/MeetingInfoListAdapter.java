@@ -9,6 +9,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -42,6 +43,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         TextView time;
         TextView status;
         Button locaton;
+        ImageView imageView;
     }
 
     public MeetingInfoListAdapter(Context context, int resource, ArrayList<MeetingInfo> objects) {
@@ -82,7 +84,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
             holder.status = (TextView) convertView.findViewById(R.id.tvStatus);
             holder.time = (TextView) convertView.findViewById(R.id.tvTime);
             holder.locaton = (Button) convertView.findViewById(R.id.btnLocation);
-
+            holder.imageView = (ImageView) convertView.findViewById(R.id.image);
             result = convertView;
 
             convertView.setTag(holder);
@@ -98,6 +100,25 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         result.startAnimation(animation);
         lastPosition = position;
 
+        switch (status){
+            case "unknown":
+                holder.imageView.setBackgroundResource(R.drawable.unknown_background);
+                holder.imageView.setImageResource(R.mipmap.unknown_foreground);
+                break;
+            case "healthy":
+                holder.imageView.setBackgroundResource(R.drawable.healthy_background);
+                holder.imageView.setImageResource(R.mipmap.healthy_foreground);
+                break;
+            case "treated":
+                holder.imageView.setBackgroundResource(R.drawable.treated_background);
+                holder.imageView.setImageResource(R.mipmap.treated_foreground);
+                break;
+            case "infected":
+                holder.imageView.setBackgroundResource(R.drawable.infected_background);
+                holder.imageView.setImageResource(R.mipmap.infected_foreground);
+                break;
+        }
+
 
 
 
@@ -105,8 +126,11 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         holder.status.setText(meetingInfo.getStatus());
         if (latitude == 9999 && longitude == 9999)
             holder.locaton.setEnabled(false);
-        holder.locaton.setId(counter);
-        counter++;
+        else
+            holder.locaton.setEnabled(true);
+
+
+        holder.locaton.setId(position);
 
         return convertView;
     }
