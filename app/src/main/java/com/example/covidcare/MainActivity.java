@@ -18,10 +18,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,7 +60,7 @@ import table.Summary;
 import table.User;
 import utils.MeetingInfo;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     private static final String TAG = "MainActivity";
     public static final String EXTRA_INDEX = "com.example.covidcare.MainActivity.EXTRA_INDEX";
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ListView mListView;
     private TextView nHealth, nInfected, nTreated, nUnknown;
     private SwitchCompat btnLocationSwitch;
+    private Spinner dl_status;
 
     private Map<String, Integer> status2Index;
     private Map<Integer, String> index2Status;
@@ -147,6 +150,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         nInfected = findViewById(R.id.no_infected);
         nTreated = findViewById(R.id.no_treated);
         nUnknown = findViewById(R.id.no_un);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.status, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dl_status = findViewById(R.id.dl_status);
+        dl_status.setAdapter(adapter);
+        dl_status.setOnItemSelectedListener(this);
 
     }
 
@@ -324,9 +333,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 for (int i = 0; i < meetings.size(); i++) {
                     meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
                     map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
-                    Log.e(TAG, meetings.get(i).getStatus());
                 }
-                Log.i(TAG,"Size is "+String.valueOf(meetingsInfo.size()));
+                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), meetings.get(0).getStatus(),9999,9999));
+                map.put(meetings.get(0).getStatus(), map.getOrDefault(meetings.get(0).getStatus(), 0) + 1);
+
                 MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MainActivity.this, R.layout.adabter_view_list, meetingsInfo);
                 mListView.setAdapter(adapter);
 
@@ -345,7 +355,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mService.checkBluetoothState();
             String state = mService.getBluetoothAdapterStatus();
             mService.startDiscovering();
-            Toast.makeText(this, state + "aaaaaaaaaaaa", Toast.LENGTH_SHORT).show();
             if (state.equals("need enable")) {
                 Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
@@ -389,13 +398,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bindService(serviceBindIntent, modelView.getServiceConnection(), Context.BIND_AUTO_CREATE);
     }
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        mService.onPause();
-//    }
-//
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String text = parent.getItemAtPosition(position).toString();
+        Toast.makeText(parent.getContext(),text, Toast.LENGTH_LONG).show();
 
+    }
 
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
 }
 

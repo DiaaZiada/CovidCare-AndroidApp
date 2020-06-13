@@ -101,12 +101,12 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
 
 
 
-        holder.time.setText("From " + meetingInfo.getTime()+" ago");
+        holder.time.setText(meetingInfo.getTime());
         holder.status.setText(meetingInfo.getStatus());
-        holder.locaton.setEnabled(false);
+        if (latitude == 9999 && longitude == 9999)
+            holder.locaton.setEnabled(false);
         holder.locaton.setId(counter);
         counter++;
-        Log.i(TAG, counter+meetingInfo.getStatus()+"  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaadfasdfassdf65+65+6");
 
         return convertView;
     }
@@ -132,7 +132,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
 
 //        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
 
-        return String.valueOf(day)+"d:"+String.valueOf(hours)+"h:"+String.valueOf(minute)+"m";
+        return "From "+String.valueOf(day)+" day: "+String.valueOf(hours)+" hours ago";
 
     }
 
