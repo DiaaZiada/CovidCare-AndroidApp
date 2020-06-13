@@ -126,22 +126,8 @@ public class MainActivity extends AppCompatActivity {
 
         requestsModel.getMeetings(getMacAddr());
 
-////        ScanButton = findViewById(R.id.button);
-//        ScanButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (isServicesOK()) {
-//                    Intent intent = new Intent(MainActivity.this, MapActivity.class);
-//                    startActivity(intent);
-//
-//                }
-//            }
-//
-//        });
-
 
         btnLocationSwitch = (SwitchCompat) findViewById(R.id.btnLocationSwitch);
-//        btnLocationSwitch.setChecked(checkPermissions());
         btnLocationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -154,11 +140,9 @@ public class MainActivity extends AppCompatActivity {
                     modelView.userUpdate(updatedUser);
 
                     Toast.makeText(getBaseContext(), "True", Toast.LENGTH_SHORT).show();
-//                    mService.setAddLocation(true);
                     isAddLocation = 1;
                 } else {
                     Toast.makeText(getBaseContext(), "False", Toast.LENGTH_SHORT).show();
-//                    mService.setAddLocation(false);
                     User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
                     updatedUser.setId(user.getId());
                     modelView.userUpdate(updatedUser);
@@ -174,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
 
         if (available == ConnectionResult.SUCCESS) {
-            //everything is fine and the user can make map requests
             Log.d(TAG, "isServicesOK: Google Play Services is working");
             return true;
         } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
