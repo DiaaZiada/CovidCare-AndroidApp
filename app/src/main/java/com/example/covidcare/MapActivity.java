@@ -79,8 +79,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void getDeviceLocation(){
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
         Intent intent = getIntent();
-        double latitude = intent.getIntExtra(MeetingInfoActivity.EXTRA_LATITUDE, 0)/10000000.;
-        double longitue = intent.getIntExtra(MeetingInfoActivity.EXTRA_LONGITUDE, 0)/10000000.;
+        double latitude = intent.getIntExtra(MainActivity.EXTRA_LATITUDE, 0)/10000000.;
+        double longitue = intent.getIntExtra(MainActivity.EXTRA_LONGITUDE, 0)/10000000.;
         Log.e(TAG, String.valueOf(longitue)+"  "+String.valueOf(latitude));
         moveCamera(new LatLng(latitude,longitue),
                 DEFAULT_ZOOM,

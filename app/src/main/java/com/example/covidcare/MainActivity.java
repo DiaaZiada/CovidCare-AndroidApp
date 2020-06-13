@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,33 +66,44 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_INDEX = "com.example.covidcare.MainActivity.EXTRA_INDEX";
 
 
-    public static final int REQUEST_ACCESS_COARSE_LOCATION = 1;
+    //    public static final int REQUEST_ACCESS_COARSE_LOCATION = 1;
     public static final int REQUEST_ENABLE_BLUETOOTH = 11;
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
-    private Button ScanButton, btnRelaod;
+//    private Button ScanButton, btnRelaod;
 
-    private ArrayAdapter<String> listAdapter;
+//    private ArrayAdapter<String> listAdapter;
+
+
+    public static final String EXTRA_LATITUDE = "com.example.covidcare.MainActivity.EXTRA_LATITUDE";
+    public static final String EXTRA_LONGITUDE = "com.example.covidcare.MainActivity.EXTRA_LONGITUDE";
+
+    private ListView mListView;
+
+    private ModelView modelView;
+    private Summary summary;
+    private ArrayList<MeetingInfo> meetingsInfo;
+    private RequestsModel requestsModel;
+
+
+    private TextView nHealth, nInfected, nTreated, nUnknown;
 
     // Vars
     private MyService mService;
-    private ModelView modelView;
 
     private Map<String, Integer> status2Index;
     private Map<Integer, String> index2Status;
 
     private User user;
-    private Summary summary;
-    private boolean startService = true;
+//    private boolean startService = true;
 
     private int isAddLocation = -1;
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
 
     private SwitchCompat btnLocationSwitch;
-    private RequestsModel requestsModel;
 
-    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
-            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+//    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
+//            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,10 +111,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-
-
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        Toast.makeText(MainActivity.this, mBluetoothAdapter.getAddress(), Toast.LENGTH_SHORT).show();
+//        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//        Toast.makeText(MainActivity.this, mBluetoothAdapter.getAddress(), Toast.LENGTH_SHORT).show();
 
 
         modelView = ViewModelProviders.of(this).get(ModelView.class);
@@ -126,8 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
         requestsModel.getMeetings(getMacAddr());
 
-
         btnLocationSwitch = (SwitchCompat) findViewById(R.id.btnLocationSwitch);
+
         btnLocationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -150,6 +160,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mListView = (ListView) findViewById(R.id.listView);
+        modelView = ViewModelProviders.of(this).get(ModelView.class);
+        meetingsInfo = new ArrayList<>();
+        ArrayList<MeetingInfo> peopleList = new ArrayList<>();
+        setObservers();
+
+        nHealth = findViewById(R.id.no_health);
+        nInfected = findViewById(R.id.no_infected);
+        nTreated = findViewById(R.id.no_treated);
+        nUnknown = findViewById(R.id.no_un);
+
     }
 
     public boolean isServicesOK() {
@@ -198,8 +220,6 @@ public class MainActivity extends AppCompatActivity {
                         // exit the app if one permission is not granted
                         Toast.makeText(this, "Required permission '" + permissions[index]
                                 + " not granted, exiting", Toast.LENGTH_LONG).show();
-
-//                        finish();
 
                         mService.setAddLocation(false);
                         User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
@@ -364,6 +384,28 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
             }
         }
+        modelView.getAllMeetings().observe(this, new Observer<List<Meeting>>() {
+            @Override
+            public void onChanged(@Nullable List<Meeting> meetings) {
+                meetingsInfo.clear();
+                Map<String, Integer> map = new HashMap<>();
+
+                for (int i = 0; i < meetings.size(); i++) {
+                    meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
+                    map.put( meetings.get(i).getStatus(), map.getOrDefault( meetings.get(i).getStatus(),0)+1);
+                    Log.e(TAG, meetings.get(i).getStatus());
+
+                }
+                MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MainActivity.this, R.layout.adabter_view_list, meetingsInfo);
+                mListView.setAdapter(adapter);
+
+                nHealth.setText(String.valueOf(map.getOrDefault("health",0)));
+                nInfected.setText(String.valueOf(map.getOrDefault("infected",0)));
+                nTreated.setText(String.valueOf(map.getOrDefault("treated",0)));
+                nUnknown.setText(String.valueOf(map.getOrDefault("unknown",0)));
+
+            }
+        });
     }
 
     @Override
