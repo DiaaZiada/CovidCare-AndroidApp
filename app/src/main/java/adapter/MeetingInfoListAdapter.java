@@ -1,7 +1,6 @@
 package adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,10 +33,10 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
     private Context mContext;
     private int mResource;
     private int lastPosition = -1;
-    private DateTimeFormatter dtf= DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH);
     private LocalDateTime now;
-    private int counter =0;
+    private int counter = 0;
 
     private static class ViewHolder {
         TextView time;
@@ -61,11 +60,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         double longitude = getItem(position).getLogitude();
 
 
-
-
         time = getNumberOfDays(time);
-
-
 
 
         MeetingInfo meetingInfo = new MeetingInfo(time, status, latitude, longitude);
@@ -77,10 +72,10 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         ViewHolder holder;
 
 
-        if(convertView == null){
+        if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
             convertView = inflater.inflate(mResource, parent, false);
-            holder= new ViewHolder();
+            holder = new ViewHolder();
             holder.status = (TextView) convertView.findViewById(R.id.tvStatus);
             holder.time = (TextView) convertView.findViewById(R.id.tvTime);
             holder.locaton = (Button) convertView.findViewById(R.id.btnLocation);
@@ -88,8 +83,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
             result = convertView;
 
             convertView.setTag(holder);
-        }
-        else{
+        } else {
             holder = (ViewHolder) convertView.getTag();
             result = convertView;
         }
@@ -100,7 +94,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         result.startAnimation(animation);
         lastPosition = position;
 
-        switch (status){
+        switch (status) {
             case "unknown":
                 holder.imageView.setBackgroundResource(R.drawable.unknown_background);
                 holder.imageView.setImageResource(R.mipmap.unknown_foreground);
@@ -120,8 +114,6 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         }
 
 
-
-
         holder.time.setText(meetingInfo.getTime());
         holder.status.setText(meetingInfo.getStatus());
         if (latitude == 9999 && longitude == 9999)
@@ -135,7 +127,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         return convertView;
     }
 
-    private String getNumberOfDays(String time){
+    private String getNumberOfDays(String time) {
         now = LocalDateTime.now();
         String nowString = dtf.format(now).toString();
 
@@ -148,15 +140,15 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
             e.printStackTrace();
         }
         long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
-        long seconds = diffInMillies/1000;
-        int day = (int)TimeUnit.SECONDS.toDays(seconds);
-        long hours = TimeUnit.SECONDS.toHours(seconds) - (day *24);
-        long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds)* 60);
-        long second = TimeUnit.SECONDS.toSeconds(seconds) - (TimeUnit.SECONDS.toMinutes(seconds) *60);
+        long seconds = diffInMillies / 1000;
+        int day = (int) TimeUnit.SECONDS.toDays(seconds);
+        long hours = TimeUnit.SECONDS.toHours(seconds) - (day * 24);
+        long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
+        long second = TimeUnit.SECONDS.toSeconds(seconds) - (TimeUnit.SECONDS.toMinutes(seconds) * 60);
 
 //        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
 
-        return "From "+String.valueOf(day)+" day: "+String.valueOf(hours)+" hours ago";
+        return "From " + String.valueOf(day) + " day: " + String.valueOf(hours) + " hours ago";
 
     }
 

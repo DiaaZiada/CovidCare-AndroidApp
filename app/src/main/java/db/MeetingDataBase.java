@@ -9,15 +9,16 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import table.Meeting;
 import dao.MeetingDao;
+import table.Meeting;
 
 @Database(entities = {Meeting.class}, version = 2)
 public abstract class MeetingDataBase extends RoomDatabase {
-    private  static  MeetingDataBase instance;
-    public  abstract MeetingDao meetingDao();
+    private static MeetingDataBase instance;
 
-    public static synchronized MeetingDataBase getInstance(Context context){
+    public abstract MeetingDao meetingDao();
+
+    public static synchronized MeetingDataBase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
                     MeetingDataBase.class, "meeting_database")
@@ -35,11 +36,14 @@ public abstract class MeetingDataBase extends RoomDatabase {
             new PopulateDbAsyncTask(instance).execute();
         }
     };
+
     private static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void> {
         private MeetingDao meetingDao;
+
         private PopulateDbAsyncTask(MeetingDataBase db) {
             meetingDao = db.meetingDao();
         }
+
         @Override
         protected Void doInBackground(Void... voids) {
             return null;

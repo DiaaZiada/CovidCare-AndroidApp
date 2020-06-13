@@ -1,32 +1,23 @@
 package com.example.covidcare;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Criteria;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,21 +31,15 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import java.io.IOException;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import adapter.MeetingInfoListAdapter;
 import requests.RequestsModel;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import table.Device;
 import table.Meeting;
 import table.Summary;
 import table.User;
@@ -94,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         modelView = ViewModelProviders.of(this).get(ModelView.class);
         requestsModel = RequestsModel.getInstance();
 
@@ -112,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         index2Status.put(3, "treated");
 
 
-        setObservers();
 
         requestsModel.getMeetings(getMacAddr());
 
@@ -129,10 +112,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     updatedUser.setId(user.getId());
                     modelView.userUpdate(updatedUser);
 
-                    // Toast.makeText(getBaseContext(), "True", // Toast.LENGTH_SHORT).show();
                     isAddLocation = 1;
                 } else {
-                    // Toast.makeText(getBaseContext(), "False", // Toast.LENGTH_SHORT).show();
                     User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
                     updatedUser.setId(user.getId());
                     modelView.userUpdate(updatedUser);
@@ -153,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dl_status = findViewById(R.id.dl_status);
         dl_status.setAdapter(adapter);
         dl_status.setOnItemSelectedListener(this);
+
+        setObservers();
 
     }
 
@@ -234,18 +217,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             updatedUser.setId(user.getId());
             modelView.userUpdate(updatedUser);
             user = updatedUser;
-            // Toast.makeText(this, "Note saved" + index, // Toast.LENGTH_SHORT).show();
         } else {
-            // Toast.makeText(this, "Note not saved", // Toast.LENGTH_SHORT).show();
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return true;
-    }
+
 
     public static String getMacAddr() {
         try {
@@ -292,7 +268,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     }
                     checkBluetoothState();
-//
                 }
             }
         });
@@ -315,7 +290,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         mService.setAddLocation(isAddLocation == 1);
 
                     requestsModel.updateStatus(user, getMacAddr());
-
+                    Log.i(TAG,String.valueOf(status2Index.getOrDefault(user.getStatus(), 0))+"aaaaaaaaaaaaaa");
+                    dl_status.setSelection(status2Index.getOrDefault(user.getStatus(), 0));
                 }
             }
         });
@@ -331,41 +307,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
                     map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
                 }
-                String status = "healthy";
-                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
-                map.put(status, map.getOrDefault(status, 0) + 1);
-
-                status = "infected";
-                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
-                map.put(status, map.getOrDefault(status, 0) + 1);
-
-                status = "infected";
-                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
-                map.put(status, map.getOrDefault(status, 0) + 1);
-
-                status = "healthy";
-                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
-                map.put(status, map.getOrDefault(status, 0) + 1);
-
-                status = "infected";
-                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
-                map.put(status, map.getOrDefault(status, 0) + 1);
-
-                status = "infected";
-                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
-                map.put(status, map.getOrDefault(status, 0) + 1);
-                status = "healthy";
-                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
-                map.put(status, map.getOrDefault(status, 0) + 1);
-
-                status = "infected";
-                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
-                map.put(status, map.getOrDefault(status, 0) + 1);
-
-                status = "infected";
-                meetingsInfo.add(new MeetingInfo(meetings.get(0).getTime(), status, 9999, 9999));
-                map.put(status, map.getOrDefault(status, 0) + 1);
-
 
                 MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MainActivity.this, R.layout.adabter_view_list, meetingsInfo);
                 mListView.setAdapter(adapter);
@@ -431,7 +372,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String text = parent.getItemAtPosition(position).toString();
-        // Toast.makeText(parent.getContext(), text, // Toast.LENGTH_LONG).show();
+        int user_id = user.getId();
+        User updatedUser = new User(user.getName(), text, user.getMacAddress(), user.getAddLocation());
+        updatedUser.setId(user.getId());
+        modelView.userUpdate(updatedUser);
+        user = updatedUser;
+        dl_status.setScrollBarDefaultDelayBeforeFade(1);
 
     }
 

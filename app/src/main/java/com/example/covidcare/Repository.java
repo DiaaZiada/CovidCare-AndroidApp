@@ -42,15 +42,15 @@ public class Repository {
 
     private static Repository instance;
 
-    public static Repository getInstance(Application application){
+    public static Repository getInstance(Application application) {
         if (instance == null)
             instance = new Repository(application);
-        return  instance;
-    }
-    public static Repository getInstance(){
-        return  instance;
+        return instance;
     }
 
+    public static Repository getInstance() {
+        return instance;
+    }
 
 
     private Repository(Application application) {

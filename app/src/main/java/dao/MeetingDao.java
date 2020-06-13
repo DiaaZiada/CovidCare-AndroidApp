@@ -7,9 +7,9 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import table.Meeting;
-
 import java.util.List;
+
+import table.Meeting;
 
 @Dao
 public interface MeetingDao {

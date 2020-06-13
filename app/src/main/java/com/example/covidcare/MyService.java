@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.LifecycleService;
@@ -22,18 +23,15 @@ import androidx.lifecycle.Observer;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
-import requests.MacAddress;
 import requests.RequestsModel;
 import table.Device;
 
@@ -57,6 +55,7 @@ public class MyService extends LifecycleService {
     private String macAddress;
     MediaPlayer player;
 
+    private FusedLocationProviderClient mFusedLocationProviderClient;
 
     public void setAddLocation(boolean bool) {
         addLocation = bool;
@@ -65,30 +64,49 @@ public class MyService extends LifecycleService {
     private void saveDeviceMeetingInfo(final String name, final String macAddress, final String time) {
         Log.e(TAG, "found ad DV VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV");
 
-        if (addLocation) {
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                return;
-            }
-            FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-            Task task = fusedLocationProviderClient.getLastLocation();
-            task.addOnSuccessListener(new OnSuccessListener() {
-                @Override
-                public void onSuccess(Object o) {
-                    location = String.valueOf(((Location) o).getLatitude()) + "\t" + String.valueOf(((Location) o).getLongitude());
-                    Log.e(TAG, "location \t" + name + "\t" + macAddress + "\t" + time + "\t" + String.valueOf(((Location) o).getLatitude()) + "\t" + String.valueOf(((Location) o).getLongitude()));
-                    Device dev = new Device(name, macAddress, time, ((Location) o).getLatitude(), ((Location) o).getLongitude());
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        try {
+            if (addLocation) {
+                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    Device dev = new Device(name, macAddress, time, 9999, 9999);
                     deviceRepository.deviceInsert(dev);
+                    return;
                 }
 
-
-            });
-        } else {
-            Device dev = new Device(name, macAddress, time, -1, -1);
+                final Task location = mFusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if (task.isSuccessful()) {
+                            try {
+                                Log.d(TAG, "onComplete: found location!");
+                                Location currentLocation = (Location) task.getResult();
+                                Log.e(TAG, currentLocation.getLatitude() + "\t" + currentLocation.getLongitude());
+                                Device dev = new Device(name, macAddress, time, currentLocation.getLatitude(), currentLocation.getLongitude());
+                                deviceRepository.deviceInsert(dev);
+                                Log.i(TAG, "Doneeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+                            } catch (Exception e) {
+                                Log.i(TAG, "Faliddddddddddddddddddddddddddddddddddddddd");
+                                Device dev = new Device(name, macAddress, time, 9999, 9999);
+                                deviceRepository.deviceInsert(dev);
+                            }
+                        } else {
+                            Device dev = new Device(name, macAddress, time, 9999, 9999);
+                            deviceRepository.deviceInsert(dev);
+                        }
+                    }
+                });
+            } else {
+                Device dev = new Device(name, macAddress, time, 9999, 9999);
+                deviceRepository.deviceInsert(dev);
+            }
+        } catch (SecurityException e) {
+            Device dev = new Device(name, macAddress, time, 9999, 9999);
             deviceRepository.deviceInsert(dev);
-            Log.e(TAG, "Nooooooo location \t" + name + "\t" + macAddress + "\t" + time + "\t");
-
         }
+
     }
 
     public class MyBinder extends Binder {

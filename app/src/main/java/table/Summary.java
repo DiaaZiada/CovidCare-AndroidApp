@@ -11,7 +11,7 @@ public class Summary {
     private int unknown;
     private int infected;
     private int treated;
-    private  int healthy;
+    private int healthy;
 
     public Summary(int unknown, int infected, int treated, int healthy) {
         this.unknown = unknown;

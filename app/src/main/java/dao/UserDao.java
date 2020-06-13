@@ -7,9 +7,9 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import table.User;
-
 import java.util.List;
+
+import table.User;
 
 @Dao
 public interface UserDao {

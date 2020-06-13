@@ -9,18 +9,18 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import table.User;
-
 import dao.UserDao;
+import table.User;
 
 @Database(entities = {User.class}, version = 2)
 public abstract class UserDataBase extends RoomDatabase {
 
     private static UserDataBase instance;
+
     public abstract UserDao userDao();
 
-    public static synchronized UserDataBase getInstance(Context context){
-        if(instance == null){
+    public static synchronized UserDataBase getInstance(Context context) {
+        if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
                     UserDataBase.class, "user_database")
                     .fallbackToDestructiveMigration()
@@ -40,9 +40,11 @@ public abstract class UserDataBase extends RoomDatabase {
 
     private static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void> {
         private UserDao userDao;
+
         private PopulateDbAsyncTask(UserDataBase db) {
             userDao = db.userDao();
         }
+
         @Override
         protected Void doInBackground(Void... voids) {
             return null;

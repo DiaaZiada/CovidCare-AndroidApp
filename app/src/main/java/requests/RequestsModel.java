@@ -40,7 +40,7 @@ public class RequestsModel {
 
     public void addMeeting(final List<Device> devices, String macAddress_user1) {
         ArrayList<AddMeeting> addMeetings = new ArrayList<AddMeeting>();
-        for(Device device : devices) {
+        for (Device device : devices) {
             String macAddress_user2 = device.getMacAddress();
             String latitude = String.valueOf(device.getLatitude());
             String longitude = String.valueOf(device.getLongitude());
@@ -52,13 +52,14 @@ public class RequestsModel {
         repository.deleteAllDevices();
         Log.e(TAG, "DELETE ALL DEVS");
 
-        for(AddMeeting addMeeting : addMeetings){
+        for (AddMeeting addMeeting : addMeetings) {
             Call<RequestStatus> call = apiInterface.addMeeting(addMeeting);
 
             call.enqueue(new Callback<RequestStatus>() {
                 @Override
                 public void onResponse(Call<RequestStatus> call, Response<RequestStatus> response) {
                 }
+
                 @Override
                 public void onFailure(Call<RequestStatus> call, Throwable t) {
                     Log.e(TAG, t.getMessage());
@@ -66,6 +67,7 @@ public class RequestsModel {
             });
         }
     }
+
     public void getMeetings(String macAddress_user1) {
 
         MacAddress macAddress = new MacAddress(macAddress_user1);
@@ -76,7 +78,7 @@ public class RequestsModel {
             @Override
             public void onResponse(Call<List<GetMeeting>> call, Response<List<GetMeeting>> response) {
                 repository.deleteAllMeetings();
-                for(GetMeeting meeting : response.body()){
+                for (GetMeeting meeting : response.body()) {
                     Meeting meet = new Meeting(meeting.getStatus(), meeting.getTime(),
                             Double.valueOf(meeting.getLatitude()), Double.valueOf(meeting.getLongitude()));
                     repository.meetingInsert(meet);
