@@ -1,6 +1,7 @@
 package adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,21 +94,21 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
                 (position > lastPosition) ? R.anim.load_down_anim : R.anim.load_up_anim);
         result.startAnimation(animation);
         lastPosition = position;
-
+        Log.i(TAG, status);
         switch (status) {
-            case "unknown":
+            case "Unknown":
                 holder.imageView.setBackgroundResource(R.drawable.unknown_background);
                 holder.imageView.setImageResource(R.mipmap.unknown_foreground);
                 break;
-            case "healthy":
+            case "Healthy":
                 holder.imageView.setBackgroundResource(R.drawable.healthy_background);
                 holder.imageView.setImageResource(R.mipmap.healthy_foreground);
                 break;
-            case "treated":
+            case "Treated":
                 holder.imageView.setBackgroundResource(R.drawable.treated_background);
                 holder.imageView.setImageResource(R.mipmap.treated_foreground);
                 break;
-            case "infected":
+            case "Infected":
                 holder.imageView.setBackgroundResource(R.drawable.infected_background);
                 holder.imageView.setImageResource(R.mipmap.infected_foreground);
                 break;

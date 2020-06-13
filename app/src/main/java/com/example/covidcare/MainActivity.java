@@ -18,6 +18,7 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -73,29 +74,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Map<Integer, String> index2Status;
     private ArrayList<MeetingInfo> meetingsInfo;
 
+    private String macAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        macAddress = getMacAddr();
         modelView = ViewModelProviders.of(this).get(ModelView.class);
         requestsModel = RequestsModel.getInstance();
 
         status2Index = new HashMap<String, Integer>();
         index2Status = new HashMap<Integer, String>();
 
-        status2Index.put("unknown", 0);
-        status2Index.put("Health", 1);
+        status2Index.put("Unknown", 0);
+        status2Index.put("Healthy", 1);
         status2Index.put("Infected", 2);
-        status2Index.put("treated", 3);
+        status2Index.put("Treated", 3);
 
-        index2Status.put(0, "unknown");
-        index2Status.put(1, "Health");
+        index2Status.put(0, "Unknown");
+        index2Status.put(1, "Healthy");
         index2Status.put(2, "Infected");
-        index2Status.put(3, "treated");
-
-
+        index2Status.put(3, "Treated");
 
         requestsModel.getMeetings(getMacAddr());
 
@@ -107,11 +108,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (isChecked) {
                     int id = user.getId();
                     requestPermissions();
-
                     User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), true);
                     updatedUser.setId(user.getId());
                     modelView.userUpdate(updatedUser);
-
                     isAddLocation = 1;
                 } else {
                     User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
@@ -135,11 +134,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dl_status.setAdapter(adapter);
         dl_status.setOnItemSelectedListener(this);
 
+        requestsModel.getMeetings(macAddress);
+
+
         setObservers();
 
     }
 
     public void onClick(View v) {
+        Toast.makeText(this, "Loading map", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(MainActivity.this, MapActivity.class);
         intent.putExtra(EXTRA_LATITUDE, (int) (meetingsInfo.get(v.getId()).getLatitude() * 10000000));
         intent.putExtra(EXTRA_LONGITUDE, (int) (meetingsInfo.get(v.getId()).getLogitude() * 10000000));
@@ -189,10 +192,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case REQUEST_CODE_ASK_PERMISSIONS:
                 for (int index = permissions.length - 1; index >= 0; --index) {
                     if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
-                        // exit the app if one permission is not granted
-                        // Toast.makeText(this, "Required permission '" + permissions[index]
-//                                + " not granted, exiting", // Toast.LENGTH_LONG).show();
-
                         mService.setAddLocation(false);
                         User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
                         updatedUser.setId(user.getId());
@@ -220,8 +219,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
         }
     }
-
-
 
     public static String getMacAddr() {
         try {
@@ -292,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     requestsModel.updateStatus(user, getMacAddr());
                     Log.i(TAG,String.valueOf(status2Index.getOrDefault(user.getStatus(), 0))+"aaaaaaaaaaaaaa");
                     dl_status.setSelection(status2Index.getOrDefault(user.getStatus(), 0));
+                    requestsModel.updateStatus(user, macAddress);
                 }
             }
         });
@@ -302,20 +300,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onChanged(@Nullable List<Meeting> meetings) {
                 meetingsInfo.clear();
                 Map<String, Integer> map = new HashMap<>();
-
                 for (int i = 0; i < meetings.size(); i++) {
                     meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
                     map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
                 }
-
                 MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MainActivity.this, R.layout.adabter_view_list, meetingsInfo);
                 mListView.setAdapter(adapter);
-
-                nHealth.setText(String.valueOf(map.getOrDefault("health", 0)));
-                nInfected.setText(String.valueOf(map.getOrDefault("infected", 0)));
-                nTreated.setText(String.valueOf(map.getOrDefault("treated", 0)));
-                nUnknown.setText(String.valueOf(map.getOrDefault("unknown", 0)));
-
+                nHealth.setText(String.valueOf(map.getOrDefault("Health", 0)));
+                nInfected.setText(String.valueOf(map.getOrDefault("Infected", 0)));
+                nTreated.setText(String.valueOf(map.getOrDefault("Treated", 0)));
+                nUnknown.setText(String.valueOf(map.getOrDefault("Unknown", 0)));
             }
         });
     }
@@ -345,7 +339,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         startService();
-
     }
 
 
@@ -372,7 +365,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String text = parent.getItemAtPosition(position).toString();
-        int user_id = user.getId();
         User updatedUser = new User(user.getName(), text, user.getMacAddress(), user.getAddLocation());
         updatedUser.setId(user.getId());
         modelView.userUpdate(updatedUser);
