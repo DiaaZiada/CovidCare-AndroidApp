@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="100"
-    android:padding="10dp">
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:weightSum="100">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="20.">
+        android:layout_weight="20."
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tvStatus"
@@ -21,20 +21,30 @@
             android:textColor="#000000" />
 
         <TextView
-            android:gravity="left"
-            android:text="TextView2"
+            android:id="@+id/tvTime"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:id="@+id/tvTime"/>
+            android:gravity="left"
+            android:text="TextView2" />
 
     </LinearLayout>
 
+    <!--    <Button-->
+    <!--        android:gravity="center"-->
+    <!--        android:text="TextView3"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="40dp"-->
+    <!--        android:id="@+id/textView3"-->
+    <!--        android:layout_below="@+id/textView2"-->
+    <!--        android:onClick="onClick"/>-->
     <Button
-        android:layout_marginTop="15dp"
         android:id="@+id/btnLocation"
         android:layout_width="220dp"
         android:layout_height="40dp"
+        android:layout_marginTop="15dp"
         android:layout_weight="80"
+        android:enabled="true"
         android:background="@drawable/thumb"
-        android:gravity="bottom" />
+        android:gravity="bottom"
+        android:onClick="onClick" />
 </LinearLayout>

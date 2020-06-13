@@ -103,7 +103,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
 
         holder.time.setText("From " + meetingInfo.getTime()+" ago");
         holder.status.setText(meetingInfo.getStatus());
-        holder.locaton.getDefaultFocusHighlightEnabled();
+        holder.locaton.setEnabled(false);
         holder.locaton.setId(counter);
         counter++;
         Log.i(TAG, counter+meetingInfo.getStatus()+"  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaadfasdfassdf65+65+6");
