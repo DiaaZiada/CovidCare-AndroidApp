@@ -79,9 +79,9 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
             LayoutInflater inflater = LayoutInflater.from(mContext);
             convertView = inflater.inflate(mResource, parent, false);
             holder= new ViewHolder();
-            holder.status = (TextView) convertView.findViewById(R.id.textView1);
-            holder.time = (TextView) convertView.findViewById(R.id.textView2);
-            holder.locaton = (Button) convertView.findViewById(R.id.textView3);
+            holder.status = (TextView) convertView.findViewById(R.id.tvStatus);
+            holder.time = (TextView) convertView.findViewById(R.id.tvTime);
+            holder.locaton = (Button) convertView.findViewById(R.id.btnLocation);
 
             result = convertView;
 
@@ -103,7 +103,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
 
         holder.time.setText("From " + meetingInfo.getTime()+" ago");
         holder.status.setText(meetingInfo.getStatus());
-        holder.locaton.setText("View Location "+String.valueOf(counter));
+        holder.locaton.getDefaultFocusHighlightEnabled();
         holder.locaton.setId(counter);
         counter++;
         Log.i(TAG, counter+meetingInfo.getStatus()+"  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaadfasdfassdf65+65+6");
