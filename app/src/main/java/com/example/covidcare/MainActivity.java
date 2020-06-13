@@ -58,61 +58,41 @@ import table.Summary;
 import table.User;
 import utils.MeetingInfo;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "MainActivity";
-
-    public static final int UPDATE_STATUS_REQUEST = 1;
     public static final String EXTRA_INDEX = "com.example.covidcare.MainActivity.EXTRA_INDEX";
-
-
-    //    public static final int REQUEST_ACCESS_COARSE_LOCATION = 1;
-    public static final int REQUEST_ENABLE_BLUETOOTH = 11;
-    private static final int ERROR_DIALOG_REQUEST = 9001;
-
-//    private Button ScanButton, btnRelaod;
-
-//    private ArrayAdapter<String> listAdapter;
-
-
     public static final String EXTRA_LATITUDE = "com.example.covidcare.MainActivity.EXTRA_LATITUDE";
     public static final String EXTRA_LONGITUDE = "com.example.covidcare.MainActivity.EXTRA_LONGITUDE";
 
-    private ListView mListView;
+    public static final int UPDATE_STATUS_REQUEST = 1;
+    public static final int REQUEST_ENABLE_BLUETOOTH = 11;
+    private static final int ERROR_DIALOG_REQUEST = 9001;
+    private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
+    private int isAddLocation = -1;
 
     private ModelView modelView;
-    private Summary summary;
-    private ArrayList<MeetingInfo> meetingsInfo;
     private RequestsModel requestsModel;
-
-
-    private TextView nHealth, nInfected, nTreated, nUnknown;
-
-    // Vars
+    private Summary summary;
     private MyService mService;
+    private User user;
+
+    private ListView mListView;
+    private TextView nHealth, nInfected, nTreated, nUnknown;
+    private SwitchCompat btnLocationSwitch;
 
     private Map<String, Integer> status2Index;
     private Map<Integer, String> index2Status;
+    private ArrayList<MeetingInfo> meetingsInfo;
 
-    private User user;
-//    private boolean startService = true;
 
-    private int isAddLocation = -1;
-    private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
 
-    private SwitchCompat btnLocationSwitch;
 
-//    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
-//            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-//        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//        Toast.makeText(MainActivity.this, mBluetoothAdapter.getAddress(), Toast.LENGTH_SHORT).show();
 
 
         modelView = ViewModelProviders.of(this).get(ModelView.class);
@@ -162,16 +142,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mListView = (ListView) findViewById(R.id.listView);
-        modelView = ViewModelProviders.of(this).get(ModelView.class);
         meetingsInfo = new ArrayList<>();
-        ArrayList<MeetingInfo> peopleList = new ArrayList<>();
-        setObservers();
-
         nHealth = findViewById(R.id.no_health);
         nInfected = findViewById(R.id.no_infected);
         nTreated = findViewById(R.id.no_treated);
         nUnknown = findViewById(R.id.no_un);
 
+    }
+
+    public void onClick(View v) {
+        Intent intent = new Intent(MainActivity.this, MapActivity.class);
+        intent.putExtra(EXTRA_LATITUDE, (int) (meetingsInfo.get(v.getId()).getLatitude() * 10000000));
+        intent.putExtra(EXTRA_LONGITUDE, (int) (meetingsInfo.get(v.getId()).getLogitude() * 10000000));
+        startActivityForResult(intent, 1);
     }
 
     public boolean isServicesOK() {
@@ -258,27 +241,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.meetingInfo:
-                Toast.makeText(this, "meeting Info selected", Toast.LENGTH_SHORT).show();
-                Intent meetingIntent = new Intent(MainActivity.this, MeetingInfoActivity.class);
-                startActivity(meetingIntent);
-                return true;
-            case R.id.updataStatus:
-                Intent statusIntent = new Intent(MainActivity.this, StatusActivity.class);
-                int indx = status2Index.get(user.getStatus());
-                statusIntent.putExtra(EXTRA_INDEX, indx);
-                startActivityForResult(statusIntent, UPDATE_STATUS_REQUEST);
-                Toast.makeText(this, "updata Status selected", Toast.LENGTH_SHORT).show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-
     public static String getMacAddr() {
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
@@ -353,20 +315,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        modelView.getAllSummaries().observe(this, new Observer<List<Summary>>() {
+        modelView.getAllMeetings().observe(this, new Observer<List<Meeting>>() {
             @Override
-            public void onChanged(@Nullable List<Summary> summaries) {
-                if (summaries.size() == 0) {
-                    summary = new Summary(0, 0, 0, 0);
-                    modelView.summaryInsert(summary);
-                } else {
-                    summary = summaries.get(0);
+            public void onChanged(@Nullable List<Meeting> meetings) {
+                meetingsInfo.clear();
+                Map<String, Integer> map = new HashMap<>();
+
+                for (int i = 0; i < meetings.size(); i++) {
+                    meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
+                    map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
+                    Log.e(TAG, meetings.get(i).getStatus());
                 }
-            }
-        });
-        modelView.getAllDevices().observe(this, new Observer<List<Device>>() {
-            @Override
-            public void onChanged(List<Device> devices) {
+                Log.i(TAG,"Size is "+String.valueOf(meetingsInfo.size()));
+                MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MainActivity.this, R.layout.adabter_view_list, meetingsInfo);
+                mListView.setAdapter(adapter);
+
+                nHealth.setText(String.valueOf(map.getOrDefault("health", 0)));
+                nInfected.setText(String.valueOf(map.getOrDefault("infected", 0)));
+                nTreated.setText(String.valueOf(map.getOrDefault("treated", 0)));
+                nUnknown.setText(String.valueOf(map.getOrDefault("unknown", 0)));
 
             }
         });
@@ -384,28 +351,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
             }
         }
-        modelView.getAllMeetings().observe(this, new Observer<List<Meeting>>() {
-            @Override
-            public void onChanged(@Nullable List<Meeting> meetings) {
-                meetingsInfo.clear();
-                Map<String, Integer> map = new HashMap<>();
 
-                for (int i = 0; i < meetings.size(); i++) {
-                    meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
-                    map.put( meetings.get(i).getStatus(), map.getOrDefault( meetings.get(i).getStatus(),0)+1);
-                    Log.e(TAG, meetings.get(i).getStatus());
-
-                }
-                MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MainActivity.this, R.layout.adabter_view_list, meetingsInfo);
-                mListView.setAdapter(adapter);
-
-                nHealth.setText(String.valueOf(map.getOrDefault("health",0)));
-                nInfected.setText(String.valueOf(map.getOrDefault("infected",0)));
-                nTreated.setText(String.valueOf(map.getOrDefault("treated",0)));
-                nUnknown.setText(String.valueOf(map.getOrDefault("unknown",0)));
-
-            }
-        });
     }
 
     @Override

@@ -1,8 +1,6 @@
 package adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.icu.util.MeasureUnit;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,9 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.example.covidcare.MainActivity;
-import com.example.covidcare.MapActivity;
-import com.example.covidcare.MeetingInfoActivity;
 import com.example.covidcare.R;
 
 import java.text.ParseException;
@@ -41,7 +36,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
     private DateTimeFormatter dtf= DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH);
     private LocalDateTime now;
-    private int i=0;
+    private int counter =0;
 
     private static class ViewHolder {
         TextView time;
@@ -108,17 +103,11 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
 
         holder.time.setText("From " + meetingInfo.getTime()+" ago");
         holder.status.setText(meetingInfo.getStatus());
-        holder.locaton.setText("View Location");
-        holder.locaton.setId(i);
-        i++;
-//        holder.locaton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.e(TAG, String.valueOf(holder.locaton.getText()));
-////                Intent intent = new Intent(MeetingInfoActivity.this, MapActivity.class);
-////                startActivity(intent);
-//            }
-//        });
+        holder.locaton.setText("View Location "+String.valueOf(counter));
+        holder.locaton.setId(counter);
+        counter++;
+        Log.i(TAG, counter+meetingInfo.getStatus()+"  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaadfasdfassdf65+65+6");
+
         return convertView;
     }
 
@@ -134,7 +123,6 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, time+"\t"+nowString);
         long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
         long seconds = diffInMillies/1000;
         int day = (int)TimeUnit.SECONDS.toDays(seconds);
