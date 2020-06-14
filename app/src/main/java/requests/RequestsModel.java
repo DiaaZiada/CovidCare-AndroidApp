@@ -47,19 +47,15 @@ public class RequestsModel {
             String latitude = String.valueOf(device.getLatitude());
             String longitude = String.valueOf(device.getLongitude());
             String time = device.getTime();
-            Log.e(TAG, "Addd metting ddddddddddddddddd");
 
-            addMeetings.add(new AddMeeting(macAddress_user1, macAddress_user2, latitude, longitude, time));
-        }        repository.deleteAllDevices();
+            AddMeeting addMeeting = new AddMeeting(macAddress_user1, macAddress_user2, latitude, longitude, time);
 
-        Log.e(TAG, "DELETE ALL DEVS");
-
-        for (AddMeeting addMeeting : addMeetings) {
             Call<RequestStatus> call = apiInterface.addMeeting(addMeeting);
 
             call.enqueue(new Callback<RequestStatus>() {
                 @Override
                 public void onResponse(Call<RequestStatus> call, Response<RequestStatus> response) {
+                    repository.deviceDelete(device);
                 }
 
                 @Override
@@ -87,9 +83,11 @@ public class RequestsModel {
                 }
                 requestFinished = true;
             }
+
             @Override
             public void onFailure(Call<List<GetMeeting>> call, Throwable t) {
                 Log.e(TAG, t.getMessage());
+                requestFinished = true;
             }
         });
     }

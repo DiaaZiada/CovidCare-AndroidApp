@@ -49,7 +49,6 @@ import utils.MeetingInfo;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     private static final String TAG = "MainActivity";
-    public static final String EXTRA_INDEX = "com.example.covidcare.MainActivity.EXTRA_INDEX";
     public static final String EXTRA_LATITUDE = "com.example.covidcare.MainActivity.EXTRA_LATITUDE";
     public static final String EXTRA_LONGITUDE = "com.example.covidcare.MainActivity.EXTRA_LONGITUDE";
 
@@ -205,20 +204,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == UPDATE_STATUS_REQUEST && resultCode == RESULT_OK) {
-            int index = data.getIntExtra(StatusActivity.EXTRA_NEW_INDEX, 0);
-            String status = index2Status.get(index);
-            int id = user.getId();
-            User updatedUser = new User(user.getName(), status, user.getMacAddress(), user.getAddLocation());
-            updatedUser.setId(user.getId());
-            modelView.userUpdate(updatedUser);
-            user = updatedUser;
-        } else {
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == UPDATE_STATUS_REQUEST && resultCode == RESULT_OK) {
+//            int index = data.getIntExtra(StatusActivity.EXTRA_NEW_INDEX, 0);
+//            String status = index2Status.get(index);
+//            int id = user.getId();
+//            User updatedUser = new User(user.getName(), status, user.getMacAddress(), user.getAddLocation());
+//            updatedUser.setId(user.getId());
+//            modelView.userUpdate(updatedUser);
+//            user = updatedUser;
+//        } else {
+//        }
+//    }
 
     public static String getMacAddr() {
         try {
@@ -298,7 +297,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         modelView.getAllMeetings().observe(this, new Observer<List<Meeting>>() {
             @Override
             public void onChanged(@Nullable List<Meeting> meetings) {
+                Log.e(TAG, "ALLLLLLLLLLLLMEEEEEEEEEETINGSSSSSSSSSSSSSSSSs "+ requestsModel.requestFinished);
+
                 if (requestsModel.requestFinished) {
+
+                    Log.e(TAG, "ALLLLLLLLLLLLMEEEEEEEEEETINGSSSSSSSSSSSSSSSSs56666666666666666");
 
                     meetingsInfo.clear();
                     Map<String, Integer> map = new HashMap<>();
