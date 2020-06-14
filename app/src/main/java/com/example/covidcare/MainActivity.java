@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dl_status.setAdapter(adapter);
         dl_status.setOnItemSelectedListener(this);
 
-        requestsModel.getMeetings(macAddress);
+//        requestsModel.getMeetings(macAddress);
 
 
         setObservers();
@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         mService.setAddLocation(isAddLocation == 1);
 
                     requestsModel.updateStatus(user, getMacAddr());
-                    Log.i(TAG,String.valueOf(status2Index.getOrDefault(user.getStatus(), 0))+"aaaaaaaaaaaaaa");
+                    Log.i(TAG, String.valueOf(status2Index.getOrDefault(user.getStatus(), 0)) + "aaaaaaaaaaaaaa");
                     dl_status.setSelection(status2Index.getOrDefault(user.getStatus(), 0));
                     requestsModel.updateStatus(user, macAddress);
                 }
@@ -298,18 +298,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         modelView.getAllMeetings().observe(this, new Observer<List<Meeting>>() {
             @Override
             public void onChanged(@Nullable List<Meeting> meetings) {
-                meetingsInfo.clear();
-                Map<String, Integer> map = new HashMap<>();
-                for (int i = 0; i < meetings.size(); i++) {
-                    meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
-                    map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
+                if (requestsModel.requestFinished) {
+
+                    meetingsInfo.clear();
+                    Map<String, Integer> map = new HashMap<>();
+                    for (int i = 0; i < meetings.size(); i++) {
+                        meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
+                        map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
+                    }
+                    MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MainActivity.this, R.layout.adabter_view_list, meetingsInfo);
+                    mListView.setAdapter(adapter);
+                    nHealth.setText(String.valueOf(map.getOrDefault("Health", 0)));
+                    nInfected.setText(String.valueOf(map.getOrDefault("Infected", 0)));
+                    nTreated.setText(String.valueOf(map.getOrDefault("Treated", 0)));
+                    nUnknown.setText(String.valueOf(map.getOrDefault("Unknown", 0)));
                 }
-                MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MainActivity.this, R.layout.adabter_view_list, meetingsInfo);
-                mListView.setAdapter(adapter);
-                nHealth.setText(String.valueOf(map.getOrDefault("Health", 0)));
-                nInfected.setText(String.valueOf(map.getOrDefault("Infected", 0)));
-                nTreated.setText(String.valueOf(map.getOrDefault("Treated", 0)));
-                nUnknown.setText(String.valueOf(map.getOrDefault("Unknown", 0)));
             }
         });
     }
@@ -331,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStart() {
         super.onStart();
-        requestsModel.getMeetings(getMacAddr());
+        requestsModel.getMeetings(macAddress);
 
     }
 
@@ -339,6 +342,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         startService();
+//        requestsModel.getMeetings(macAddress);
     }
 
 

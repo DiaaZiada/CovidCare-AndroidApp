@@ -18,7 +18,8 @@ import table.User;
 
 public class RequestsModel {
     private static final String TAG = "RequestsModel";
-    private static final String BASE_URL = "http://192.168.1.106:5000/";
+    private static final String BASE_URL = "http://192.168.1.109:5000/";
+    public static boolean requestFinished;
     private ApiInterface apiInterface;
     private static RequestsModel instance;
     private static Repository repository = Repository.getInstance();
@@ -29,6 +30,7 @@ public class RequestsModel {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiInterface = retrofit.create(ApiInterface.class);
+        requestFinished = true;
     }
 
     public static RequestsModel getInstance() {
@@ -48,8 +50,8 @@ public class RequestsModel {
             Log.e(TAG, "Addd metting ddddddddddddddddd");
 
             addMeetings.add(new AddMeeting(macAddress_user1, macAddress_user2, latitude, longitude, time));
-        }
-        repository.deleteAllDevices();
+        }        repository.deleteAllDevices();
+
         Log.e(TAG, "DELETE ALL DEVS");
 
         for (AddMeeting addMeeting : addMeetings) {
@@ -73,7 +75,7 @@ public class RequestsModel {
         MacAddress macAddress = new MacAddress(macAddress_user1);
 
         Call<List<GetMeeting>> call = apiInterface.getMeetings(macAddress);
-
+        requestFinished = false;
         call.enqueue(new Callback<List<GetMeeting>>() {
             @Override
             public void onResponse(Call<List<GetMeeting>> call, Response<List<GetMeeting>> response) {
@@ -83,8 +85,8 @@ public class RequestsModel {
                             Double.valueOf(meeting.getLatitude()), Double.valueOf(meeting.getLongitude()));
                     repository.meetingInsert(meet);
                 }
+                requestFinished = true;
             }
-
             @Override
             public void onFailure(Call<List<GetMeeting>> call, Throwable t) {
                 Log.e(TAG, t.getMessage());
