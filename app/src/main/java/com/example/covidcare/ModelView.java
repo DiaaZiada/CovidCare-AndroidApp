@@ -11,7 +11,6 @@ import java.util.List;
 
 import table.Device;
 import table.Meeting;
-import table.Summary;
 import table.User;
 
 public class ModelView extends AndroidViewModel {
@@ -25,7 +24,6 @@ public class ModelView extends AndroidViewModel {
     private LiveData<List<Device>> allDevices;
     private LiveData<List<User>> allUsers;
     private LiveData<List<Meeting>> allMeetings;
-    private LiveData<List<Summary>> allSummaries;
 
 
     public ServiceConnection getServiceConnection() {
@@ -44,31 +42,9 @@ public class ModelView extends AndroidViewModel {
         allDevices = repository.getAllDevices();
         allUsers = repository.getAllUsers();
         allMeetings = repository.getAllMeetings();
-        allSummaries = repository.getAllSummaries();
     }
 
-    /* Summary */
-    public void summaryInsert(Summary summary) {
-        repository.summaryInsert(summary);
-    }
-
-    public void summaryUpdate(Summary summary) {
-        repository.summaryUpdate(summary);
-    }
-
-    public void summaryDelete(Summary summary) {
-        repository.summaryDelete(summary);
-    }
-
-    public void DeleteAllSummaries() {
-        repository.deleteAllMeetings();
-    }
-
-    public LiveData<List<Summary>> getAllSummaries() {
-        return allSummaries;
-    }
-    /* End Summary*/
-
+    
     /* Meeting */
     public void meetingInsert(Meeting meeting) {
         repository.meetingInsert(meeting);

@@ -1,7 +1,6 @@
 package com.example.covidcare;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -9,8 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,7 +39,6 @@ import java.util.Map;
 import adapter.MeetingInfoListAdapter;
 import requests.RequestsModel;
 import table.Meeting;
-import table.Summary;
 import table.User;
 import utils.MeetingInfo;
 
@@ -52,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String EXTRA_LATITUDE = "com.example.covidcare.MainActivity.EXTRA_LATITUDE";
     public static final String EXTRA_LONGITUDE = "com.example.covidcare.MainActivity.EXTRA_LONGITUDE";
 
-    public static final int UPDATE_STATUS_REQUEST = 1;
     public static final int REQUEST_ENABLE_BLUETOOTH = 11;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
@@ -60,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private ModelView modelView;
     private RequestsModel requestsModel;
-    private Summary summary;
     private MyService mService;
     private User user;
 
