@@ -77,6 +77,7 @@ public class RequestsModel {
             public void onResponse(Call<List<GetMeeting>> call, Response<List<GetMeeting>> response) {
                 repository.deleteAllMeetings();
                 for (GetMeeting meeting : response.body()) {
+                    Log.i(TAG, meeting.getStatus());
                     Meeting meet = new Meeting(meeting.getStatus(), meeting.getTime(),
                             Double.valueOf(meeting.getLatitude()), Double.valueOf(meeting.getLongitude()));
                     repository.meetingInsert(meet);

@@ -50,10 +50,10 @@ public class MyService extends LifecycleService {
     //   System.out.println(dtf.format(now));
     private boolean startService = true;
     private boolean addLocation = false;
-    private String location = "";
+//    private String location = "";
     private RequestsModel requestsModel;
     private String macAddress;
-    MediaPlayer player;
+//    MediaPlayer player;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
@@ -62,7 +62,7 @@ public class MyService extends LifecycleService {
     }
 
     private void saveDeviceMeetingInfo(final String name, final String macAddress, final String time) {
-        Log.e(TAG, "found ad DV VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV");
+//        Log.e(TAG, "found ad DV VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV");
 
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -81,14 +81,11 @@ public class MyService extends LifecycleService {
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
                             try {
-                                Log.d(TAG, "onComplete: found location!");
                                 Location currentLocation = (Location) task.getResult();
                                 Log.e(TAG, currentLocation.getLatitude() + "\t" + currentLocation.getLongitude());
                                 Device dev = new Device(name, macAddress, time, currentLocation.getLatitude(), currentLocation.getLongitude());
                                 deviceRepository.deviceInsert(dev);
-                                Log.i(TAG, "Doneeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
                             } catch (Exception e) {
-                                Log.i(TAG, "Faliddddddddddddddddddddddddddddddddddddddd");
                                 Device dev = new Device(name, macAddress, time, 9999, 9999);
                                 deviceRepository.deviceInsert(dev);
                             }
@@ -146,7 +143,6 @@ public class MyService extends LifecycleService {
                 bluetoothAdapterStatus = "need enable";
             }
         }
-//        return bluetoothAdapterStatus;
     }
 
 
@@ -158,7 +154,6 @@ public class MyService extends LifecycleService {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 LocalDateTime now = LocalDateTime.now();
                 saveDeviceMeetingInfo(device.getName(), device.getAddress(), dtf.format(now).toString());
-
                 status = "found a device";
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 status = "scanning devices ...";
@@ -190,29 +185,26 @@ public class MyService extends LifecycleService {
         super.onStartCommand(intent, flags, startId);
         deviceRepository = Repository.getInstance();
         if (startService) {
-            player = MediaPlayer.create(this,
-                    Settings.System.DEFAULT_ALARM_ALERT_URI);
-            player.setLooping(true);
+//            player = MediaPlayer.create(this,
+//                    Settings.System.DEFAULT_ALARM_ALERT_URI);
+//            player.setLooping(true);
 //            player.start();
             onResume();
             startDiscovering();
             setObserver();
 
             startService = false;
-
         }
         return START_STICKY;
-
     }
 
     public void startDiscovering() {
-
         mBluetoothAdapter.startDiscovery();
     }
 
     public void onPause() {
         unregisterReceiver(devicesFoundReceiver);
-        player.stop();
+//        player.stop();
     }
 
 
@@ -226,7 +218,7 @@ public class MyService extends LifecycleService {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        Log.d(TAG, "onTaskRemoved: called.");
+//        Log.d(TAG, "onTaskRemoved: called.");
         onPause();
         stopSelf();
     }
@@ -234,13 +226,12 @@ public class MyService extends LifecycleService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy: called.");
+//        Log.d(TAG, "onDestroy: called.");
         onPause();
     }
 
     private void setObserver() {
         deviceRepository.getAllDevices().observe(this, new Observer<List<Device>>() {
-
             @Override
             public void onChanged(@Nullable List<Device> devices) {
                 if (devices.size() > 0)

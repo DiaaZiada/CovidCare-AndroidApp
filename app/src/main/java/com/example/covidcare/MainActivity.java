@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private User user;
 
     private ListView mListView;
-    private TextView nHealth, nInfected, nTreated, nUnknown;
+    private TextView nHealth, nInfected, nRecovered, nUnknown;
     private SwitchCompat btnLocationSwitch;
     private Spinner dl_status;
 
@@ -84,14 +84,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         status2Index.put("Unknown", 0);
         status2Index.put("Healthy", 1);
         status2Index.put("Infected", 2);
-        status2Index.put("Treated", 3);
+        status2Index.put("Recovered", 3);
 
         index2Status.put(0, "Unknown");
         index2Status.put(1, "Healthy");
         index2Status.put(2, "Infected");
-        index2Status.put(3, "Treated");
+        index2Status.put(3, "Recovered");
 
-        requestsModel.getMeetings(getMacAddr());
 
         btnLocationSwitch = (SwitchCompat) findViewById(R.id.btnLocationSwitch);
 
@@ -118,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         meetingsInfo = new ArrayList<>();
         nHealth = findViewById(R.id.no_health);
         nInfected = findViewById(R.id.no_infected);
-        nTreated = findViewById(R.id.no_treated);
+        nRecovered = findViewById(R.id.no_recovered);
         nUnknown = findViewById(R.id.no_un);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.status, android.R.layout.simple_spinner_item);
@@ -131,6 +130,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         setObservers();
+
+        requestsModel.getMeetings(getMacAddr());
+
 
     }
 
@@ -305,9 +307,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MainActivity.this, R.layout.adabter_view_list, meetingsInfo);
                     mListView.setAdapter(adapter);
-                    nHealth.setText(String.valueOf(map.getOrDefault("Health", 0)));
+                    nHealth.setText(String.valueOf(map.getOrDefault("Healthy", 0)));
                     nInfected.setText(String.valueOf(map.getOrDefault("Infected", 0)));
-                    nTreated.setText(String.valueOf(map.getOrDefault("Treated", 0)));
+                    nRecovered.setText(String.valueOf(map.getOrDefault("Recovered", 0)));
                     nUnknown.setText(String.valueOf(map.getOrDefault("Unknown", 0)));
                 }
             }
@@ -365,6 +367,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if (user == null)
+            return;
         String text = parent.getItemAtPosition(position).toString();
         User updatedUser = new User(user.getName(), text, user.getMacAddress(), user.getAddLocation());
         updatedUser.setId(user.getId());

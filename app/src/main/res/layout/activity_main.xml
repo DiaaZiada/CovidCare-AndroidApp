@@ -39,28 +39,28 @@
 
     <TextView
         android:id="@+id/textView12"
-        android:layout_width="233dp"
-        android:layout_height="wrap_content"
+        android:layout_width="292dp"
+        android:layout_height="14dp"
         android:layout_below="@+id/textView11"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="0dp"
-        android:layout_marginEnd="168dp"
-        android:text="Whiether to save meetings locations or not"
+        android:layout_marginEnd="109dp"
+        android:text="Save locations where you have run into possible incubators"
         android:textSize="10sp" />
 
     <TextView
         android:id="@+id/textView7"
-        android:layout_width="wrap_content"
+        android:layout_width="184dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="12dp"
         android:layout_marginTop="18dp"
-        android:layout_marginEnd="290dp"
-        android:text="My Status"
+        android:layout_marginEnd="215dp"
+        android:text="Current Status"
         android:textColor="#000000"
         android:textSize="14sp"
         android:textStyle="bold" />
@@ -75,7 +75,7 @@
         android:layout_marginStart="12dp"
         android:layout_marginTop="1dp"
         android:layout_marginEnd="179dp"
-        android:text="Select your COVID status from the dropdown list"
+        android:text="Select your COVID-19 status from the dropdown list"
         android:textSize="10sp" />
 
     <androidx.cardview.widget.CardView
@@ -108,7 +108,7 @@
         android:layout_marginStart="13dp"
         android:layout_marginTop="40px"
         android:layout_marginEnd="208dp"
-        android:text="Meetings Statistics"
+        android:text="Statistics"
         android:textColor="#000000"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -234,7 +234,7 @@
         android:layout_marginTop="60dp"
         android:layout_toEndOf="@+id/textView16"
         android:gravity="center"
-        android:text="Treated"
+        android:text="Recovered"
         android:textColor="#000000" />
 
     <TextView
@@ -271,7 +271,7 @@
         android:textColor="#000000" />
 
     <TextView
-        android:id="@+id/no_treated"
+        android:id="@+id/no_recovered"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView17"

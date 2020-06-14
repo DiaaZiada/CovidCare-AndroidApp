@@ -5,6 +5,6 @@
         <item>Unknown</item>
         <item>Healthy</item>
         <item>Infected</item>
-        <item>Treated</item>
+        <item>Recovered</item>
     </string-array>
 </resources>

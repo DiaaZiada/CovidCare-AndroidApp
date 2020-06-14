@@ -104,7 +104,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
                 holder.imageView.setBackgroundResource(R.drawable.healthy_background);
                 holder.imageView.setImageResource(R.mipmap.healthy_foreground);
                 break;
-            case "Treated":
+            case "Recovered":
                 holder.imageView.setBackgroundResource(R.drawable.treated_background);
                 holder.imageView.setImageResource(R.mipmap.treated_foreground);
                 break;
