@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private ModelView modelView;
     private RequestsModel requestsModel;
-    private MyService mService;
+//    private MyService mService;
     private User user;
 
     private ListView mListView;
@@ -92,12 +92,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         index2Status.put(2, "Infected");
         index2Status.put(3, "Recovered");
 
+        Toast.makeText(this, "Loading map", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(MainActivity.this, MapActivity.class);
+//        intent.putExtra(EXTRA_LATITUDE, (int) (meetingsInfo.get(v.getId()).getLatitude() * 10000000));
+//        intent.putExtra(EXTRA_LONGITUDE, (int) (meetingsInfo.get(v.getId()).getLogitude() * 10000000));
+        startActivityForResult(intent, 1);
 
         btnLocationSwitch = (SwitchCompat) findViewById(R.id.btnLocationSwitch);
 
         btnLocationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
                 if (isChecked) {
                     int id = user.getId();
                     requestPermissions();
@@ -189,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case REQUEST_CODE_ASK_PERMISSIONS:
                 for (int index = permissions.length - 1; index >= 0; --index) {
                     if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
-                        mService.setAddLocation(false);
+//                        mService.setAddLocation(false);
                         User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
                         updatedUser.setId(user.getId());
                         modelView.userUpdate(updatedUser);
@@ -265,25 +271,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setObservers() {
 
-        modelView.getBinder().observe(this, new Observer<MyService.MyBinder>() {
-
-            @Override
-            public void onChanged(@Nullable MyService.MyBinder myBinder) {
-
-                if (myBinder == null) {
-                    Log.d(TAG, "onChanged: unbound from service");
-
-                } else {
-                    Log.d(TAG, "onChanged: bound to service.");
-                    mService = myBinder.getService();
-                    if (isAddLocation != -1) {
-                        mService.setAddLocation(isAddLocation == 1);
-
-                    }
-                    checkBluetoothState();
-                }
-            }
-        });
+//        modelView.getBinder().observe(this, new Observer<MyService.MyBinder>() {
+//
+//            @Override
+//            public void onChanged(@Nullable MyService.MyBinder myBinder) {
+//
+//                if (myBinder == null) {
+//                    Log.d(TAG, "onChanged: unbound from service");
+//
+//                } else {
+//                    Log.d(TAG, "onChanged: bound to service.");
+//                    mService = myBinder.getService();
+//                    if (isAddLocation != -1) {
+//                        mService.setAddLocation(isAddLocation == 1);
+//
+//                    }
+//                    checkBluetoothState();
+//                }
+//            }
+//        });
 
         modelView.getAllUsers().observe(this, new Observer<List<User>>() {
             @Override
@@ -299,8 +305,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         isAddLocation = 0;
 
                     btnLocationSwitch.setChecked(isAddLocation == 1);
-                    if (mService != null)
-                        mService.setAddLocation(isAddLocation == 1);
+//                    if (mService != null)
+//                        mService.setAddLocation(isAddLocation == 1);
 
                     requestsModel.updateStatus(user, getMacAddr());
                     Log.i(TAG, String.valueOf(status2Index.getOrDefault(user.getStatus(), 0)) + "aaaaaaaaaaaaaa");
@@ -337,19 +343,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-
-    private void checkBluetoothState() {
-        if (mService != null) {
-            mService.checkBluetoothState();
-            String state = mService.getBluetoothAdapterStatus();
-            mService.startDiscovering();
-            if (state.equals("need enable")) {
-                Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
-            }
-        }
-
-    }
+//
+//    private void checkBluetoothState() {
+//        if (mService != null) {
+//            mService.checkBluetoothState();
+//            String state = mService.getBluetoothAdapterStatus();
+//            mService.startDiscovering();
+//            if (state.equals("need enable")) {
+//                Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
+//            }
+//        }
+//
+//    }
 
     @Override
     protected void onStart() {
@@ -375,15 +381,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void startService() {
-        Intent serviceIntent = new Intent(this, MyService.class);
-        startService(serviceIntent);
+//        Intent serviceIntent = new Intent(this, MyService.class);
+//        startService(serviceIntent);
         bindService();
 
     }
 
     private void bindService() {
-        Intent serviceBindIntent = new Intent(this, MyService.class);
-        bindService(serviceBindIntent, modelView.getServiceConnection(), Context.BIND_AUTO_CREATE);
+//        Intent serviceBindIntent = new Intent(this, MyService.class);
+//        bindService(serviceBindIntent, modelView.getServiceConnection(), Context.BIND_AUTO_CREATE);
     }
 
     @Override
