@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import java.lang.reflect.Field;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -132,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setObservers();
 
         requestsModel.getMeetings(getMacAddr());
+        Log.e(TAG,BluetoothAdapter.getDefaultAdapter().getAddress()+"WWWWWWWWWWWWWWWWWWWWWWWWWW");
 
 
     }
@@ -214,6 +216,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        } else {
 //        }
 //    }
+
+    public static @Nullable String getAddress2(final BluetoothAdapter adapter) {
+        if (adapter == null)
+            return null;
+
+        final String address = adapter.getAddress();
+        // Horrible reflection hack needed to get the Bluetooth MAC for Marshmellow and above.
+        try {
+            final Field mServiceField = BluetoothAdapter.class.getDeclaredField("mService");
+            mServiceField.setAccessible(true);
+            final Object mService = mServiceField.get(adapter);
+            if (mService == null)
+                return null;
+            return (String) mService.getClass().getMethod("getAddress").invoke(mService);
+        } catch (final Exception x) {
+            throw new RuntimeException(x);
+        }
+    }
+
 
     public static String getMacAddr() {
         try {
