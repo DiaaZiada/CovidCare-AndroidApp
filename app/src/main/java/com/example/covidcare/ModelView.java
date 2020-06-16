@@ -26,13 +26,13 @@ public class ModelView extends AndroidViewModel {
     private LiveData<List<Meeting>> allMeetings;
 
 
-    public ServiceConnection getServiceConnection() {
-        return repository.getServiceConnection();
-    }
+//    public ServiceConnection getServiceConnection() {
+//        return repository.getServiceConnection();
+//    }
 
-    public LiveData<MyService.MyBinder> getBinder() {
-        return repository.getBinder();
-    }
+//    public LiveData<MyService.MyBinder> getBinder() {
+//        return repository.getBinder();
+//    }
 
 
     public ModelView(@NonNull Application application) {
