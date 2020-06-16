@@ -34,6 +34,7 @@ public class Repository {
     private LiveData<List<Meeting>> allMeetings;
 
 //    private MutableLiveData<MyService.MyBinder> mBinder = new MutableLiveData<>();
+    private MutableLiveData<LocationUpdatesService.LocalBinder> mBinder = new MutableLiveData<>();
 
     private static Repository instance;
 
@@ -226,6 +227,36 @@ public class Repository {
     /*End User DataBase*/
 
 
+
+    /* Location Service*/
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder iBinder) {
+            Log.d(TAG, "ServiceConnection: connected to service.");
+            // We've bound to MyService, cast the IBinder and get MyBinder instance
+            LocationUpdatesService.LocalBinder binder = (LocationUpdatesService.LocalBinder) iBinder;
+            mBinder.postValue(binder);
+
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.d(TAG, "ServiceConnection: disconnected from service.");
+            mBinder.postValue(null);
+        }
+    };
+
+    public ServiceConnection getServiceConnection() {
+        return serviceConnection;
+    }
+
+    public LiveData<LocationUpdatesService.LocalBinder> getBinder() {
+        return mBinder;
+    }
+
+    /* End Location Service*/
 
     /* BlueTooth Service*/
 

@@ -26,6 +26,16 @@ public class ModelView extends AndroidViewModel {
     private LiveData<List<Meeting>> allMeetings;
 
 
+    public ServiceConnection getServiceConnection() {
+        return repository.getServiceConnection();
+    }
+
+    public LiveData<LocationUpdatesService.LocalBinder> getBinder() {
+        return repository.getBinder();
+    }
+
+
+
 //    public ServiceConnection getServiceConnection() {
 //        return repository.getServiceConnection();
 //    }
