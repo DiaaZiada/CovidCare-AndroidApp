@@ -1,20 +1,20 @@
 package requests;
 
 public class UpdateStatus {
-    private String macAddress;
-    private String status;
+   private int userId;
+   private String status;
 
-    public UpdateStatus(String macAddress, String status) {
-        this.macAddress = macAddress;
+    public UpdateStatus(int userId, String status) {
+        this.userId = userId;
         this.status = status;
     }
 
-    public String getMacAddress() {
-        return macAddress;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getStatus() {

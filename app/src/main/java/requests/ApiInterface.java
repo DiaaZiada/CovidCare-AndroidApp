@@ -18,6 +18,13 @@ public interface ApiInterface {
     @POST("updatestatus")
     public Call<RequestStatus> updateStatus(@Body UpdateStatus updateStatus);
 
+    @POST("requestid")
+    public Call<RequestId> requestId(@Body RequestId requestId);
+
+
+
+
+
 
 }
 
