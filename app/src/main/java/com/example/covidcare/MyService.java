@@ -227,7 +227,7 @@
 //    public void onDestroy() {
 //        super.onDestroy();
 ////        Log.d(TAG, "onDestroy: called.");
-//        onPause();
+//        ();
 //    }
 //
 //    private void setObserver() {

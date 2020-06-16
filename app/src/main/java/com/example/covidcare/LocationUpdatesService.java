@@ -36,6 +36,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -45,6 +47,14 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import java.util.List;
+import java.util.Observable;
+
+import table.AppInfo;
+import table.LocationTime;
+
+import static com.example.covidcare.Utils.getTime;
 
 /**
  * A bound and started service that is promoted to a foreground service when location updates have
@@ -60,6 +70,7 @@ import com.google.android.gms.tasks.Task;
  * continue. When the activity comes back to the foreground, the foreground service stops, and the
  * notification associated with that service is removed.
  */
+
 public class LocationUpdatesService extends Service {
 
     private static final String PACKAGE_NAME =
@@ -128,6 +139,9 @@ public class LocationUpdatesService extends Service {
      */
     private Location mLocation;
 
+    private Repository repository;
+
+
     public LocationUpdatesService() {
     }
 
@@ -143,6 +157,7 @@ public class LocationUpdatesService extends Service {
             }
         };
 
+        repository = Repository.getInstance();
         createLocationRequest();
         getLastLocation();
 
@@ -319,9 +334,11 @@ public class LocationUpdatesService extends Service {
 
     private void onNewLocation(Location location) {
         Log.e(TAG, "New location: " + location);
-
         mLocation = location;
 
+        LocationTime locationTime = new LocationTime(getTime(),location.getLatitude(), location.getLongitude());
+        Log.e(TAG, locationTime.getTime()+"\t"+locationTime.getLatitude()+"\t"+locationTime.getLongitude());
+        repository.locationTimeInsert(locationTime);
         // Notify anyone listening for broadcasts about the new location.
         Intent intent = new Intent(ACTION_BROADCAST);
         intent.putExtra(EXTRA_LOCATION, location);
@@ -332,6 +349,7 @@ public class LocationUpdatesService extends Service {
             mNotificationManager.notify(NOTIFICATION_ID, getNotification());
         }
     }
+
 
     /**
      * Sets the location request parameters.
@@ -371,4 +389,7 @@ public class LocationUpdatesService extends Service {
         }
         return false;
     }
+    
+
+
 }

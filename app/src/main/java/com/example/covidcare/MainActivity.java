@@ -102,22 +102,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private ServiceConnection mServiceConnection;
 
-//    private final ServiceConnection mServiceConnection = new ServiceConnection() {
-//
-//        @Override
-//        public void onServiceConnected(ComponentName name, IBinder service) {
-//            LocationUpdatesService.LocalBinder binder = (LocationUpdatesService.LocalBinder) service;
-//            mService = binder.getService();
-//            mBound = true;
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName name) {
-//            mService = null;
-//            mBound = false;
-//        }
-//    };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
