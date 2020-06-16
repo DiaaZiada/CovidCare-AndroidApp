@@ -1,20 +1,20 @@
 package requests;
 
 public class UpdateStatus {
-   private int userId;
+   private int appId;
    private String status;
 
     public UpdateStatus(int userId, String status) {
-        this.userId = userId;
+        this.appId = userId;
         this.status = status;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getAppId() {
+        return appId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setAppId(int appId) {
+        this.appId = appId;
     }
 
     public String getStatus() {

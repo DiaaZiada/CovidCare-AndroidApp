@@ -1,24 +1,24 @@
 package requests;
 
 public class SendLocationTime {
-    private int userId;
+    private int appId;
     private String time;
     private double latitude;
     private double longitude;
 
-    public SendLocationTime(int userIf, String time, double latitude, double longitude) {
-        this.userId = userIf;
+    public SendLocationTime(int appId, String time, double latitude, double longitude) {
+        this.appId = appId;
         this.time = time;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getAppId() {
+        return appId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setAppId(int appId) {
+        this.appId = appId;
     }
 
     public String getTime() {

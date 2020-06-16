@@ -31,4 +31,12 @@ public class AppInfo {
     public String getStatus() {
         return status;
     }
+
+    public void setAppId(int appId) {
+        this.appId = appId;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

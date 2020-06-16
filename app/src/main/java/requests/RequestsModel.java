@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.example.covidcare.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -12,14 +11,17 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import table.Device;
+import table.AppInfo;
+import table.LocationTime;
 import table.Meeting;
 import table.User;
 
 public class RequestsModel {
     private static final String TAG = "RequestsModel";
     private static final String BASE_URL = "http://192.168.1.109:5000/";
-    public static boolean requestFinished;
+    public static boolean getMeetingsFinished;
+    public static boolean sendLocationTimeFinished;
+
     private ApiInterface apiInterface;
     private static RequestsModel instance;
     private static Repository repository = Repository.getInstance();
@@ -30,7 +32,8 @@ public class RequestsModel {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiInterface = retrofit.create(ApiInterface.class);
-        requestFinished = true;
+        getMeetingsFinished = true;
+        sendLocationTimeFinished = true;
     }
 
     public static RequestsModel getInstance() {
@@ -39,78 +42,93 @@ public class RequestsModel {
         return instance;
     }
 
+    public void requestId(AppInfo appInfo) {
+        if (appInfo.getAppId() != -1)
+            return;
+        RequestId requestId = new RequestId(-1);
+        Call<RequestId> call = apiInterface.requestId(requestId);
+        call.enqueue(new Callback<RequestId>() {
+            @Override
+            public void onResponse(Call<RequestId> call, Response<RequestId> response) {
+                appInfo.setAppId(response.body().getAppId());
+                repository.appInfoUpdate(appInfo);
+            }
 
-    public void addMeeting(final List<Device> devices, String macAddress_user1) {
-        ArrayList<AddMeeting> addMeetings = new ArrayList<AddMeeting>();
-        for (Device device : devices) {
-            String macAddress_user2 = device.getMacAddress();
-            String latitude = String.valueOf(device.getLatitude());
-            String longitude = String.valueOf(device.getLongitude());
-            String time = device.getTime();
+            @Override
+            public void onFailure(Call<RequestId> call, Throwable t) {
 
-            AddMeeting addMeeting = new AddMeeting(macAddress_user1, macAddress_user2, latitude, longitude, time);
+            }
+        });
+    }
 
-            Call<RequestStatus> call = apiInterface.addMeeting(addMeeting);
+    public void updateStatus(AppInfo appInfo) {
+        UpdateStatus updateStatus = new UpdateStatus(appInfo.getAppId(), appInfo.getStatus());
+        Call<UpdateStatus> call = apiInterface.updateStatus(updateStatus);
+        call.enqueue(new Callback<UpdateStatus>() {
+            @Override
+            public void onResponse(Call<UpdateStatus> call, Response<UpdateStatus> response) {
 
-            call.enqueue(new Callback<RequestStatus>() {
+            }
+
+            @Override
+            public void onFailure(Call<UpdateStatus> call, Throwable t) {
+
+            }
+        });
+    }
+
+
+    public void sendLocationTime(AppInfo appInfo, List<LocationTime> locationTimes) {
+        if (appInfo.getAppId() == -1) {
+            requestId(appInfo);
+            return;
+        }
+
+        sendLocationTimeFinished = false;
+        for (LocationTime locationTime : locationTimes) {
+            SendLocationTime sendLocationTime = new SendLocationTime(appInfo.getAppId(), locationTime.getTime(), locationTime.getLatitude(), locationTime.getLongitude());
+            Call<SendLocationTime> call = apiInterface.sendLocationTime(sendLocationTime);
+            call.enqueue(new Callback<SendLocationTime>() {
                 @Override
-                public void onResponse(Call<RequestStatus> call, Response<RequestStatus> response) {
-                    repository.deviceDelete(device);
+                public void onResponse(Call<SendLocationTime> call, Response<SendLocationTime> response) {
+                    repository.locationTimeDelete(locationTime);
                 }
 
                 @Override
-                public void onFailure(Call<RequestStatus> call, Throwable t) {
-                    Log.e(TAG, t.getMessage());
+                public void onFailure(Call<SendLocationTime> call, Throwable t) {
+
                 }
             });
         }
+        sendLocationTimeFinished = true;
     }
 
-    public void getMeetings(String macAddress_user1) {
 
-        MacAddress macAddress = new MacAddress(macAddress_user1);
+    public void getMeetings(AppInfo appInfo) {
+        if (appInfo.getAppId() == -1) {
+            requestId(appInfo);
+            return;
+        }
 
-        Call<List<GetMeeting>> call = apiInterface.getMeetings(macAddress);
-        requestFinished = false;
+        RequestId requestId = new RequestId(appInfo.getAppId());
+
+        Call<List<GetMeeting>> call = apiInterface.getMeetings(requestId);
         call.enqueue(new Callback<List<GetMeeting>>() {
             @Override
             public void onResponse(Call<List<GetMeeting>> call, Response<List<GetMeeting>> response) {
-                repository.deleteAllMeetings();
-                for (GetMeeting meeting : response.body()) {
-                    Log.i(TAG, meeting.getStatus());
-                    Meeting meet = new Meeting(meeting.getStatus(), meeting.getTime(),
-                            Double.valueOf(meeting.getLatitude()), Double.valueOf(meeting.getLongitude()));
-                    repository.meetingInsert(meet);
+                getMeetingsFinished = false;
+                for (GetMeeting getMeeting : response.body()) {
+                    Meeting meeting = new Meeting(getMeeting.getStatus(), getMeeting.getTime(),
+                            Double.valueOf(getMeeting.getLatitude()), Double.valueOf(getMeeting.getLongitude()));
+                    repository.meetingInsert(meeting);
                 }
-                requestFinished = true;
+                getMeetingsFinished = true;
             }
 
             @Override
             public void onFailure(Call<List<GetMeeting>> call, Throwable t) {
-                Log.e(TAG, t.getMessage());
-                requestFinished = true;
-            }
-        });
-    }
-
-    public void updateStatus(User user, String macAddress_user1) {
-
-
-        UpdateStatus updateStatus = new UpdateStatus(macAddress_user1, user.getStatus());
-
-        Call<RequestStatus> call = apiInterface.updateStatus(updateStatus);
-
-        call.enqueue(new Callback<RequestStatus>() {
-            @Override
-            public void onResponse(Call<RequestStatus> call, Response<RequestStatus> response) {
-                Log.e(TAG, response.body().getMsg());
-            }
-
-            @Override
-            public void onFailure(Call<RequestStatus> call, Throwable t) {
 
             }
         });
     }
-
 }

@@ -1,17 +1,17 @@
 package requests;
 
 public class RequestId {
-    private int userId;
+    private int appId;
 
     public RequestId(int userId) {
-        this.userId = userId;
+        this.appId = userId;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getAppId() {
+        return appId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setAppId(int appId) {
+        this.appId = appId;
     }
 }
