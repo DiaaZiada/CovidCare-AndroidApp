@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     // The BroadcastReceiver used to listen from broadcasts from the service.
-    private MyReceiver myReceiver;
+//    private MyReceiver myReceiver;
 
     // A reference to the service used to get location updates.
     private LocationUpdatesService mService = null;
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.e(TAG, BluetoothAdapter.getDefaultAdapter().getAddress() + "WWWWWWWWWWWWWWWWWWWWWWWWWW");
 
 
-        myReceiver = new MyReceiver();
+//        myReceiver = new MyReceiver();
         if (Utils.requestingLocationUpdates(this)) {
             if (!checkPermissions()) {
                 requestPermissions();
@@ -476,14 +476,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
 //        startService();
 //        requestsModel.getMeetings(macAddress);
-        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
-                new IntentFilter(LocationUpdatesService.ACTION_BROADCAST));
+//        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
+//                new IntentFilter(LocationUpdatesService.ACTION_BROADCAST));
     }
 
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(myReceiver);
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(myReceiver);
         super.onPause();
     }
 
@@ -619,16 +619,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * Receiver for broadcasts sent by {@link LocationUpdatesService}.
      */
-    private class MyReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Location location = intent.getParcelableExtra(LocationUpdatesService.EXTRA_LOCATION);
-            if (location != null) {
-                Toast.makeText(MainActivity.this, Utils.getLocationText(location),
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+//    private class MyReceiver extends BroadcastReceiver {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            Location location = intent.getParcelableExtra(LocationUpdatesService.EXTRA_LOCATION);
+//            if (location != null) {
+//                Toast.makeText(MainActivity.this, Utils.getLocationText(location),
+//                        Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
