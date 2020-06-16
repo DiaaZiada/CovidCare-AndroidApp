@@ -110,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         macAddress = getMacAddr();
         modelView = ViewModelProviders.of(this).get(ModelView.class);
-        mServiceConnection = modelView.getServiceConnection();
 
         requestsModel = RequestsModel.getInstance();
 
@@ -132,6 +131,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        intent.putExtra(EXTRA_LATITUDE, (int) (meetingsInfo.get(v.getId()).getLatitude() * 10000000));
 //        intent.putExtra(EXTRA_LONGITUDE, (int) (meetingsInfo.get(v.getId()).getLogitude() * 10000000));
 //        startActivityForResult(intent, 1);
+
+        mServiceConnection = modelView.getServiceConnection();
 
         btnLocationSwitch = (SwitchCompat) findViewById(R.id.btnLocationSwitch);
 

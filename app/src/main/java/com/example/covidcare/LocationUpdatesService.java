@@ -37,6 +37,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -71,7 +72,7 @@ import static com.example.covidcare.Utils.getTime;
  * notification associated with that service is removed.
  */
 
-public class LocationUpdatesService extends Service {
+public class LocationUpdatesService extends LifecycleService {
 
     private static final String PACKAGE_NAME =
             "com.google.android.gms.location.sample.locationupdatesforegroundservice";
@@ -176,10 +177,12 @@ public class LocationUpdatesService extends Service {
             // Set the Notification Channel for the Notification Manager.
             mNotificationManager.createNotificationChannel(mChannel);
         }
+        setObserver();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
         Log.i(TAG, "Service started");
         boolean startedFromNotification = intent.getBooleanExtra(EXTRA_STARTED_FROM_NOTIFICATION,
                 false);
@@ -189,6 +192,7 @@ public class LocationUpdatesService extends Service {
             removeLocationUpdates();
             stopSelf();
         }
+        setObserver();
         // Tells the system to not try to recreate the service after it has been killed.
         return START_NOT_STICKY;
     }
@@ -204,6 +208,7 @@ public class LocationUpdatesService extends Service {
         // Called when a client (MainActivity in case of this sample) comes to the foreground
         // and binds with this service. The service should cease to be a foreground service
         // when that happens.
+        super.onBind(intent);
         Log.i(TAG, "in onBind()");
         stopForeground(true);
         mChangingConfiguration = false;
@@ -238,6 +243,7 @@ public class LocationUpdatesService extends Service {
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         mServiceHandler.removeCallbacksAndMessages(null);
     }
 
@@ -343,7 +349,6 @@ public class LocationUpdatesService extends Service {
         Intent intent = new Intent(ACTION_BROADCAST);
         intent.putExtra(EXTRA_LOCATION, location);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-
         // Update notification content if running as a foreground service.
         if (serviceIsRunningInForeground(this)) {
             mNotificationManager.notify(NOTIFICATION_ID, getNotification());
@@ -391,5 +396,15 @@ public class LocationUpdatesService extends Service {
     }
     
 
+    private void setObserver(){
+        repository.getAllLocationsTimes().observe( this, new Observer<List<LocationTime>>() {
+            @Override
+            public void onChanged(List<LocationTime> locationTimes) {
+                Log.e(TAG,"LOCTIM");
+                for (LocationTime locationTime : locationTimes)
+                    Log.i(TAG, locationTime.getTime()+"\t"+locationTime.getLatitude()+"\t"+locationTime.getLongitude());
+            }
+        });
+    }
 
 }
