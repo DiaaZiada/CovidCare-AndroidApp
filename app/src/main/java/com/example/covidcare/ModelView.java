@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import table.Device;
+import table.LocationTime;
 import table.Meeting;
 import table.User;
 
@@ -24,6 +25,7 @@ public class ModelView extends AndroidViewModel {
     private LiveData<List<Device>> allDevices;
     private LiveData<List<User>> allUsers;
     private LiveData<List<Meeting>> allMeetings;
+    private LiveData<List<LocationTime>> allLocationsTimes;
 
 
     public ServiceConnection getServiceConnection() {
@@ -52,8 +54,30 @@ public class ModelView extends AndroidViewModel {
         allDevices = repository.getAllDevices();
         allUsers = repository.getAllUsers();
         allMeetings = repository.getAllMeetings();
+        allLocationsTimes = repository.getAllLocationsTimes();
     }
 
+    /* LocationTime */
+    public void locationTimeInsert(LocationTime locationTime) {
+        repository.locationTimeInsert(locationTime);
+    }
+
+    public void locationTimeUpdate(LocationTime locationTime) {
+        repository.locationTimeUpdate(locationTime);
+    }
+
+    public void locationTimeDelete(LocationTime locationTime) {
+        repository.locationTimeDelete(locationTime);
+    }
+
+    public void DeleteAllLocationsTimes() {
+        repository.deleteAllLocationsTimes();
+    }
+
+    public LiveData<List<LocationTime>> getAllLocationsTimes() {
+        return allLocationsTimes;
+    }
+    /* End LocationTime */
     
     /* Meeting */
     public void meetingInsert(Meeting meeting) {

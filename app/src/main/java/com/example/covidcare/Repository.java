@@ -13,12 +13,15 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.List;
 
 import dao.DeviceDao;
+import dao.LocationTimeDao;
 import dao.MeetingDao;
 import dao.UserDao;
 import db.DeviceDataBase;
+import db.LocationTimeDataBase;
 import db.MeetingDataBase;
 import db.UserDataBase;
 import table.Device;
+import table.LocationTime;
 import table.Meeting;
 import table.User;
 
@@ -28,10 +31,12 @@ public class Repository {
     private DeviceDao deviceDao;
     private UserDao userDao;
     private MeetingDao meetingDao;
+    private LocationTimeDao locationTimeDao;
 
     private LiveData<List<Device>> allDevices;
     private LiveData<List<User>> allUsers;
     private LiveData<List<Meeting>> allMeetings;
+    private LiveData<List<LocationTime>> allLocationsTimes;
 
 //    private MutableLiveData<MyService.MyBinder> mBinder = new MutableLiveData<>();
     private MutableLiveData<LocationUpdatesService.LocalBinder> mBinder = new MutableLiveData<>();
@@ -62,7 +67,92 @@ public class Repository {
         meetingDao = meetingDataBase.meetingDao();
         allMeetings = meetingDao.getAllMeetings();
 
+        LocationTimeDataBase locationTimeDataBase = LocationTimeDataBase.getInstance(application);
+        locationTimeDao = locationTimeDataBase.locationTimeDao();
+        allLocationsTimes = locationTimeDao.getAllLocationsTimes();
+
     }
+
+
+    /*LocationTime DataBase*/
+    public void locationTimeInsert(LocationTime locationTime) {
+        new InsertLocationTimeAsyncTask(locationTimeDao).execute(locationTime);
+    }
+
+    public void locationTimeUpdate(LocationTime locationTime) {
+        new UpdateLocationTimeAsyncTask(locationTimeDao).execute(locationTime);
+    }
+
+    public void locationTimeDelete(LocationTime locationTime) {
+        new DeleteLocationTimeAsyncTask(locationTimeDao).execute(locationTime);
+    }
+
+    public void deleteAllLocationsTimes() {
+        new DeleteAllLocationsTimesAsyncTask(locationTimeDao).execute();
+    }
+
+    public LiveData<List<LocationTime>> getAllLocationsTimes() {
+        return allLocationsTimes;
+    }
+
+    private static class InsertLocationTimeAsyncTask extends AsyncTask<LocationTime, Void, Void> {
+        private LocationTimeDao locationTimeDao;
+
+        private InsertLocationTimeAsyncTask(LocationTimeDao locationTimeDao) {
+            this.locationTimeDao = locationTimeDao;
+        }
+
+        @Override
+        protected Void doInBackground(LocationTime... locationsTimes) {
+            locationTimeDao.insert(locationsTimes[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateLocationTimeAsyncTask extends AsyncTask<LocationTime, Void, Void> {
+        private LocationTimeDao locationTimeDao;
+
+        private UpdateLocationTimeAsyncTask(LocationTimeDao locationTimeDao) {
+            this.locationTimeDao = locationTimeDao;
+        }
+
+        @Override
+        protected Void doInBackground(LocationTime... locationsTimes) {
+            locationTimeDao.update(locationsTimes[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteLocationTimeAsyncTask extends AsyncTask<LocationTime, Void, Void> {
+        private LocationTimeDao locationTimeDao;
+
+        private DeleteLocationTimeAsyncTask(LocationTimeDao locationTimeDao) {
+            this.locationTimeDao = locationTimeDao;
+        }
+
+        @Override
+        protected Void doInBackground(LocationTime... locationsTimes) {
+            locationTimeDao.delete(locationsTimes[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteAllLocationsTimesAsyncTask extends AsyncTask<Void, Void, Void> {
+        private LocationTimeDao locationTimeDao;
+
+        private DeleteAllLocationsTimesAsyncTask(LocationTimeDao locationTimeDao) {
+            this.locationTimeDao = locationTimeDao;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            locationTimeDao.deleteAllLocationsTimes();
+            return null;
+        }
+    }
+
+
+    /*End LocationTime DataBase*/
 
 
 
