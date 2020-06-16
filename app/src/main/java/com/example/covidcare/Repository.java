@@ -12,14 +12,17 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
+import dao.AppInfoDao;
 import dao.DeviceDao;
 import dao.LocationTimeDao;
 import dao.MeetingDao;
 import dao.UserDao;
+import db.AppInfoDataBase;
 import db.DeviceDataBase;
 import db.LocationTimeDataBase;
 import db.MeetingDataBase;
 import db.UserDataBase;
+import table.AppInfo;
 import table.Device;
 import table.LocationTime;
 import table.Meeting;
@@ -32,11 +35,13 @@ public class Repository {
     private UserDao userDao;
     private MeetingDao meetingDao;
     private LocationTimeDao locationTimeDao;
+    private AppInfoDao appInfoDao;
 
     private LiveData<List<Device>> allDevices;
     private LiveData<List<User>> allUsers;
     private LiveData<List<Meeting>> allMeetings;
     private LiveData<List<LocationTime>> allLocationsTimes;
+    private LiveData<List<AppInfo>> allAppInfos;
 
 //    private MutableLiveData<MyService.MyBinder> mBinder = new MutableLiveData<>();
     private MutableLiveData<LocationUpdatesService.LocalBinder> mBinder = new MutableLiveData<>();
@@ -71,8 +76,93 @@ public class Repository {
         locationTimeDao = locationTimeDataBase.locationTimeDao();
         allLocationsTimes = locationTimeDao.getAllLocationsTimes();
 
+
+        AppInfoDataBase appInfoDataBase = AppInfoDataBase.getInstance(application);
+        appInfoDao = appInfoDataBase.appInfoDao();
+        allAppInfos = appInfoDao.getAllAppInfos();
+
+
     }
 
+    /*AppInfo DataBase*/
+
+    public void appInfoInsert(AppInfo appInfo) {
+        new InsertAppInfoAsyncTask(appInfoDao).execute(appInfo);
+    }
+
+    public void appInfoUpdate(AppInfo appInfo) {
+        new UpdateAppInfoAsyncTask(appInfoDao).execute(appInfo);
+    }
+
+    public void appInfoDelete(AppInfo appInfo) {
+        new DeleteAppInfoAsyncTask(appInfoDao).execute(appInfo);
+    }
+
+    public void deleteAllAppInfos() {
+        new DeleteAllAppInfosAsyncTask(appInfoDao).execute();
+    }
+
+    public LiveData<List<AppInfo>> getAllAppInfos() {
+        return allAppInfos;
+    }
+
+    private static class InsertAppInfoAsyncTask extends AsyncTask<AppInfo, Void, Void> {
+        private AppInfoDao appInfoDao;
+
+        private InsertAppInfoAsyncTask(AppInfoDao appInfoDao) {
+            this.appInfoDao = appInfoDao;
+        }
+
+        @Override
+        protected Void doInBackground(AppInfo... appInfos) {
+            appInfoDao.insert(appInfos[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateAppInfoAsyncTask extends AsyncTask<AppInfo, Void, Void> {
+        private AppInfoDao appInfoDao;
+
+        private UpdateAppInfoAsyncTask(AppInfoDao appInfoDao) {
+            this.appInfoDao = appInfoDao;
+        }
+
+        @Override
+        protected Void doInBackground(AppInfo... appInfos) {
+            appInfoDao.update(appInfos[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteAppInfoAsyncTask extends AsyncTask<AppInfo, Void, Void> {
+        private AppInfoDao appInfoDao;
+
+        private DeleteAppInfoAsyncTask(AppInfoDao appInfoDao) {
+            this.appInfoDao = appInfoDao;
+        }
+
+        @Override
+        protected Void doInBackground(AppInfo... appInfos) {
+            appInfoDao.delete(appInfos[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteAllAppInfosAsyncTask extends AsyncTask<Void, Void, Void> {
+        private AppInfoDao appInfoDao;
+
+        private DeleteAllAppInfosAsyncTask(AppInfoDao appInfoDao) {
+            this.appInfoDao = appInfoDao;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            appInfoDao.deleteAllAppInfos();
+            return null;
+        }
+    }
+
+    /*End AppInfo DataBase*/
 
     /*LocationTime DataBase*/
     public void locationTimeInsert(LocationTime locationTime) {
