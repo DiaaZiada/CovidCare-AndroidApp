@@ -56,7 +56,7 @@ import table.Meeting;
 import table.User;
 import utils.MeetingInfo;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener,SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = "MainActivity";
     public static final String EXTRA_LATITUDE = "com.example.covidcare.MainActivity.EXTRA_LATITUDE";
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private ModelView modelView;
     private RequestsModel requestsModel;
-//    private MyService mService;
+    //    private MyService mService;
     private User user;
 
     private ListView mListView;
@@ -82,14 +82,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<MeetingInfo> meetingsInfo;
 
     private String macAddress;
-
-
-
-
-
-
-
-
 
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
@@ -108,26 +100,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mRemoveLocationUpdatesButton;
 
 
+    private ServiceConnection mServiceConnection;
 
-
-    private final ServiceConnection mServiceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            LocationUpdatesService.LocalBinder binder = (LocationUpdatesService.LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mService = null;
-            mBound = false;
-        }
-    };
-
-
-
+//    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+//
+//        @Override
+//        public void onServiceConnected(ComponentName name, IBinder service) {
+//            LocationUpdatesService.LocalBinder binder = (LocationUpdatesService.LocalBinder) service;
+//            mService = binder.getService();
+//            mBound = true;
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName name) {
+//            mService = null;
+//            mBound = false;
+//        }
+//    };
 
 
     @Override
@@ -137,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         macAddress = getMacAddr();
         modelView = ViewModelProviders.of(this).get(ModelView.class);
+        mServiceConnection = modelView.getServiceConnection();
+
         requestsModel = RequestsModel.getInstance();
 
         status2Index = new HashMap<String, Integer>();
@@ -199,8 +190,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setObservers();
 
         requestsModel.getMeetings(getMacAddr());
-        Log.e(TAG,BluetoothAdapter.getDefaultAdapter().getAddress()+"WWWWWWWWWWWWWWWWWWWWWWWWWW");
-
+        Log.e(TAG, BluetoothAdapter.getDefaultAdapter().getAddress() + "WWWWWWWWWWWWWWWWWWWWWWWWWW");
 
 
         myReceiver = new MyReceiver();
@@ -209,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 requestPermissions();
             }
         }
-
 
 
     }
@@ -293,7 +282,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }
 //    }
 
-    public static @Nullable String getAddress2(final BluetoothAdapter adapter) {
+    public static @Nullable
+    String getAddress2(final BluetoothAdapter adapter) {
         if (adapter == null)
             return null;
 
@@ -340,7 +330,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void setObservers() {
-
+        modelView.getBinder().observe(this, new Observer<LocationUpdatesService.LocalBinder>() {
+            @Override
+            public void onChanged(LocationUpdatesService.LocalBinder localBinder) {
+                if (localBinder == null) {
+                    Log.d(TAG, "onChanged: unbound from service");
+//
+                } else {
+//                    Log.d(TAG, "onChanged: bound to service.");
+                    mService = localBinder.getService();
+//                    if (isAddLocation != -1) {
+//                        mService.setAddLocation(isAddLocation == 1);
+//
+//                    }
+                }
+            }
+        });
 //        modelView.getBinder().observe(this, new Observer<MyService.MyBinder>() {
 //
 //            @Override
@@ -390,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         modelView.getAllMeetings().observe(this, new Observer<List<Meeting>>() {
             @Override
             public void onChanged(@Nullable List<Meeting> meetings) {
-                Log.e(TAG, "ALLLLLLLLLLLLMEEEEEEEEEETINGSSSSSSSSSSSSSSSSs "+ requestsModel.requestFinished);
+                Log.e(TAG, "ALLLLLLLLLLLLMEEEEEEEEEETINGSSSSSSSSSSSSSSSSs " + requestsModel.requestFinished);
 
                 if (requestsModel.requestFinished) {
 
@@ -485,13 +490,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStop() {
 
-        if (mBound) {
+//        if (mBound) {
             // Unbind from the service. This signals to the service that this activity is no longer
             // in the foreground, and the service can respond by promoting itself to a foreground
             // service.
             unbindService(mServiceConnection);
-            mBound = false;
-        }
+//            mBound = false;
+//        }
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
 
@@ -532,7 +537,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private boolean checkPermissions() {
-        return  PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(this,
+        return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
