@@ -94,15 +94,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         status2Index = new HashMap<String, Integer>();
         index2Status = new HashMap<Integer, String>();
 
-        status2Index.put("Unknown", 0);
-        status2Index.put("Healthy", 1);
-        status2Index.put("Infected", 2);
-        status2Index.put("Recovered", 3);
+        status2Index.put("Healthy", 0);
+        status2Index.put("Infected", 1);
+        status2Index.put("Recovered", 2);
 
-        index2Status.put(0, "Unknown");
-        index2Status.put(1, "Healthy");
-        index2Status.put(2, "Infected");
-        index2Status.put(3, "Recovered");
+        index2Status.put(0, "Healthy");
+        index2Status.put(1, "Infected");
+        index2Status.put(2, "Recovered");
 
 
         mServiceConnection = modelView.getServiceConnection();
@@ -187,12 +185,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     modelView.appInfoInsert(appInfo);
                 } else
                     appInfo = appInfos.get(0);
+                Log.e(TAG,String.valueOf(status2Index.get(appInfo.getStatus()))+"\t"+appInfo.getStatus());
+                dl_status.setScrollBarDefaultDelayBeforeFade(status2Index.getOrDefault(appInfo.getStatus(),0));
 
                 if (appInfo.getAppId() == -1) {
                     requestsModel.requestId();
                     return;
                 }
-                dl_status.setScrollBarDefaultDelayBeforeFade(status2Index.get(appInfo.getStatus()));
                 requestsModel.updateStatus();
                 requestsModel.getMeetings();
 
@@ -298,7 +297,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String text = parent.getItemAtPosition(position).toString();
         appInfo.setStatus(text);
         modelView.appInfoUpdate(appInfo);
-        dl_status.setScrollBarDefaultDelayBeforeFade(1);
+        Log.e(TAG, appInfo.getStatus()+"\t"+text);
+        dl_status.setScrollBarDefaultDelayBeforeFade(status2Index.getOrDefault(appInfo.getStatus(),0));
         if (appInfo.getAppId() == -1) {
             requestsModel.requestId();
             return;
