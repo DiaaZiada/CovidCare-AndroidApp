@@ -127,15 +127,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dl_status.setAdapter(adapter);
         dl_status.setOnItemSelectedListener(this);
 
-        setObservers();
+//        if (Utils.requestingLocationUpdates(this)) {
+//            if (!checkPermissions()) {
+//                requestPermissions();
+//            }
+//        }
+
+//        setObservers();
 
 
-        if (Utils.requestingLocationUpdates(this)) {
-            if (!checkPermissions()) {
-                requestPermissions();
+
+
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
+
+        mRequestLocationUpdatesButton = (Button) findViewById(R.id.request_location_updates_button);
+        mRemoveLocationUpdatesButton = (Button) findViewById(R.id.remove_location_updates_button);
+
+        mRequestLocationUpdatesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!checkPermissions()) {
+                    requestPermissions();
+                } else {
+                    mService.requestLocationUpdates();
+                }
             }
-        }
+        });
 
+        mRemoveLocationUpdatesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mService.removeLocationUpdates();
+            }
+        });
+
+        setButtonsState(Utils.requestingLocationUpdates(this));
+
+        bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
+                Context.BIND_AUTO_CREATE);
 
     }
 
@@ -226,40 +261,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    @Override
-    protected void onStart() {
-        super.onStart();
 
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .registerOnSharedPreferenceChangeListener(this);
-
-        mRequestLocationUpdatesButton = (Button) findViewById(R.id.request_location_updates_button);
-        mRemoveLocationUpdatesButton = (Button) findViewById(R.id.remove_location_updates_button);
-
-        mRequestLocationUpdatesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!checkPermissions()) {
-                    requestPermissions();
-                } else {
-                    mService.requestLocationUpdates();
-                }
-            }
-        });
-
-        mRemoveLocationUpdatesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mService.removeLocationUpdates();
-            }
-        });
-
-        setButtonsState(Utils.requestingLocationUpdates(this));
-
-        bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
-                Context.BIND_AUTO_CREATE);
-
-    }
 
     @Override
     protected void onResume() {
@@ -313,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private boolean checkPermissions() {
-        return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(this,
+        return  PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
@@ -322,6 +324,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.ACCESS_FINE_LOCATION);
 
+        // Provide an additional rationale to the user. This would happen if the user denied the
+        // request previously, but didn't check the "Don't ask again" checkbox.
         if (shouldProvideRationale) {
             Log.i(TAG, "Displaying permission rationale to provide additional context.");
             Snackbar.make(
@@ -340,11 +344,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .show();
         } else {
             Log.i(TAG, "Requesting permission");
+            // Request permission. It's possible this can be auto answered if device policy
+            // sets the permission in a given state or the user denied the permission
+            // previously and checked "Never ask again".
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
