@@ -21,7 +21,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -36,7 +35,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -50,13 +48,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.List;
-import java.util.Observable;
 
-import table.AppInfo;
+import okhttp3.internal.Util;
 import table.LocationTime;
-
-import static com.example.covidcare.Utils.getTime;
-
 /**
  * A bound and started service that is promoted to a foreground service when location updates have
  * been requested and all clients unbind.
@@ -148,6 +142,7 @@ public class LocationUpdatesService extends LifecycleService {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         mLocationCallback = new LocationCallback() {
@@ -342,7 +337,7 @@ public class LocationUpdatesService extends LifecycleService {
         Log.e(TAG, "New location: " + location);
         mLocation = location;
 
-        LocationTime locationTime = new LocationTime(getTime(),location.getLatitude(), location.getLongitude());
+        LocationTime locationTime = new LocationTime(Utils.getTime(),location.getLatitude(), location.getLongitude());
         Log.e(TAG, locationTime.getTime()+"\t"+locationTime.getLatitude()+"\t"+locationTime.getLongitude());
         repository.locationTimeInsert(locationTime);
         // Notify anyone listening for broadcasts about the new location.

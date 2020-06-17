@@ -21,6 +21,8 @@ import android.content.Context;
 import android.location.Location;
 import android.preference.PreferenceManager;
 
+import com.example.covidcare.R;
+
 import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

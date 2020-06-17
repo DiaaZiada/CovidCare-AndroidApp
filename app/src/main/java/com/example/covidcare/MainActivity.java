@@ -3,18 +3,13 @@ package com.example.covidcare;
 import android.Manifest;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
@@ -33,10 +28,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -174,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setObservers();
 
-        requestsModel.getMeetings(getMacAddr());
+//        requestsModel.getMeetings(getMacAddr());
         Log.e(TAG, BluetoothAdapter.getDefaultAdapter().getAddress() + "WWWWWWWWWWWWWWWWWWWWWWWWWW");
 
 
@@ -368,10 +361,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                    if (mService != null)
 //                        mService.setAddLocation(isAddLocation == 1);
 
-                    requestsModel.updateStatus(user, getMacAddr());
+//                    requestsModel.updateStatus(user, getMacAddr());
                     Log.i(TAG, String.valueOf(status2Index.getOrDefault(user.getStatus(), 0)) + "aaaaaaaaaaaaaa");
                     dl_status.setSelection(status2Index.getOrDefault(user.getStatus(), 0));
-                    requestsModel.updateStatus(user, macAddress);
+//                    requestsModel.updateStatus(user, macAddress);
                 }
             }
         });
@@ -380,10 +373,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         modelView.getAllMeetings().observe(this, new Observer<List<Meeting>>() {
             @Override
             public void onChanged(@Nullable List<Meeting> meetings) {
-                Log.e(TAG, "ALLLLLLLLLLLLMEEEEEEEEEETINGSSSSSSSSSSSSSSSSs " + requestsModel.requestFinished);
+//                Log.e(TAG, "ALLLLLLLLLLLLMEEEEEEEEEETINGSSSSSSSSSSSSSSSSs " + requestsModel.requestFinished);
 
-                if (requestsModel.requestFinished) {
-
+//                if (requestsModel.requestFinished) {
+                    if(false){
                     Log.e(TAG, "ALLLLLLLLLLLLMEEEEEEEEEETINGSSSSSSSSSSSSSSSSs56666666666666666");
 
                     meetingsInfo.clear();
@@ -420,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStart() {
         super.onStart();
-        requestsModel.getMeetings(macAddress);
+//        requestsModel.getMeetings(macAddress);
 
         PreferenceManager.getDefaultSharedPreferences(this)
                 .registerOnSharedPreferenceChangeListener(this);
