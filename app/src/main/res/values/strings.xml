@@ -2,7 +2,6 @@
     <string name="app_name">CovidCare</string>
     <string name="google_maps_API_key">AIzaSyCVan8a4y50xoF7bQTSSh_CmpxwZTtiZQU</string>
     <string-array name="status">
-        <item>Unknown</item>
         <item>Healthy</item>
         <item>Infected</item>
         <item>Recovered</item>

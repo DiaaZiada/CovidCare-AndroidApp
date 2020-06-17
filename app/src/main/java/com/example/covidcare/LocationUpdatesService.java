@@ -395,9 +395,9 @@ public class LocationUpdatesService extends LifecycleService {
         repository.getAllLocationsTimes().observe( this, new Observer<List<LocationTime>>() {
             @Override
             public void onChanged(List<LocationTime> locationTimes) {
-                Log.e(TAG,"LOCTIM");
-                for (LocationTime locationTime : locationTimes)
-                    Log.i(TAG, locationTime.getTime()+"\t"+locationTime.getLatitude()+"\t"+locationTime.getLongitude());
+//                Log.e(TAG,"LOCTIM");
+//                for (LocationTime locationTime : locationTimes)
+//                    Log.i(TAG, locationTime.getTime()+"\t"+locationTime.getLatitude()+"\t"+locationTime.getLongitude());
             }
         });
     }

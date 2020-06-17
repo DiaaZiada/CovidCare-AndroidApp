@@ -1,5 +1,6 @@
 package requests;
 
+import com.example.covidcare.MainActivity;
 import com.example.covidcare.Repository;
 
 import java.util.List;
@@ -39,16 +40,16 @@ public class RequestsModel {
         return instance;
     }
 
-    public void requestId(AppInfo appInfo) {
-        if (appInfo.getAppId() != -1)
+    public void requestId() {
+        if (MainActivity.appInfo.getAppId() != -1)
             return;
         RequestId requestId = new RequestId(-1);
         Call<RequestId> call = apiInterface.requestId(requestId);
         call.enqueue(new Callback<RequestId>() {
             @Override
             public void onResponse(Call<RequestId> call, Response<RequestId> response) {
-                appInfo.setAppId(response.body().getAppId());
-                repository.appInfoUpdate(appInfo);
+                MainActivity.appInfo.setAppId(response.body().getAppId());
+                repository.appInfoUpdate(MainActivity.appInfo);
             }
 
             @Override
@@ -58,8 +59,8 @@ public class RequestsModel {
         });
     }
 
-    public void updateStatus(AppInfo appInfo) {
-        UpdateStatus updateStatus = new UpdateStatus(appInfo.getAppId(), appInfo.getStatus());
+    public void updateStatus() {
+        UpdateStatus updateStatus = new UpdateStatus(MainActivity.appInfo.getAppId(), MainActivity.appInfo.getStatus());
         Call<UpdateStatus> call = apiInterface.updateStatus(updateStatus);
         call.enqueue(new Callback<UpdateStatus>() {
             @Override
@@ -75,15 +76,15 @@ public class RequestsModel {
     }
 
 
-    public void sendLocationTime(AppInfo appInfo, List<LocationTime> locationTimes) {
-        if (appInfo.getAppId() == -1) {
-            requestId(appInfo);
+    public void sendLocationTime(List<LocationTime> locationTimes) {
+        if (MainActivity.appInfo.getAppId() == -1) {
+            requestId();
             return;
         }
 
         sendLocationTimeFinished = false;
         for (LocationTime locationTime : locationTimes) {
-            SendLocationTime sendLocationTime = new SendLocationTime(appInfo.getAppId(), locationTime.getTime(), locationTime.getLatitude(), locationTime.getLongitude());
+            SendLocationTime sendLocationTime = new SendLocationTime(MainActivity.appInfo.getAppId(), locationTime.getTime(), locationTime.getLatitude(), locationTime.getLongitude());
             Call<SendLocationTime> call = apiInterface.sendLocationTime(sendLocationTime);
             call.enqueue(new Callback<SendLocationTime>() {
                 @Override
@@ -101,13 +102,13 @@ public class RequestsModel {
     }
 
 
-    public void getMeetings(AppInfo appInfo) {
-        if (appInfo.getAppId() == -1) {
-            requestId(appInfo);
+    public void getMeetings() {
+        if (MainActivity.appInfo.getAppId() == -1) {
+            requestId();
             return;
         }
 
-        RequestId requestId = new RequestId(appInfo.getAppId());
+        RequestId requestId = new RequestId(MainActivity.appInfo.getAppId());
 
         Call<List<GetMeeting>> call = apiInterface.getMeetings(requestId);
         call.enqueue(new Callback<List<GetMeeting>>() {

@@ -96,10 +96,6 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         lastPosition = position;
         Log.i(TAG, status);
         switch (status) {
-            case "Unknown":
-                holder.imageView.setBackgroundResource(R.drawable.unknown_background);
-                holder.imageView.setImageResource(R.mipmap.unknown_foreground);
-                break;
             case "Healthy":
                 holder.imageView.setBackgroundResource(R.drawable.healthy_background);
                 holder.imageView.setImageResource(R.mipmap.healthy_foreground);
@@ -147,7 +143,6 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
         long second = TimeUnit.SECONDS.toSeconds(seconds) - (TimeUnit.SECONDS.toMinutes(seconds) * 60);
 
-//        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
 
         return "From " + String.valueOf(day) + " day: " + String.valueOf(hours) + " hours ago";
 
