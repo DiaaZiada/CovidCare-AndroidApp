@@ -86,6 +86,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
         Log.i(TAG,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
         if (Utils.requestingLocationUpdates(this)) {
@@ -96,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 requestPermissions();
             }
         }
+        Log.i(TAG,"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+
         modelView = ViewModelProviders.of(this).get(ModelView.class);
 
         requestsModel = RequestsModel.getInstance();
@@ -138,7 +143,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-//        setObservers();
+
+        setObservers();
 
 
 
@@ -325,6 +331,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void requestPermissions() {
+        Log.i(TAG,"RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+
         boolean shouldProvideRationale =
                 ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.ACCESS_FINE_LOCATION);
@@ -372,7 +380,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.i(TAG, "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission was granted.
-                mService.requestLocationUpdates();
+//                mService.requestLocationUpdates();
             } else {
                 // Permission denied.
                 setButtonsState(false);
