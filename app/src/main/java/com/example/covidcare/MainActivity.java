@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else
                     appInfo = appInfos.get(0);
                 Log.e(TAG,String.valueOf(status2Index.get(appInfo.getStatus()))+"\t"+appInfo.getStatus());
-                dl_status.setScrollBarDefaultDelayBeforeFade(status2Index.getOrDefault(appInfo.getStatus(),0));
+                dl_status.setSelection(status2Index.getOrDefault(appInfo.getStatus(),0));
 
                 if (appInfo.getAppId() == -1) {
                     requestsModel.requestId();
@@ -298,12 +298,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         appInfo.setStatus(text);
         modelView.appInfoUpdate(appInfo);
         Log.e(TAG, appInfo.getStatus()+"\t"+text);
-        dl_status.setScrollBarDefaultDelayBeforeFade(status2Index.getOrDefault(appInfo.getStatus(),0));
         if (appInfo.getAppId() == -1) {
             requestsModel.requestId();
             return;
         }
         requestsModel.updateStatus();
+        dl_status.setScrollBarDefaultDelayBeforeFade(1);
+
     }
 
     @Override
