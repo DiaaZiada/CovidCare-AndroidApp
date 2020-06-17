@@ -2,7 +2,6 @@ package com.example.covidcare;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -54,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String EXTRA_LATITUDE = "com.example.covidcare.MainActivity.EXTRA_LATITUDE";
     public static final String EXTRA_LONGITUDE = "com.example.covidcare.MainActivity.EXTRA_LONGITUDE";
 
-    public static final int REQUEST_ENABLE_BLUETOOTH = 11;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
     private int isAddLocation = -1;
@@ -166,7 +164,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setObservers();
 
 //        requestsModel.getMeetings(getMacAddr());
-        Log.e(TAG, BluetoothAdapter.getDefaultAdapter().getAddress() + "WWWWWWWWWWWWWWWWWWWWWWWWWW");
 
 
 //        myReceiver = new MyReceiver();
@@ -258,24 +255,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }
 //    }
 
-    public static @Nullable
-    String getAddress2(final BluetoothAdapter adapter) {
-        if (adapter == null)
-            return null;
 
-        final String address = adapter.getAddress();
-        // Horrible reflection hack needed to get the Bluetooth MAC for Marshmellow and above.
-        try {
-            final Field mServiceField = BluetoothAdapter.class.getDeclaredField("mService");
-            mServiceField.setAccessible(true);
-            final Object mService = mServiceField.get(adapter);
-            if (mService == null)
-                return null;
-            return (String) mService.getClass().getMethod("getAddress").invoke(mService);
-        } catch (final Exception x) {
-            throw new RuntimeException(x);
-        }
-    }
 
 
     public static String getMacAddr() {
@@ -322,25 +302,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
-//        modelView.getBinder().observe(this, new Observer<MyService.MyBinder>() {
-//
-//            @Override
-//            public void onChanged(@Nullable MyService.MyBinder myBinder) {
-//
-//                if (myBinder == null) {
-//                    Log.d(TAG, "onChanged: unbound from service");
-//
-//                } else {
-//                    Log.d(TAG, "onChanged: bound to service.");
-//                    mService = myBinder.getService();
-//                    if (isAddLocation != -1) {
-//                        mService.setAddLocation(isAddLocation == 1);
-//
-//                    }
-//                    checkBluetoothState();
-//                }
-//            }
-//        });
 
 //        modelView.getAllUsers().observe(this, new Observer<List<User>>() {
 //            @Override
@@ -391,19 +352,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-//
-//    private void checkBluetoothState() {
-//        if (mService != null) {
-//            mService.checkBluetoothState();
-//            String state = mService.getBluetoothAdapterStatus();
-//            mService.startDiscovering();
-//            if (state.equals("need enable")) {
-//                Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//                startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
-//            }
-//        }
-//
-//    }
+
 
     @Override
     protected void onStart() {
@@ -593,7 +542,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        // Update the buttons state depending on whether location updates are being requested.
         if (s.equals(Utils.KEY_REQUESTING_LOCATION_UPDATES)) {
             setButtonsState(sharedPreferences.getBoolean(Utils.KEY_REQUESTING_LOCATION_UPDATES,
                     false));
