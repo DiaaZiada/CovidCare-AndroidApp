@@ -1,7 +1,5 @@
 package requests;
 
-import android.util.Log;
-
 import com.example.covidcare.Repository;
 
 import java.util.List;
@@ -14,7 +12,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import table.AppInfo;
 import table.LocationTime;
 import table.Meeting;
-import table.User;
 
 public class RequestsModel {
     private static final String TAG = "RequestsModel";

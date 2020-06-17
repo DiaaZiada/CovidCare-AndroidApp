@@ -46,7 +46,6 @@ import java.util.Map;
 import adapter.MeetingInfoListAdapter;
 import requests.RequestsModel;
 import table.Meeting;
-import table.User;
 import utils.MeetingInfo;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -63,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ModelView modelView;
     private RequestsModel requestsModel;
     //    private MyService mService;
-    private User user;
 
     private ListView mListView;
     private TextView nHealth, nInfected, nRecovered, nUnknown;
@@ -133,19 +131,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if (isChecked) {
-                    int id = user.getId();
-                    requestPermissions();
-                    User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), true);
-                    updatedUser.setId(user.getId());
-                    modelView.userUpdate(updatedUser);
-                    isAddLocation = 1;
-                } else {
-                    User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
-                    updatedUser.setId(user.getId());
-                    modelView.userUpdate(updatedUser);
-                    isAddLocation = 0;
-                }
+//                if (isChecked) {
+//                    int id = user.getId();
+//                    requestPermissions();
+//                    User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), true);
+//                    updatedUser.setId(user.getId());
+//                    modelView.userUpdate(updatedUser);
+//                    isAddLocation = 1;
+//                } else {
+//                    User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
+//                    updatedUser.setId(user.getId());
+//                    modelView.userUpdate(updatedUser);
+//                    isAddLocation = 0;
+//                }
             }
         });
 
@@ -344,38 +342,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            }
 //        });
 
-        modelView.getAllUsers().observe(this, new Observer<List<User>>() {
-            @Override
-            public void onChanged(@Nullable List<User> users) {
-                if (users.size() == 0) {
-                    user = new User("unknown", "unknown", getMacAddr(), false);
-                    modelView.userInsert(user);
-                } else {
-                    user = users.get(0);
-                    if (user.getAddLocation()) {
-                        isAddLocation = 1;
-                    } else
-                        isAddLocation = 0;
-
-                    btnLocationSwitch.setChecked(isAddLocation == 1);
-//                    if (mService != null)
-//                        mService.setAddLocation(isAddLocation == 1);
-
-//                    requestsModel.updateStatus(user, getMacAddr());
-                    Log.i(TAG, String.valueOf(status2Index.getOrDefault(user.getStatus(), 0)) + "aaaaaaaaaaaaaa");
-                    dl_status.setSelection(status2Index.getOrDefault(user.getStatus(), 0));
-//                    requestsModel.updateStatus(user, macAddress);
-                }
-            }
-        });
+//        modelView.getAllUsers().observe(this, new Observer<List<User>>() {
+//            @Override
+//            public void onChanged(@Nullable List<User> users) {
+//                if (users.size() == 0) {
+//                    user = new User("unknown", "unknown", getMacAddr(), false);
+//                    modelView.userInsert(user);
+//                } else {
+//                    user = users.get(0);
+//                    if (user.getAddLocation()) {
+//                        isAddLocation = 1;
+//                    } else
+//                        isAddLocation = 0;
+//
+//                    btnLocationSwitch.setChecked(isAddLocation == 1);
+////                    if (mService != null)
+////                        mService.setAddLocation(isAddLocation == 1);
+//
+////                    requestsModel.updateStatus(user, getMacAddr());
+//                    Log.i(TAG, String.valueOf(status2Index.getOrDefault(user.getStatus(), 0)) + "aaaaaaaaaaaaaa");
+//                    dl_status.setSelection(status2Index.getOrDefault(user.getStatus(), 0));
+////                    requestsModel.updateStatus(user, macAddress);
+//                }
+//            }
+//        });
 
 
         modelView.getAllMeetings().observe(this, new Observer<List<Meeting>>() {
             @Override
             public void onChanged(@Nullable List<Meeting> meetings) {
-//                Log.e(TAG, "ALLLLLLLLLLLLMEEEEEEEEEETINGSSSSSSSSSSSSSSSSs " + requestsModel.requestFinished);
-
-//                if (requestsModel.requestFinished) {
                     if(false){
                     Log.e(TAG, "ALLLLLLLLLLLLMEEEEEEEEEETINGSSSSSSSSSSSSSSSSs56666666666666666");
 
@@ -498,14 +493,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (user == null)
-            return;
-        String text = parent.getItemAtPosition(position).toString();
-        User updatedUser = new User(user.getName(), text, user.getMacAddress(), user.getAddLocation());
-        updatedUser.setId(user.getId());
-        modelView.userUpdate(updatedUser);
-        user = updatedUser;
-        dl_status.setScrollBarDefaultDelayBeforeFade(1);
+//        if (user == null)
+//            return;
+//        String text = parent.getItemAtPosition(position).toString();
+//        User updatedUser = new User(user.getName(), text, user.getMacAddress(), user.getAddLocation());
+//        updatedUser.setId(user.getId());
+//        modelView.userUpdate(updatedUser);
+//        user = updatedUser;
+//        dl_status.setScrollBarDefaultDelayBeforeFade(1);
 
     }
 
@@ -594,19 +589,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    /**
-     * Receiver for broadcasts sent by {@link LocationUpdatesService}.
-     */
-//    private class MyReceiver extends BroadcastReceiver {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            Location location = intent.getParcelableExtra(LocationUpdatesService.EXTRA_LOCATION);
-//            if (location != null) {
-//                Toast.makeText(MainActivity.this, Utils.getLocationText(location),
-//                        Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
+
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {

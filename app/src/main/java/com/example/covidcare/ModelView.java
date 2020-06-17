@@ -10,10 +10,8 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import table.AppInfo;
-import table.Device;
 import table.LocationTime;
 import table.Meeting;
-import table.User;
 
 public class ModelView extends AndroidViewModel {
     private static final String TAG = "ModelView";
@@ -23,8 +21,6 @@ public class ModelView extends AndroidViewModel {
     }
 
     private Repository repository;
-    private LiveData<List<Device>> allDevices;
-    private LiveData<List<User>> allUsers;
     private LiveData<List<Meeting>> allMeetings;
     private LiveData<List<LocationTime>> allLocationsTimes;
     private LiveData<List<AppInfo>> allAppInfos;
@@ -53,8 +49,7 @@ public class ModelView extends AndroidViewModel {
         super(application);
         repository = Repository.getInstance(application);
 
-        allDevices = repository.getAllDevices();
-        allUsers = repository.getAllUsers();
+
         allMeetings = repository.getAllMeetings();
         allLocationsTimes = repository.getAllLocationsTimes();
         allAppInfos = repository.getAllAppInfos();
@@ -127,50 +122,5 @@ public class ModelView extends AndroidViewModel {
     }
     /* End Meeting*/
 
-
-    /* User */
-    public void userInsert(User user) {
-        repository.userInsert(user);
-    }
-
-    public void userUpdate(User user) {
-        repository.userUpdate(user);
-    }
-
-    public void userDelete(User user) {
-        repository.userDelete(user);
-    }
-
-    public void deleteAllUsers() {
-        repository.deletAllUsers();
-    }
-
-    public LiveData<List<User>> getAllUsers() {
-        return allUsers;
-    }
-    /* End User*/
-
-
-    /* Device */
-    public void deviceInsert(Device device) {
-        repository.deviceInsert(device);
-    }
-
-    public void deviceUpdate(Device device) {
-        repository.deviceUpdate(device);
-    }
-
-    public void deviceDelete(Device device) {
-        repository.deviceDelete(device);
-    }
-
-    public void deleteAllDevices() {
-        repository.deleteAllDevices();
-    }
-
-    public LiveData<List<Device>> getAllDevices() {
-        return allDevices;
-    }
-    /* End Device*/
 
 }
