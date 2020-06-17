@@ -86,7 +86,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.i(TAG,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
+        if (Utils.requestingLocationUpdates(this)) {
+            Log.i(TAG,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
+            if (!checkPermissions()) {
+                Log.i(TAG,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                requestPermissions();
+            }
+        }
         modelView = ViewModelProviders.of(this).get(ModelView.class);
 
         requestsModel = RequestsModel.getInstance();
@@ -127,11 +136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dl_status.setAdapter(adapter);
         dl_status.setOnItemSelectedListener(this);
 
-//        if (Utils.requestingLocationUpdates(this)) {
-//            if (!checkPermissions()) {
-//                requestPermissions();
-//            }
-//        }
+
 
 //        setObservers();
 
@@ -182,23 +187,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivityForResult(intent, 1);
     }
 
-//    public boolean isServicesOK() {
-//        Log.d(TAG, "isServicesOK: checking google services version");
-//
-//        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
-//
-//        if (available == ConnectionResult.SUCCESS) {
-//            Log.d(TAG, "isServicesOK: Google Play Services is working");
-//            return true;
-//        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
-//            //an error occured but we can resolve it
-//            Log.d(TAG, "isServicesOK: an error occured but we can fix it");
-//            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
-//            dialog.show();
-//        } else {
-//        }
-//        return false;
-//    }
+    public boolean isServicesOK() {
+        Log.d(TAG, "isServicesOK: checking google services version");
+
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
+
+        if (available == ConnectionResult.SUCCESS) {
+            Log.d(TAG, "isServicesOK: Google Play Services is working");
+            return true;
+        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
+            //an error occured but we can resolve it
+            Log.d(TAG, "isServicesOK: an error occured but we can fix it");
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        } else {
+        }
+        return false;
+    }
 
 
     private void setObservers() {
@@ -353,7 +358,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
+    /**
+     * Callback received when a permissions request has been completed.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -395,6 +402,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        // Update the buttons state depending on whether location updates are being requested.
         if (s.equals(Utils.KEY_REQUESTING_LOCATION_UPDATES)) {
             setButtonsState(sharedPreferences.getBoolean(Utils.KEY_REQUESTING_LOCATION_UPDATES,
                     false));

@@ -20,6 +20,7 @@ package com.example.covidcare;
 import android.content.Context;
 import android.location.Location;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.example.covidcare.R;
 
@@ -39,6 +40,8 @@ class Utils {
      * @param context The {@link Context}.
      */
     static boolean requestingLocationUpdates(Context context) {
+        Log.i("TAG","DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd");
+
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_REQUESTING_LOCATION_UPDATES, false);
     }
