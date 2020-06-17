@@ -34,10 +34,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.lang.reflect.Field;
-import java.net.NetworkInterface;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,11 +52,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
-    private int isAddLocation = -1;
 
     private ModelView modelView;
     private RequestsModel requestsModel;
-    //    private MyService mService;
 
     private ListView mListView;
     private TextView nHealth, nInfected, nRecovered, nUnknown;
@@ -70,19 +65,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Map<Integer, String> index2Status;
     private ArrayList<MeetingInfo> meetingsInfo;
 
-    private String macAddress;
 
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
-    // The BroadcastReceiver used to listen from broadcasts from the service.
-//    private MyReceiver myReceiver;
-
-    // A reference to the service used to get location updates.
     private LocationUpdatesService mService = null;
 
-    // Tracks the bound state of the service.
-    private boolean mBound = false;
 
     // UI elements.
     private Button mRequestLocationUpdatesButton;
@@ -97,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        macAddress = getMacAddr();
         modelView = ViewModelProviders.of(this).get(ModelView.class);
 
         requestsModel = RequestsModel.getInstance();
@@ -115,11 +102,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         index2Status.put(2, "Infected");
         index2Status.put(3, "Recovered");
 
-        Toast.makeText(this, "Loading map", Toast.LENGTH_LONG).show();
-//        Intent intent = new Intent(MainActivity.this, MapActivity.class);
-//        intent.putExtra(EXTRA_LATITUDE, (int) (meetingsInfo.get(v.getId()).getLatitude() * 10000000));
-//        intent.putExtra(EXTRA_LONGITUDE, (int) (meetingsInfo.get(v.getId()).getLogitude() * 10000000));
-//        startActivityForResult(intent, 1);
+
 
         mServiceConnection = modelView.getServiceConnection();
 
@@ -129,19 +112,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-//                if (isChecked) {
-//                    int id = user.getId();
-//                    requestPermissions();
-//                    User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), true);
-//                    updatedUser.setId(user.getId());
-//                    modelView.userUpdate(updatedUser);
-//                    isAddLocation = 1;
-//                } else {
-//                    User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
-//                    updatedUser.setId(user.getId());
-//                    modelView.userUpdate(updatedUser);
-//                    isAddLocation = 0;
-//                }
             }
         });
 
@@ -158,15 +128,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dl_status.setAdapter(adapter);
         dl_status.setOnItemSelectedListener(this);
 
-//        requestsModel.getMeetings(macAddress);
-
-
         setObservers();
 
-//        requestsModel.getMeetings(getMacAddr());
 
-
-//        myReceiver = new MyReceiver();
         if (Utils.requestingLocationUpdates(this)) {
             if (!checkPermissions()) {
                 requestPermissions();
@@ -198,91 +162,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
         } else {
-//            // Toast.makeText(this, "You can't make map requests", // Toast.LENGTH_SHORT).show();
         }
         return false;
     }
 
-//    private boolean checkPermissions() {
-//        return !(ContextCompat.checkSelfPermission(MainActivity.this,
-//                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED);
-//    }
-
-//    protected void requestPermissions() {
-//        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-//                Manifest.permission.ACCESS_FINE_LOCATION)) {
-//            ActivityCompat.requestPermissions(MainActivity.this,
-//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_ASK_PERMISSIONS);
-//        } else {
-//            ActivityCompat.requestPermissions(MainActivity.this,
-//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_ASK_PERMISSIONS);
-//        }
-//
-//    }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
-//                                           @NonNull int[] grantResults) {
-//        switch (requestCode) {
-//            case REQUEST_CODE_ASK_PERMISSIONS:
-//                for (int index = permissions.length - 1; index >= 0; --index) {
-//                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
-////                        mService.setAddLocation(false);
-//                        User updatedUser = new User(user.getName(), user.getStatus(), user.getMacAddress(), false);
-//                        updatedUser.setId(user.getId());
-//                        modelView.userUpdate(updatedUser);
-//                        isAddLocation = 0;
-//                        return;
-//                    }
-//                }
-//
-//                break;
-//        }
-//    }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == UPDATE_STATUS_REQUEST && resultCode == RESULT_OK) {
-//            int index = data.getIntExtra(StatusActivity.EXTRA_NEW_INDEX, 0);
-//            String status = index2Status.get(index);
-//            int id = user.getId();
-//            User updatedUser = new User(user.getName(), status, user.getMacAddress(), user.getAddLocation());
-//            updatedUser.setId(user.getId());
-//            modelView.userUpdate(updatedUser);
-//            user = updatedUser;
-//        } else {
-//        }
-//    }
 
 
-
-
-    public static String getMacAddr() {
-        try {
-            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface nif : all) {
-                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
-
-                byte[] macBytes = nif.getHardwareAddress();
-                if (macBytes == null) {
-                    return "";
-                }
-
-                StringBuilder res1 = new StringBuilder();
-                for (byte b : macBytes) {
-                    res1.append(Integer.toHexString(b & 0xFF) + ":");
-                }
-
-                if (res1.length() > 0) {
-                    res1.deleteCharAt(res1.length() - 1);
-                }
-                return res1.toString();
-            }
-        } catch (Exception ex) {
-        }
-        return "02:00:00:00:00:00";
-    }
 
 
     private void setObservers() {
@@ -333,7 +218,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onChanged(@Nullable List<Meeting> meetings) {
                     if(false){
-                    Log.e(TAG, "ALLLLLLLLLLLLMEEEEEEEEEETINGSSSSSSSSSSSSSSSSs56666666666666666");
 
                     meetingsInfo.clear();
                     Map<String, Integer> map = new HashMap<>();
@@ -396,16 +280,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-//        startService();
-//        requestsModel.getMeetings(macAddress);
-//        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
-//                new IntentFilter(LocationUpdatesService.ACTION_BROADCAST));
     }
 
 
     @Override
     protected void onPause() {
-//        LocalBroadcastManager.getInstance(this).unregisterReceiver(myReceiver);
         super.onPause();
     }
 
@@ -423,22 +302,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .unregisterOnSharedPreferenceChangeListener(this);
 
         super.onStop();
-//        if (modelView.getBinder() != null) {
-//            unbindService(modelView.getServiceConnection());
-//        }
-    }
-
-    private void startService() {
-//        Intent serviceIntent = new Intent(this, MyService.class);
-//        startService(serviceIntent);
-        bindService();
 
     }
 
-    private void bindService() {
-//        Intent serviceBindIntent = new Intent(this, MyService.class);
-//        bindService(serviceBindIntent, modelView.getServiceConnection(), Context.BIND_AUTO_CREATE);
-    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -468,8 +334,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.ACCESS_FINE_LOCATION);
 
-        // Provide an additional rationale to the user. This would happen if the user denied the
-        // request previously, but didn't check the "Don't ask again" checkbox.
         if (shouldProvideRationale) {
             Log.i(TAG, "Displaying permission rationale to provide additional context.");
             Snackbar.make(
@@ -488,9 +352,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .show();
         } else {
             Log.i(TAG, "Requesting permission");
-            // Request permission. It's possible this can be auto answered if device policy
-            // sets the permission in a given state or the user denied the permission
-            // previously and checked "Never ask again".
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMISSIONS_REQUEST_CODE);
