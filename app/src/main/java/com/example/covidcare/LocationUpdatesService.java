@@ -132,10 +132,13 @@ public class LocationUpdatesService extends LifecycleService {
     /**
      * The current location.
      */
+
     private Location mLocation;
 
     private Repository repository;
 
+
+    private boolean isRequestingLocation;
 
     public LocationUpdatesService() {
     }
@@ -143,6 +146,7 @@ public class LocationUpdatesService extends LifecycleService {
     @Override
     public void onCreate() {
         super.onCreate();
+        isRequestingLocation=false;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         mLocationCallback = new LocationCallback() {
@@ -247,6 +251,7 @@ public class LocationUpdatesService extends LifecycleService {
      * {@link SecurityException}.
      */
     public void requestLocationUpdates() {
+        isRequestingLocation = true;
         Log.i(TAG, "Requesting location updates");
         Utils.setRequestingLocationUpdates(this, true);
         startService(new Intent(getApplicationContext(), LocationUpdatesService.class));
@@ -264,6 +269,7 @@ public class LocationUpdatesService extends LifecycleService {
      * {@link SecurityException}.
      */
     public void removeLocationUpdates() {
+        isRequestingLocation=false;
         Log.i(TAG, "Removing location updates");
         try {
             mFusedLocationClient.removeLocationUpdates(mLocationCallback);
@@ -402,4 +408,7 @@ public class LocationUpdatesService extends LifecycleService {
         });
     }
 
+    public boolean isRequestingLocation() {
+        return isRequestingLocation;
+    }
 }

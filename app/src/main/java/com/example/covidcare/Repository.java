@@ -34,6 +34,7 @@ public class Repository {
     private LiveData<List<LocationTime>> allLocationsTimes;
     private LiveData<List<AppInfo>> allAppInfos;
 
+    private static boolean bound;
 //    private MutableLiveData<MyService.MyBinder> mBinder = new MutableLiveData<>();
     private MutableLiveData<LocationUpdatesService.LocalBinder> mBinder = new MutableLiveData<>();
 
@@ -64,6 +65,8 @@ public class Repository {
         AppInfoDataBase appInfoDataBase = AppInfoDataBase.getInstance(application);
         appInfoDao = appInfoDataBase.appInfoDao();
         allAppInfos = appInfoDao.getAllAppInfos();
+
+        bound = false;
 
 
     }
@@ -323,14 +326,14 @@ public class Repository {
             // We've bound to MyService, cast the IBinder and get MyBinder instance
             LocationUpdatesService.LocalBinder binder = (LocationUpdatesService.LocalBinder) iBinder;
             mBinder.postValue(binder);
-
-
+            bound = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             Log.d(TAG, "ServiceConnection: disconnected from service.");
             mBinder.postValue(null);
+            bound = false;
         }
     };
 
@@ -345,6 +348,11 @@ public class Repository {
     /* End Location Service*/
 
 
+    public boolean isBound() {
+        return bound;
+    }
 
-
+    public void setBound(boolean bound) {
+        this.bound = bound;
+    }
 }

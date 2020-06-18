@@ -88,18 +88,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
 
-
-        Log.i(TAG,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
         if (Utils.requestingLocationUpdates(this)) {
-            Log.i(TAG,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
             if (!checkPermissions()) {
-                Log.i(TAG,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 requestPermissions();
             }
         }
-        Log.i(TAG,"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+        Log.i(TAG, "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
 
         modelView = ViewModelProviders.of(this).get(ModelView.class);
 
@@ -142,14 +141,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dl_status.setOnItemSelectedListener(this);
 
 
-
-
         setObservers();
 
 
-
-
     }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -218,8 +214,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onChanged(LocationUpdatesService.LocalBinder localBinder) {
                 if (localBinder == null)
                     Log.d(TAG, "onChanged: unbound from service");
-                else
-                    mService = localBinder.getService();
+                else {
+                    if (!checkPermissions()) {
+                        requestPermissions();
+                    } else {
+                        mService = localBinder.getService();
+                        if (!mService.isRequestingLocation())
+                            mService.requestLocationUpdates();
+                    }
+                }
             }
         });
 
@@ -231,8 +234,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     modelView.appInfoInsert(appInfo);
                 } else
                     appInfo = appInfos.get(0);
-                Log.e(TAG,String.valueOf(status2Index.get(appInfo.getStatus()))+"\t"+appInfo.getStatus());
-                dl_status.setSelection(status2Index.getOrDefault(appInfo.getStatus(),0));
+                Log.e(TAG, String.valueOf(status2Index.get(appInfo.getStatus())) + "\t" + appInfo.getStatus());
+                dl_status.setSelection(status2Index.getOrDefault(appInfo.getStatus(), 0));
 
                 if (appInfo.getAppId() == -1) {
                     requestsModel.requestId();
@@ -272,8 +275,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -288,13 +289,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStop() {
 
-//        if (mBound) {
-        // Unbind from the service. This signals to the service that this activity is no longer
-        // in the foreground, and the service can respond by promoting itself to a foreground
-        // service.
-        unbindService(mServiceConnection);
-//            mBound = false;
-//        }
+        if (modelView.isBound()) {
+            unbindService(mServiceConnection);
+            modelView.setBound(false);
+        }
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
 
@@ -310,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String text = parent.getItemAtPosition(position).toString();
         appInfo.setStatus(text);
         modelView.appInfoUpdate(appInfo);
-        Log.e(TAG, appInfo.getStatus()+"\t"+text);
+        Log.e(TAG, appInfo.getStatus() + "\t" + text);
         if (appInfo.getAppId() == -1) {
             requestsModel.requestId();
             return;
@@ -326,12 +324,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private boolean checkPermissions() {
-        return  PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(this,
+        return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
     private void requestPermissions() {
-        Log.i(TAG,"RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+        Log.i(TAG, "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
 
         boolean shouldProvideRationale =
                 ActivityCompat.shouldShowRequestPermissionRationale(this,

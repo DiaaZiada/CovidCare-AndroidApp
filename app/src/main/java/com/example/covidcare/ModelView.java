@@ -35,7 +35,6 @@ public class ModelView extends AndroidViewModel {
     }
 
 
-
 //    public ServiceConnection getServiceConnection() {
 //        return repository.getServiceConnection();
 //    }
@@ -99,7 +98,7 @@ public class ModelView extends AndroidViewModel {
         return allLocationsTimes;
     }
     /* End LocationTime */
-    
+
     /* Meeting */
     public void meetingInsert(Meeting meeting) {
         repository.meetingInsert(meeting);
@@ -122,5 +121,12 @@ public class ModelView extends AndroidViewModel {
     }
     /* End Meeting*/
 
+    public boolean isBound() {
+        return repository.isBound();
+    }
+
+    public void setBound(boolean bound) {
+        repository.setBound(bound);
+    }
 
 }
