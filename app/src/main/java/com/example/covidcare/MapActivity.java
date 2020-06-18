@@ -75,7 +75,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         double latitude = intent.getIntExtra(MainActivity.EXTRA_LATITUDE, 0) / 10000000.;
         double longitue = intent.getIntExtra(MainActivity.EXTRA_LONGITUDE, 0) / 10000000.;
         Log.e(TAG, String.valueOf(longitue) + "  " + String.valueOf(latitude));
-        moveCamera(new LatLng(31.1939624	,29.9116536),
+        moveCamera(new LatLng(latitude, longitue),
                 DEFAULT_ZOOM,
                 "My Location");
     }
@@ -86,30 +86,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
         MarkerOptions options = new MarkerOptions()
-                .position(new LatLng(31.1939600	,29.9116500))
+                .position(latLng)
                 .title(title);
         mMap.addMarker(options);
 
-        options = new MarkerOptions()
-                .position(new LatLng(31.1939699	,29.9116599))
-                .title(title);
-        mMap.addMarker(options);
-
-        options = new MarkerOptions()
-                .position(new LatLng(31.1939699	,29.9116500))
-                .title(title);
-        mMap.addMarker(options);
-
-        options = new MarkerOptions()
-                .position(new LatLng(31.1939600	,29.9116599))
-                .title(title);
-        mMap.addMarker(options);
-
-
-        options = new MarkerOptions()
-                .position(new LatLng(31.1939655	,29.911655))
-                .title(title);
-        mMap.addMarker(options);
     }
 
     private void initMap() {
