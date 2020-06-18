@@ -48,6 +48,8 @@ public class RequestsModel {
         call.enqueue(new Callback<RequestId>() {
             @Override
             public void onResponse(Call<RequestId> call, Response<RequestId> response) {
+                if (response.body().getAppId() == -1)
+                    return;
                 MainActivity.appInfo.setAppId(response.body().getAppId());
                 repository.appInfoUpdate(MainActivity.appInfo);
             }
