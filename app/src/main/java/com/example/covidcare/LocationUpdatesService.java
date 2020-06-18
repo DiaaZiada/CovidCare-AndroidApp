@@ -1,12 +1,12 @@
 /**
  * Copyright 2017 Google Inc. All Rights Reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 
 package com.example.covidcare;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -50,7 +51,9 @@ import com.google.android.gms.tasks.Task;
 import java.util.List;
 
 import okhttp3.internal.Util;
+import requests.RequestsModel;
 import table.LocationTime;
+
 /**
  * A bound and started service that is promoted to a foreground service when location updates have
  * been requested and all clients unbind.
@@ -140,13 +143,15 @@ public class LocationUpdatesService extends LifecycleService {
 
     private boolean isRequestingLocation;
 
+    private RequestsModel requestsModel;
+
     public LocationUpdatesService() {
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        isRequestingLocation=false;
+        isRequestingLocation = false;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         mLocationCallback = new LocationCallback() {
@@ -158,6 +163,7 @@ public class LocationUpdatesService extends LifecycleService {
         };
 
         repository = Repository.getInstance();
+        requestsModel = RequestsModel.getInstance();
         createLocationRequest();
         getLastLocation();
 
@@ -269,7 +275,7 @@ public class LocationUpdatesService extends LifecycleService {
      * {@link SecurityException}.
      */
     public void removeLocationUpdates() {
-        isRequestingLocation=false;
+        isRequestingLocation = false;
         Log.i(TAG, "Removing location updates");
         try {
             mFusedLocationClient.removeLocationUpdates(mLocationCallback);
@@ -343,8 +349,8 @@ public class LocationUpdatesService extends LifecycleService {
         Log.e(TAG, "New location: " + location);
         mLocation = location;
 
-        LocationTime locationTime = new LocationTime(Utils.getTime(),location.getLatitude(), location.getLongitude());
-        Log.e(TAG, locationTime.getTime()+"\t"+locationTime.getLatitude()+"\t"+locationTime.getLongitude());
+        LocationTime locationTime = new LocationTime(Utils.getTime(), location.getLatitude(), location.getLongitude());
+        Log.e(TAG, locationTime.getTime() + "\t" + locationTime.getLatitude() + "\t" + locationTime.getLongitude());
         repository.locationTimeInsert(locationTime);
         // Notify anyone listening for broadcasts about the new location.
         Intent intent = new Intent(ACTION_BROADCAST);
@@ -361,6 +367,7 @@ public class LocationUpdatesService extends LifecycleService {
      * Sets the location request parameters.
      */
     private void createLocationRequest() {
+
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
@@ -395,15 +402,16 @@ public class LocationUpdatesService extends LifecycleService {
         }
         return false;
     }
-    
 
-    private void setObserver(){
-        repository.getAllLocationsTimes().observe( this, new Observer<List<LocationTime>>() {
+
+    private void setObserver() {
+        repository.getAllLocationsTimes().observe(this, new Observer<List<LocationTime>>() {
             @Override
             public void onChanged(List<LocationTime> locationTimes) {
-//                Log.e(TAG,"LOCTIM");
-//                for (LocationTime locationTime : locationTimes)
-//                    Log.i(TAG, locationTime.getTime()+"\t"+locationTime.getLatitude()+"\t"+locationTime.getLongitude());
+                Log.e(TAG, "LOCTIM");
+
+                if (requestsModel.sendLocationTimeFinished)
+                    requestsModel.sendLocationTime(locationTimes);
             }
         });
     }

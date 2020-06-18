@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String EXTRA_LONGITUDE = "com.example.covidcare.MainActivity.EXTRA_LONGITUDE";
 
     private static final int ERROR_DIALOG_REQUEST = 9001;
-    private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
 
     public static AppInfo appInfo;
 
@@ -61,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private ListView mListView;
     private TextView nHealth, nInfected, nRecovered;
-    //    private SwitchCompat btnLocationSwitch;
     private Spinner dl_status;
 
     private Map<String, Integer> status2Index;
@@ -73,12 +71,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private LocationUpdatesService mService = null;
 
-
-    // UI elements.
-//    private Button mRequestLocationUpdatesButton;
-//    private Button mRemoveLocationUpdatesButton;
-
-
     private ServiceConnection mServiceConnection;
 
 
@@ -88,17 +80,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
 
-        Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-
         if (Utils.requestingLocationUpdates(this)) {
-            Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-
             if (!checkPermissions()) {
-                Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 requestPermissions();
             }
         }
-        Log.i(TAG, "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
 
         modelView = ViewModelProviders.of(this).get(ModelView.class);
 
@@ -117,22 +103,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         mServiceConnection = modelView.getServiceConnection();
-
-//        btnLocationSwitch = (SwitchCompat) findViewById(R.id.btnLocationSwitch);
-//
-//        btnLocationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//
-//            }
-//        });
-
         mListView = (ListView) findViewById(R.id.listView);
         meetingsInfo = new ArrayList<>();
         nHealth = findViewById(R.id.no_healthy);
         nInfected = findViewById(R.id.no_infected);
         nRecovered = findViewById(R.id.no_recovered);
-//        nUnknown = findViewById(R.id.no_un);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.status, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -152,27 +127,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         PreferenceManager.getDefaultSharedPreferences(this)
                 .registerOnSharedPreferenceChangeListener(this);
-
-//        mRequestLocationUpdatesButton = (Button) findViewById(R.id.request_location_updates_button);
-//        mRemoveLocationUpdatesButton = (Button) findViewById(R.id.remove_location_updates_button);
-
-//        mRequestLocationUpdatesButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (!checkPermissions()) {
-//                    requestPermissions();
-//                } else {
-//                    mService.requestLocationUpdates();
-//                }
-//            }
-//        });
-
-//        mRemoveLocationUpdatesButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                mService.removeLocationUpdates();
-//            }
-//        });
 
         Utils.requestingLocationUpdates(this);
 
@@ -209,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void setObservers() {
+
         modelView.getBinder().observe(this, new Observer<LocationUpdatesService.LocalBinder>() {
             @Override
             public void onChanged(LocationUpdatesService.LocalBinder localBinder) {
@@ -221,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         mService = localBinder.getService();
                         if (!mService.isRequestingLocation())
                             mService.requestLocationUpdates();
+                            Log.e(TAG, "Start Service");
                     }
                 }
             }
@@ -238,10 +194,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 dl_status.setSelection(status2Index.getOrDefault(appInfo.getStatus(), 0));
 
                 if (appInfo.getAppId() == -1) {
+                    Log.e(TAG, "Request id");
                     requestsModel.requestId();
                     return;
                 }
+                Log.e(TAG, "id\t"+appInfo.getAppId());
+                Log.e(TAG, "update status");
                 requestsModel.updateStatus();
+                Log.e(TAG, "get Meetimgs");
                 requestsModel.getMeetings();
 
             }
@@ -254,12 +214,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void onChanged(@Nullable List<Meeting> meetings) {
                         if (appInfo == null)
                             return;
-//                        requestsModel.getMeetings();
                         if (requestsModel.getMeetingsFinished) {
                             meetingsInfo.clear();
                             Map<String, Integer> map = new HashMap<>();
                             for (int i = 0; i < meetings.size(); i++) {
-                                Log.i(TAG, "Aaaaaaaaaaaaa");
+                                Log.e(TAG,meetings.get(i).getTime());
                                 meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
                                 map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
                             }
@@ -268,7 +227,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             nHealth.setText(String.valueOf(map.getOrDefault("Healthy", 0)));
                             nInfected.setText(String.valueOf(map.getOrDefault("Infected", 0)));
                             nRecovered.setText(String.valueOf(map.getOrDefault("Recovered", 0)));
-//                            nUnknown.setText(String.valueOf(map.getOrDefault("Unknown", 0)));
                         }
                     }
                 });
@@ -329,14 +287,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void requestPermissions() {
-        Log.i(TAG, "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
-
         boolean shouldProvideRationale =
                 ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.ACCESS_FINE_LOCATION);
 
-        // Provide an additional rationale to the user. This would happen if the user denied the
-        // request previously, but didn't check the "Don't ask again" checkbox.
         if (shouldProvideRationale) {
             Log.i(TAG, "Displaying permission rationale to provide additional context.");
             Snackbar.make(
@@ -355,33 +309,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .show();
         } else {
             Log.i(TAG, "Requesting permission");
-            // Request permission. It's possible this can be auto answered if device policy
-            // sets the permission in a given state or the user denied the permission
-            // previously and checked "Never ask again".
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
     }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         Log.i(TAG, "onRequestPermissionResult");
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length <= 0) {
-                // If user interaction was interrupted, the permission request is cancelled and you
-                // receive empty arrays.
                 Log.i(TAG, "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission was granted.
 //                mService.requestLocationUpdates();
             } else {
-                // Permission denied.
-//                setButtonsState(false);
                 Snackbar.make(
                         findViewById(R.id.activity_main),
                         R.string.permission_denied_explanation,
@@ -408,22 +351,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        // Update the buttons state depending on whether location updates are being requested.
         if (s.equals(Utils.KEY_REQUESTING_LOCATION_UPDATES)) {
-//            setButtonsState(sharedPreferences.getBoolean(Utils.KEY_REQUESTING_LOCATION_UPDATES,
-//                    false));
             sharedPreferences.getBoolean(Utils.KEY_REQUESTING_LOCATION_UPDATES, false);
         }
     }
-//
-//    private void setButtonsState(boolean requestingLocationUpdates) {
-//        if (requestingLocationUpdates) {
-//            mRequestLocationUpdatesButton.setEnabled(false);
-//            mRemoveLocationUpdatesButton.setEnabled(true);
-//        } else {
-//            mRequestLocationUpdatesButton.setEnabled(true);
-//            mRemoveLocationUpdatesButton.setEnabled(false);
-//        }
-//    }
+
 }
 

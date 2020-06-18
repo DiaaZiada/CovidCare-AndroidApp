@@ -117,6 +117,7 @@ public class RequestsModel {
             @Override
             public void onResponse(Call<List<GetMeeting>> call, Response<List<GetMeeting>> response) {
                 getMeetingsFinished = false;
+                repository.deleteAllMeetings();
                 for (GetMeeting getMeeting : response.body()) {
                     Meeting meeting = new Meeting(getMeeting.getStatus(), getMeeting.getTime(),
                             Double.valueOf(getMeeting.getLatitude()), Double.valueOf(getMeeting.getLongitude()));

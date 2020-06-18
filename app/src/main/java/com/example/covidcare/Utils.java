@@ -39,8 +39,6 @@ class Utils {
      * @param context The {@link Context}.
      */
     static boolean requestingLocationUpdates(Context context) {
-        Log.i("TAG","DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd");
-
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_REQUESTING_LOCATION_UPDATES, false);
     }
