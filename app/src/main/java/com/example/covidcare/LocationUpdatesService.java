@@ -293,7 +293,7 @@ public class LocationUpdatesService extends LifecycleService {
     private Notification getNotification() {
         Intent intent = new Intent(this, LocationUpdatesService.class);
 
-//        CharSequence text = Utils.getLocationText(mLocation);
+        CharSequence text ="Recording Location/Time ..."; // Utils.getLocationText(mLocation);
 
         // Extra to help us figure out if we arrived in onStartCommand via the notification or not.
         intent.putExtra(EXTRA_STARTED_FROM_NOTIFICATION, true);
@@ -311,13 +311,14 @@ public class LocationUpdatesService extends LifecycleService {
                         activityPendingIntent)
                 .addAction(R.drawable.ic_cancel, getString(R.string.stop_service),
                         servicePendingIntent)
-                .setContentText("Recording Location/Time ...")
+                .setContentText(text)
                 .setContentTitle(Utils.getLocationTitle(this))
                 .setOngoing(true)
                 .setPriority(Notification.PRIORITY_HIGH)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setTicker("Recording Location/Time ...")
+                .setSmallIcon(R.drawable.ic_location_search)
+                .setTicker(text)
                 .setWhen(System.currentTimeMillis());
+
 
         // Set the Channel ID for Android O.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
