@@ -307,7 +307,7 @@ public class LocationUpdatesService extends LifecycleService {
                 new Intent(this, MainActivity.class), 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .addAction(R.mipmap.ic_launcher, getString(R.string.launch_activity),
+                .addAction(R.drawable.ic_launch, getString(R.string.launch_activity),
                         activityPendingIntent)
                 .addAction(R.drawable.ic_cancel, getString(R.string.stop_service),
                         servicePendingIntent)
