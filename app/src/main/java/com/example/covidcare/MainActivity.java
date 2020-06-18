@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mListView = (ListView) findViewById(R.id.listView);
         meetingsInfo = new ArrayList<>();
-        nHealth = findViewById(R.id.no_health);
+        nHealth = findViewById(R.id.no_healthy);
         nInfected = findViewById(R.id.no_infected);
         nRecovered = findViewById(R.id.no_recovered);
 //        nUnknown = findViewById(R.id.no_un);
