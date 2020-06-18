@@ -315,7 +315,7 @@ public class LocationUpdatesService extends LifecycleService {
                 .setContentTitle(Utils.getLocationTitle(this))
                 .setOngoing(true)
                 .setPriority(Notification.PRIORITY_HIGH)
-                .setSmallIcon(R.mipmap.ic_launcher_0_foreground)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker("Recording Location/Time ...")
                 .setWhen(System.currentTimeMillis());
 
