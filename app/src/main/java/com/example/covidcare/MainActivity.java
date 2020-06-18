@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private ListView mListView;
     private TextView nHealth, nInfected, nRecovered;
-    private SwitchCompat btnLocationSwitch;
+    //    private SwitchCompat btnLocationSwitch;
     private Spinner dl_status;
 
     private Map<String, Integer> status2Index;
@@ -75,8 +75,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     // UI elements.
-    private Button mRequestLocationUpdatesButton;
-    private Button mRemoveLocationUpdatesButton;
+//    private Button mRequestLocationUpdatesButton;
+//    private Button mRemoveLocationUpdatesButton;
 
 
     private ServiceConnection mServiceConnection;
@@ -153,28 +153,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         PreferenceManager.getDefaultSharedPreferences(this)
                 .registerOnSharedPreferenceChangeListener(this);
 
-        mRequestLocationUpdatesButton = (Button) findViewById(R.id.request_location_updates_button);
-        mRemoveLocationUpdatesButton = (Button) findViewById(R.id.remove_location_updates_button);
+//        mRequestLocationUpdatesButton = (Button) findViewById(R.id.request_location_updates_button);
+//        mRemoveLocationUpdatesButton = (Button) findViewById(R.id.remove_location_updates_button);
 
-        mRequestLocationUpdatesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!checkPermissions()) {
-                    requestPermissions();
-                } else {
-                    mService.requestLocationUpdates();
-                }
-            }
-        });
+//        mRequestLocationUpdatesButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (!checkPermissions()) {
+//                    requestPermissions();
+//                } else {
+//                    mService.requestLocationUpdates();
+//                }
+//            }
+//        });
 
-        mRemoveLocationUpdatesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mService.removeLocationUpdates();
-            }
-        });
+//        mRemoveLocationUpdatesButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                mService.removeLocationUpdates();
+//            }
+//        });
 
-        setButtonsState(Utils.requestingLocationUpdates(this));
+        Utils.requestingLocationUpdates(this);
 
         bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
                 Context.BIND_AUTO_CREATE);
@@ -381,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                mService.requestLocationUpdates();
             } else {
                 // Permission denied.
-                setButtonsState(false);
+//                setButtonsState(false);
                 Snackbar.make(
                         findViewById(R.id.activity_main),
                         R.string.permission_denied_explanation,
@@ -410,19 +410,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         // Update the buttons state depending on whether location updates are being requested.
         if (s.equals(Utils.KEY_REQUESTING_LOCATION_UPDATES)) {
-            setButtonsState(sharedPreferences.getBoolean(Utils.KEY_REQUESTING_LOCATION_UPDATES,
-                    false));
+//            setButtonsState(sharedPreferences.getBoolean(Utils.KEY_REQUESTING_LOCATION_UPDATES,
+//                    false));
+            sharedPreferences.getBoolean(Utils.KEY_REQUESTING_LOCATION_UPDATES, false);
         }
     }
-
-    private void setButtonsState(boolean requestingLocationUpdates) {
-        if (requestingLocationUpdates) {
-            mRequestLocationUpdatesButton.setEnabled(false);
-            mRemoveLocationUpdatesButton.setEnabled(true);
-        } else {
-            mRequestLocationUpdatesButton.setEnabled(true);
-            mRemoveLocationUpdatesButton.setEnabled(false);
-        }
-    }
+//
+//    private void setButtonsState(boolean requestingLocationUpdates) {
+//        if (requestingLocationUpdates) {
+//            mRequestLocationUpdatesButton.setEnabled(false);
+//            mRemoveLocationUpdatesButton.setEnabled(true);
+//        } else {
+//            mRequestLocationUpdatesButton.setEnabled(true);
+//            mRemoveLocationUpdatesButton.setEnabled(false);
+//        }
+//    }
 }
 
