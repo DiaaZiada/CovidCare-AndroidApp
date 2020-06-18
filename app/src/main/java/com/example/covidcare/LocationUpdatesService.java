@@ -177,7 +177,7 @@ public class LocationUpdatesService extends LifecycleService {
             CharSequence name = getString(R.string.app_name);
             // Create the channel for the notification
             NotificationChannel mChannel =
-                    new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
+                    new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW);
 
             // Set the Notification Channel for the Notification Manager.
             mNotificationManager.createNotificationChannel(mChannel);
@@ -293,7 +293,7 @@ public class LocationUpdatesService extends LifecycleService {
     private Notification getNotification() {
         Intent intent = new Intent(this, LocationUpdatesService.class);
 
-        CharSequence text = Utils.getLocationText(mLocation);
+//        CharSequence text = Utils.getLocationText(mLocation);
 
         // Extra to help us figure out if we arrived in onStartCommand via the notification or not.
         intent.putExtra(EXTRA_STARTED_FROM_NOTIFICATION, true);
@@ -307,16 +307,16 @@ public class LocationUpdatesService extends LifecycleService {
                 new Intent(this, MainActivity.class), 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .addAction(R.drawable.ic_launch0, getString(R.string.launch_activity),
+                .addAction(R.mipmap.ic_launcher, getString(R.string.launch_activity),
                         activityPendingIntent)
-                .addAction(R.drawable.ic_cancel, getString(R.string.remove_location_updates),
+                .addAction(R.drawable.ic_cancel, getString(R.string.stop_service),
                         servicePendingIntent)
-                .setContentText(text)
+                .setContentText("Recording Location/Time ...")
                 .setContentTitle(Utils.getLocationTitle(this))
                 .setOngoing(true)
                 .setPriority(Notification.PRIORITY_HIGH)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setTicker(text)
+                .setSmallIcon(R.mipmap.ic_launcher_0_foreground)
+                .setTicker("Recording Location/Time ...")
                 .setWhen(System.currentTimeMillis());
 
         // Set the Channel ID for Android O.
