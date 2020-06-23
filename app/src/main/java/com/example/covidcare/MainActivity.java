@@ -114,11 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dl_status = findViewById(R.id.dl_status);
         dl_status.setAdapter(adapter);
         dl_status.setOnItemSelectedListener(this);
-
-
         setObservers();
-
-
     }
 
     @Override
@@ -170,10 +166,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (localBinder == null)
                     Log.d(TAG, "onChanged: unbound from service");
                 else {
+                    mService = localBinder.getService();
                     if (!checkPermissions()) {
                         requestPermissions();
                     } else {
-                        mService = localBinder.getService();
                         if (!mService.isRequestingLocation())
                             mService.requestLocationUpdates();
                             Log.e(TAG, "Start Service");
@@ -323,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.i(TAG, "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission was granted.
-//                mService.requestLocationUpdates();
+                mService.requestLocationUpdates();
             } else {
                 Snackbar.make(
                         findViewById(R.id.activity_main),
