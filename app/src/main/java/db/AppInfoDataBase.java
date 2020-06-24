@@ -12,7 +12,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import dao.AppInfoDao;
 import table.AppInfo;
 
-@Database(entities = {AppInfo.class}, version = 1)
+@Database(entities = {AppInfo.class}, version = 2)
 public abstract class AppInfoDataBase extends RoomDatabase {
     private static AppInfoDataBase instance;
 

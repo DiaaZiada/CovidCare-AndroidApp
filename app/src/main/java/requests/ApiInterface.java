@@ -15,7 +15,7 @@ public interface ApiInterface {
     public Call<UpdateStatus> updateStatus(@Body UpdateStatus updateStatus);
 
     @POST("sendlocationtime")
-    public Call<SendLocationTime> sendLocationTime(@Body SendLocationTime sendLocationTime);
+    public Call<RequestId> sendLocationTime(@Body SendLocationTime sendLocationTime);
 
     @POST("getmeetings")
     public Call<List<GetMeeting>> getMeetings(@Body RequestId requestId);

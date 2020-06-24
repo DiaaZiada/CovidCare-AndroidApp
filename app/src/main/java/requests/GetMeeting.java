@@ -1,41 +1,15 @@
 package requests;
 
 public class GetMeeting {
-    private String time;
-    private String latitude;
-    private String longitude;
     private String status;
+    private String id;
+    private String hash;
 
 
-    public GetMeeting(String time, String latitude, String longitude, String status) {
-        this.time = time;
-        this.latitude = latitude;
-        this.longitude = longitude;
+    public GetMeeting(String status, String id, String hash) {
         this.status = status;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
+        this.id = id;
+        this.hash = hash;
     }
 
     public String getStatus() {
@@ -44,5 +18,21 @@ public class GetMeeting {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 }

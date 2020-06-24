@@ -8,12 +8,14 @@ public class Meeting {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
+    private String app_id;
     private String status;
     private String time;
     private double latitude;
     private double longitude;
 
-    public Meeting(String status, String time, double latitude, double longitude) {
+    public Meeting(String app_id, String status, String time, double latitude, double longitude) {
+        this.app_id = app_id;
         this.status = status;
         this.time = time;
         this.latitude = latitude;
@@ -26,6 +28,10 @@ public class Meeting {
 
     public int getId() {
         return id;
+    }
+
+    public String getApp_id() {
+        return app_id;
     }
 
     public String getStatus() {

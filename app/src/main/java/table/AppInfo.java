@@ -8,10 +8,10 @@ import androidx.room.PrimaryKey;
 public class AppInfo {
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private int appId;
+    private String appId;
     private String status;
 
-    public AppInfo(int appId, String status) {
+    public AppInfo(String appId, String status) {
         this.appId = appId;
         this.status = status;
     }
@@ -24,7 +24,7 @@ public class AppInfo {
         return id;
     }
 
-    public int getAppId() {
+    public String getAppId() {
         return appId;
     }
 
@@ -32,7 +32,7 @@ public class AppInfo {
         return status;
     }
 
-    public void setAppId(int appId) {
+    public void setAppId(String appId) {
         this.appId = appId;
     }
 

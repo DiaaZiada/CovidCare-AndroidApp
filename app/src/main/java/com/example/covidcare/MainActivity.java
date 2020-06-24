@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dl_status = findViewById(R.id.dl_status);
         dl_status.setAdapter(adapter);
         dl_status.setOnItemSelectedListener(this);
-        setObservers();
+//        setObservers();
     }
 
     @Override
@@ -128,6 +128,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
                 Context.BIND_AUTO_CREATE);
+        setObservers();
+
 
     }
 
@@ -214,18 +216,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.i(TAG, "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc");
 
                 if (appInfos.size() == 0) {
-                    appInfo = new AppInfo(-1, "Healthy");
+                    appInfo = new AppInfo("-1", "Healthy");
                     modelView.appInfoInsert(appInfo);
                 } else
                     appInfo = appInfos.get(0);
                 Log.e(TAG, String.valueOf(status2Index.get(appInfo.getStatus())) + "\t" + appInfo.getStatus());
                 dl_status.setSelection(status2Index.getOrDefault(appInfo.getStatus(), 0));
 
-                if (appInfo.getAppId() == -1) {
-                    Log.e(TAG, "Request id");
-                    requestsModel.requestId();
-                    return;
-                }
+//                if (appInfo.getAppId() == -1) {
+//                    Log.e(TAG, "Request id");
+//                    requestsModel.requestId();
+//                    return;
+//                }
                 Log.e(TAG, "id\t"+appInfo.getAppId());
                 Log.e(TAG, "update status");
                 requestsModel.updateStatus();
@@ -273,10 +275,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         appInfo.setStatus(text);
         modelView.appInfoUpdate(appInfo);
         Log.e(TAG, appInfo.getStatus() + "\t" + text);
-        if (appInfo.getAppId() == -1) {
-            requestsModel.requestId();
-            return;
-        }
+//        if (appInfo.getAppId() == -1) {
+//            requestsModel.requestId();
+//            return;
+//        }
         requestsModel.updateStatus();
         dl_status.setScrollBarDefaultDelayBeforeFade(1);
 

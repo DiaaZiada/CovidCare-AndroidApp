@@ -1,5 +1,7 @@
 package requests;
 
+import android.util.Log;
+
 import com.example.covidcare.MainActivity;
 import com.example.covidcare.Repository;
 
@@ -16,7 +18,7 @@ import table.Meeting;
 
 public class RequestsModel {
     private static final String TAG = "RequestsModel";
-    private static final String BASE_URL = "192.168.1.1092:5000/";
+    private static final String BASE_URL = "http://192.168.1.109:5000/";
     public static boolean getMeetingsFinished;
     public static boolean sendLocationTimeFinished;
 
@@ -41,11 +43,13 @@ public class RequestsModel {
     }
 
     public void requestId() {
+        Log.e(TAG, "requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId ");
         RequestId requestId = new RequestId(MainActivity.appInfo.getAppId());
         Call<RequestId> call = apiInterface.requestId(requestId);
         call.enqueue(new Callback<RequestId>() {
             @Override
             public void onResponse(Call<RequestId> call, Response<RequestId> response) {
+                Log.i(TAG,"requestId"+"\t"+response.body().getAppId()+"\t"+ MainActivity.appInfo.getAppId()+"\t"+requestId.getAppId());
                 if (response.body().getAppId() == MainActivity.appInfo.getAppId())
                     return;
                 MainActivity.appInfo.setAppId(response.body().getAppId());
@@ -59,12 +63,20 @@ public class RequestsModel {
     }
 
     public void updateStatus() {
-        requestId();
+        Log.e(TAG, "updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus ");
+
         UpdateStatus updateStatus = new UpdateStatus(MainActivity.appInfo.getAppId(), MainActivity.appInfo.getStatus());
         Call<UpdateStatus> call = apiInterface.updateStatus(updateStatus);
         call.enqueue(new Callback<UpdateStatus>() {
             @Override
             public void onResponse(Call<UpdateStatus> call, Response<UpdateStatus> response) {
+
+                Log.i(TAG,"updateStatus"+"\t"+response.body().getAppId()+"\t"+ MainActivity.appInfo.getAppId()+"\t"+updateStatus.getAppId());
+
+                if (response.body().getAppId() == MainActivity.appInfo.getAppId())
+                    return;
+                MainActivity.appInfo.setAppId(response.body().getAppId());
+                repository.appInfoUpdate(MainActivity.appInfo);
 
             }
 
@@ -77,29 +89,40 @@ public class RequestsModel {
 
 
     public void sendLocationTime(List<LocationTime> locationTimes) {
-        requestId();
+        Log.e(TAG, "sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime ");
         sendLocationTimeFinished = false;
         for (LocationTime locationTime : locationTimes) {
             SendLocationTime sendLocationTime = new SendLocationTime(MainActivity.appInfo.getAppId(), locationTime.getTime(), locationTime.getLatitude(), locationTime.getLongitude());
-            Call<SendLocationTime> call = apiInterface.sendLocationTime(sendLocationTime);
-            call.enqueue(new Callback<SendLocationTime>() {
+            Call<RequestId> call = apiInterface.sendLocationTime(sendLocationTime);
+            call.enqueue(new Callback<RequestId>() {
                 @Override
-                public void onResponse(Call<SendLocationTime> call, Response<SendLocationTime> response) {
+                public void onResponse(Call<RequestId> call, Response<RequestId> response) {
+                    Log.i(TAG,"sendLocationTime"+"\t"+response.body().getAppId()+"\t"+ MainActivity.appInfo.getAppId()+"\t"+sendLocationTime.getAppId());
+
+                    sendLocationTimeFinished = false;
+                    if (response.body().getAppId() == MainActivity.appInfo.getAppId())
+                        return;
+                    MainActivity.appInfo.setAppId(response.body().getAppId());
+                    repository.appInfoUpdate(MainActivity.appInfo);
+                    if (locationTime.hashCode() == locationTimes.get(locationTimes.size() - 1).hashCode())
+                        sendLocationTimeFinished = true;
                     repository.locationTimeDelete(locationTime);
+
                 }
 
                 @Override
-                public void onFailure(Call<SendLocationTime> call, Throwable t) {
+                public void onFailure(Call<RequestId> call, Throwable t) {
+                    sendLocationTimeFinished = true;
 
                 }
             });
         }
-        sendLocationTimeFinished = true;
     }
 
 
     public void getMeetings() {
-        requestId();
+        Log.e(TAG, "getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings ");
+
 
         RequestId requestId = new RequestId(MainActivity.appInfo.getAppId());
 
@@ -107,19 +130,26 @@ public class RequestsModel {
         call.enqueue(new Callback<List<GetMeeting>>() {
             @Override
             public void onResponse(Call<List<GetMeeting>> call, Response<List<GetMeeting>> response) {
+                Log.i(TAG, "getMeetings"+"\t"+MainActivity.appInfo.getAppId()+"\t"+requestId.getAppId());
                 getMeetingsFinished = false;
-//                repository.deleteAllMeetings();
+                repository.deleteAllMeetings();
                 for (GetMeeting getMeeting : response.body()) {
-                    Meeting meeting = new Meeting(getMeeting.getStatus(), getMeeting.getTime(),
-                            Double.valueOf(getMeeting.getLatitude()), Double.valueOf(getMeeting.getLongitude()));
+                    String status = getMeeting.getStatus();
+                    String id = getMeeting.getId();
+                    String hash = getMeeting.getHash();
+                    String[] locationTime = hash.split(",");
+                    Meeting meeting = new Meeting(id, status, locationTime[2], Double.valueOf(locationTime[0]), Double.valueOf(locationTime[1]));
+
+                    if (getMeeting.hashCode() == response.body().get(response.body().size() - 1).hashCode())
+                        getMeetingsFinished = true;
+
                     repository.meetingInsert(meeting);
                 }
-                getMeetingsFinished = true;
             }
 
             @Override
             public void onFailure(Call<List<GetMeeting>> call, Throwable t) {
-
+                getMeetingsFinished = true;
             }
         });
     }
