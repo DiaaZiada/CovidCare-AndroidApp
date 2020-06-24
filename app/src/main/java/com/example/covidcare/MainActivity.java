@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        first=true;
+        first = true;
 
         if (Utils.requestingLocationUpdates(this)) {
             if (!checkPermissions()) {
@@ -177,7 +177,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             for (int i = 0; i < meetings.size(); i++) {
                                 Log.i(TAG, "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
 
-                                Log.e(TAG,meetings.get(i).getTime());
+                                Log.e(TAG, meetings.get(i).getTime()+"\t"+ meetings.get(i).getStatus());
+
                                 meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
                                 map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
                             }
@@ -193,8 +194,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         modelView.getBinder().observe(this, new Observer<LocationUpdatesService.LocalBinder>() {
             @Override
             public void onChanged(LocationUpdatesService.LocalBinder localBinder) {
-                Log.i(TAG, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-
                 if (localBinder == null)
                     Log.d(TAG, "onChanged: unbound from service");
                 else {
@@ -202,39 +201,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (!checkPermissions()) {
                         requestPermissions();
                     } else {
-                        if (!mService.isRequestingLocation())
+                        if (!mService.isRequestingLocation()) {
                             mService.requestLocationUpdates();
                             Log.e(TAG, "Start Service");
+                        }
                     }
                 }
             }
         });
 
         modelView.getAllappInfos().observe(this, new Observer<List<AppInfo>>() {
+
             @Override
             public void onChanged(List<AppInfo> appInfos) {
-                Log.i(TAG, "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc");
-
+                Log.e(TAG, "getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos ");
                 if (appInfos.size() == 0) {
                     appInfo = new AppInfo("-1", "Healthy");
                     modelView.appInfoInsert(appInfo);
-                } else
-                    appInfo = appInfos.get(0);
-                Log.e(TAG, String.valueOf(status2Index.get(appInfo.getStatus())) + "\t" + appInfo.getStatus());
+                    return;
+                }
+                appInfo = appInfos.get(0);
                 dl_status.setSelection(status2Index.getOrDefault(appInfo.getStatus(), 0));
-
-//                if (appInfo.getAppId() == -1) {
-//                    Log.e(TAG, "Request id");
-//                    requestsModel.requestId();
-//                    return;
-//                }
-                Log.e(TAG, "id\t"+appInfo.getAppId());
-                Log.e(TAG, "update status");
-                requestsModel.updateStatus();
-                Log.e(TAG, "get Meetimgs");
-                requestsModel.getMeetings();
-
+                if (requestsModel.counter == 0)
+                    requestsModel.requestId();
+                if (requestsModel.counter == 2) {
+                    requestsModel.updateStatus();
+                    requestsModel.getMeetings();
+                    requestsModel.counter++;
+                }
             }
+
         });
 
 
@@ -275,10 +271,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         appInfo.setStatus(text);
         modelView.appInfoUpdate(appInfo);
         Log.e(TAG, appInfo.getStatus() + "\t" + text);
-//        if (appInfo.getAppId() == -1) {
-//            requestsModel.requestId();
-//            return;
-//        }
         requestsModel.updateStatus();
         dl_status.setScrollBarDefaultDelayBeforeFade(1);
 
@@ -322,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {

@@ -410,7 +410,6 @@ public class LocationUpdatesService extends LifecycleService {
             @Override
             public void onChanged(List<LocationTime> locationTimes) {
                 Log.e(TAG, "LOCTIM");
-
                 if (requestsModel.sendLocationTimeFinished)
                     requestsModel.sendLocationTime(locationTimes);
             }

@@ -34,8 +34,8 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
     private Context mContext;
     private int mResource;
     private int lastPosition = -1;
-    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH);
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ENGLISH);
     private LocalDateTime now;
     private int counter = 0;
 
@@ -126,6 +126,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
     }
 
     private String getNumberOfDays(String time) {
+        Log.e(TAG, time+"\t aAAAAAAAAAAAAAAAAAAAAAaaaaaaAAAAAAAAAAAAAAAAAAAAAaaaaa");
         now = LocalDateTime.now();
         String nowString = dtf.format(now).toString();
         Log.e(TAG, time+"\t"+nowString);
@@ -144,7 +145,6 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         int day = (int) TimeUnit.SECONDS.toDays(seconds);
         long hours = TimeUnit.SECONDS.toHours(seconds) - (day * 24);
         long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
-        long second = TimeUnit.SECONDS.toSeconds(seconds) - (TimeUnit.SECONDS.toMinutes(seconds) * 60);
 
 
         return "From " + String.valueOf(day) + " day: " + String.valueOf(hours) + " hours ago";
