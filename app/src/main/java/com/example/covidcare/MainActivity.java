@@ -72,13 +72,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LocationUpdatesService mService = null;
 
     private ServiceConnection mServiceConnection;
-
+    private boolean first;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        first=true;
 
         if (Utils.requestingLocationUpdates(this)) {
             if (!checkPermissions()) {
@@ -160,9 +160,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setObservers() {
 
+        modelView.getAllMeetings().
+
+                observe(this, new Observer<List<Meeting>>() {
+                    @Override
+                    public void onChanged(@Nullable List<Meeting> meetings) {
+                        Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                        if (requestsModel.getMeetingsFinished || first) {
+                            first = false;
+                            meetingsInfo.clear();
+                            Map<String, Integer> map = new HashMap<>();
+                            Log.i(TAG, "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd");
+
+                            for (int i = 0; i < meetings.size(); i++) {
+                                Log.i(TAG, "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+
+                                Log.e(TAG,meetings.get(i).getTime());
+                                meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
+                                map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
+                            }
+                            MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MainActivity.this, R.layout.adabter_view_list, meetingsInfo);
+                            mListView.setAdapter(adapter);
+                            nHealth.setText(String.valueOf(map.getOrDefault("Healthy", 0)));
+                            nInfected.setText(String.valueOf(map.getOrDefault("Infected", 0)));
+                            nRecovered.setText(String.valueOf(map.getOrDefault("Recovered", 0)));
+                        }
+                    }
+                });
+
         modelView.getBinder().observe(this, new Observer<LocationUpdatesService.LocalBinder>() {
             @Override
             public void onChanged(LocationUpdatesService.LocalBinder localBinder) {
+                Log.i(TAG, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+
                 if (localBinder == null)
                     Log.d(TAG, "onChanged: unbound from service");
                 else {
@@ -181,6 +211,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         modelView.getAllappInfos().observe(this, new Observer<List<AppInfo>>() {
             @Override
             public void onChanged(List<AppInfo> appInfos) {
+                Log.i(TAG, "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc");
+
                 if (appInfos.size() == 0) {
                     appInfo = new AppInfo(-1, "Healthy");
                     modelView.appInfoInsert(appInfo);
@@ -203,29 +235,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        modelView.getAllMeetings().
 
-                observe(this, new Observer<List<Meeting>>() {
-                    @Override
-                    public void onChanged(@Nullable List<Meeting> meetings) {
-                        if (appInfo == null)
-                            return;
-                        if (requestsModel.getMeetingsFinished) {
-                            meetingsInfo.clear();
-                            Map<String, Integer> map = new HashMap<>();
-                            for (int i = 0; i < meetings.size(); i++) {
-                                Log.e(TAG,meetings.get(i).getTime());
-                                meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
-                                map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
-                            }
-                            MeetingInfoListAdapter adapter = new MeetingInfoListAdapter(MainActivity.this, R.layout.adabter_view_list, meetingsInfo);
-                            mListView.setAdapter(adapter);
-                            nHealth.setText(String.valueOf(map.getOrDefault("Healthy", 0)));
-                            nInfected.setText(String.valueOf(map.getOrDefault("Infected", 0)));
-                            nRecovered.setText(String.valueOf(map.getOrDefault("Recovered", 0)));
-                        }
-                    }
-                });
     }
 
 

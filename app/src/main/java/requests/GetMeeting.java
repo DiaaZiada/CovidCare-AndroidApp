@@ -6,6 +6,7 @@ public class GetMeeting {
     private String longitude;
     private String status;
 
+
     public GetMeeting(String time, String latitude, String longitude, String status) {
         this.time = time;
         this.latitude = latitude;

@@ -16,7 +16,7 @@ import table.Meeting;
 
 public class RequestsModel {
     private static final String TAG = "RequestsModel";
-    private static final String BASE_URL = "http://192.168.1.109:5000/";
+    private static final String BASE_URL = "192.168.1.1092:5000/";
     public static boolean getMeetingsFinished;
     public static boolean sendLocationTimeFinished;
 
@@ -41,14 +41,12 @@ public class RequestsModel {
     }
 
     public void requestId() {
-        if (MainActivity.appInfo.getAppId() != -1)
-            return;
-        RequestId requestId = new RequestId(-1);
+        RequestId requestId = new RequestId(MainActivity.appInfo.getAppId());
         Call<RequestId> call = apiInterface.requestId(requestId);
         call.enqueue(new Callback<RequestId>() {
             @Override
             public void onResponse(Call<RequestId> call, Response<RequestId> response) {
-                if (response.body().getAppId() == -1)
+                if (response.body().getAppId() == MainActivity.appInfo.getAppId())
                     return;
                 MainActivity.appInfo.setAppId(response.body().getAppId());
                 repository.appInfoUpdate(MainActivity.appInfo);
@@ -56,12 +54,12 @@ public class RequestsModel {
 
             @Override
             public void onFailure(Call<RequestId> call, Throwable t) {
-
             }
         });
     }
 
     public void updateStatus() {
+        requestId();
         UpdateStatus updateStatus = new UpdateStatus(MainActivity.appInfo.getAppId(), MainActivity.appInfo.getStatus());
         Call<UpdateStatus> call = apiInterface.updateStatus(updateStatus);
         call.enqueue(new Callback<UpdateStatus>() {
@@ -79,11 +77,7 @@ public class RequestsModel {
 
 
     public void sendLocationTime(List<LocationTime> locationTimes) {
-        if (MainActivity.appInfo.getAppId() == -1) {
-            requestId();
-            return;
-        }
-
+        requestId();
         sendLocationTimeFinished = false;
         for (LocationTime locationTime : locationTimes) {
             SendLocationTime sendLocationTime = new SendLocationTime(MainActivity.appInfo.getAppId(), locationTime.getTime(), locationTime.getLatitude(), locationTime.getLongitude());
@@ -105,10 +99,7 @@ public class RequestsModel {
 
 
     public void getMeetings() {
-        if (MainActivity.appInfo.getAppId() == -1) {
-            requestId();
-            return;
-        }
+        requestId();
 
         RequestId requestId = new RequestId(MainActivity.appInfo.getAppId());
 
@@ -117,7 +108,7 @@ public class RequestsModel {
             @Override
             public void onResponse(Call<List<GetMeeting>> call, Response<List<GetMeeting>> response) {
                 getMeetingsFinished = false;
-                repository.deleteAllMeetings();
+//                repository.deleteAllMeetings();
                 for (GetMeeting getMeeting : response.body()) {
                     Meeting meeting = new Meeting(getMeeting.getStatus(), getMeeting.getTime(),
                             Double.valueOf(getMeeting.getLatitude()), Double.valueOf(getMeeting.getLongitude()));
