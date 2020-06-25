@@ -108,29 +108,11 @@ public class RequestsModel {
             call.enqueue(new Callback<RequestId>() {
                 @Override
                 public void onResponse(Call<RequestId> call, Response<RequestId> response) {
-                    Log.i(TAG, "sendLocationTime" + "\t" + response.body().getAppId() + "\t" + MainActivity.appInfo.getAppId() + "\t" + sendLocationTime.getAppId());
-
-                    sendLocationTimeFinished = false;
-
-                    repository.locationTimeDelete(locationTime);
-
-                    if (locationTime.hashCode() == locationTimes.get(locationTimes.size() - 1).hashCode())
-                        sendLocationTimeFinished = true;
-
-                    if (response.body().getAppId() == MainActivity.appInfo.getAppId())
-                        return;
-
-                    MainActivity.appInfo.setAppId(response.body().getAppId());
-                    repository.appInfoUpdate(MainActivity.appInfo);
-
-
+                    Log.i(TAG, response.body().getAppId());
                 }
 
                 @Override
                 public void onFailure(Call<RequestId> call, Throwable t) {
-                    sendLocationTimeFinished = true;
-                    Log.e(TAG, t.getMessage());
-
 
                 }
             });
@@ -142,8 +124,10 @@ public class RequestsModel {
 
 
     public void getMeetings() {
-        if (!getedId)
+        if (!getedId) {
+            Log.e(TAG, "NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID ");
             return;
+        }
 
         Log.e(TAG, "getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings ");
 
@@ -177,9 +161,10 @@ public class RequestsModel {
             }
         });
     }
-    private String dash2SlashSDate(String date){
+
+    private String dash2SlashSDate(String date) {
         String[] times = date.split("-");
-        date = times[0]+"/"+times[1]+"/"+times[2] +" "+ times[3]+":"+times[4];
+        date = times[0] + "/" + times[1] + "/" + times[2] + " " + times[3] + ":" + times[4];
         return date;
     }
 }
