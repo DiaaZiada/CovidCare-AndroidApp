@@ -95,8 +95,11 @@ public class RequestsModel {
 
 
     public void sendLocationTime(List<LocationTime> locationTimes) {
+        Log.e(TAG, locationTimes.size()+"AAAAA");
+
         if (SharedVars.appInfo.getAppId().equals("-1") || locationTimes.size()==0)
             return;
+        Log.e(TAG, locationTimes.size()+"");
         Log.e(TAG, "sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime ");
         SharedVars.sendLocationTimeFinished = false;
         ArrayList<SendLocationTime> sendLocationTimes = new ArrayList<>();
@@ -117,7 +120,7 @@ public class RequestsModel {
 
             }
         });
-        SharedVars.sendLocationTimeFinished =false;
+//        SharedVars.sendLocationTimeFinished =true;
 
 }
 

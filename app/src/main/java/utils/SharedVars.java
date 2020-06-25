@@ -11,6 +11,7 @@ public class SharedVars {
     public static boolean getMeetingsFinished;
     public static boolean sendLocationTimeFinished;
     public static boolean deletingFakeOldMeeetingFinished;
+    public static boolean booleanTF = true;
     public static AppInfo appInfo;
 
 
