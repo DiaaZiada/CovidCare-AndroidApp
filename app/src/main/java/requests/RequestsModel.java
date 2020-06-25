@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.covidcare.MainActivity;
 import com.example.covidcare.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -18,7 +19,7 @@ import table.Meeting;
 
 public class RequestsModel {
     private static final String TAG = "RequestsModel";
-    private static final String BASE_URL = "http://192.168.1.109:5000/";
+    private static final String BASE_URL = "http://192.168.1.108:5000/";
     public static boolean getMeetingsFinished;
     public static boolean sendLocationTimeFinished;
     public static boolean getedId;
@@ -98,29 +99,31 @@ public class RequestsModel {
 
 
     public void sendLocationTime(List<LocationTime> locationTimes) {
-        if (!getedId)
+        if (!getedId || locationTimes.size()==0)
             return;
         Log.e(TAG, "sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime ");
         sendLocationTimeFinished = false;
+        ArrayList<SendLocationTime> sendLocationTimes = new ArrayList<>();
         for (LocationTime locationTime : locationTimes) {
             SendLocationTime sendLocationTime = new SendLocationTime(MainActivity.appInfo.getAppId(), locationTime.getTime(), locationTime.getLatitude(), locationTime.getLongitude());
-            Call<RequestId> call = apiInterface.sendLocationTime(sendLocationTime);
-            call.enqueue(new Callback<RequestId>() {
-                @Override
-                public void onResponse(Call<RequestId> call, Response<RequestId> response) {
-                    Log.i(TAG, response.body().getAppId());
-                }
-
-                @Override
-                public void onFailure(Call<RequestId> call, Throwable t) {
-
-                }
-            });
-
+            sendLocationTimes.add(sendLocationTime);
         }
-        sendLocationTimeFinished = true;
+        Call<RequestId> call = apiInterface.sendLocationTime(sendLocationTimes);
+        call.enqueue(new Callback<RequestId>() {
+            @Override
+            public void onResponse(Call<RequestId> call, Response<RequestId> response) {
+                Log.i(TAG, response.body().getAppId());
+                repository.deleteAllLocationsTimes();
+            }
 
-    }
+            @Override
+            public void onFailure(Call<RequestId> call, Throwable t) {
+
+            }
+        });
+    sendLocationTimeFinished =true;
+
+}
 
 
     public void getMeetings() {
@@ -131,7 +134,6 @@ public class RequestsModel {
 
         Log.e(TAG, "getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings ");
 
-
         RequestId requestId = new RequestId(MainActivity.appInfo.getAppId());
 
         Call<List<GetMeeting>> call = apiInterface.getMeetings(requestId);
@@ -140,7 +142,6 @@ public class RequestsModel {
             public void onResponse(Call<List<GetMeeting>> call, Response<List<GetMeeting>> response) {
                 Log.i(TAG, "getMeetings" + "\t" + MainActivity.appInfo.getAppId() + "\t" + requestId.getAppId());
                 getMeetingsFinished = false;
-                repository.deleteAllMeetings();
                 for (GetMeeting getMeeting : response.body()) {
                     String status = getMeeting.getStatus();
                     String id = getMeeting.getId();

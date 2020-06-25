@@ -1,5 +1,6 @@
 package requests;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -15,7 +16,7 @@ public interface ApiInterface {
     public Call<UpdateStatus> updateStatus(@Body UpdateStatus updateStatus);
 
     @POST("sendlocationtime")
-    public Call<RequestId> sendLocationTime(@Body SendLocationTime sendLocationTime);
+    public Call<RequestId> sendLocationTime(@Body ArrayList<SendLocationTime> sendLocationTime);
 
     @POST("getmeetings")
     public Call<List<GetMeeting>> getMeetings(@Body RequestId requestId);

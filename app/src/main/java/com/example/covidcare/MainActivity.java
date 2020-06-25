@@ -34,10 +34,19 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import adapter.MeetingInfoListAdapter;
 import requests.RequestsModel;
@@ -65,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Map<String, Integer> status2Index;
     private Map<Integer, String> index2Status;
     private ArrayList<MeetingInfo> meetingsInfo;
-
+    private  boolean del_meet = true;
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
@@ -114,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dl_status = findViewById(R.id.dl_status);
         dl_status.setAdapter(adapter);
         dl_status.setOnItemSelectedListener(this);
-//        setObservers();
+
     }
 
     @Override
@@ -128,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
                 Context.BIND_AUTO_CREATE);
+        requestsModel.counter=0;
         setObservers();
 
 
@@ -168,17 +178,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onChanged(@Nullable List<Meeting> meetings) {
                         Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                        if (requestsModel.getMeetingsFinished || first) {
+                        if ((requestsModel.getMeetingsFinished || first)&& del_meet) {
+                            del_meet = false;
                             first = false;
                             meetingsInfo.clear();
                             Map<String, Integer> map = new HashMap<>();
+                            Set<String> ids = new HashSet<String>();
                             Log.i(TAG, "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd");
 
                             for (int i = 0; i < meetings.size(); i++) {
                                 Log.i(TAG, "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
 
                                 Log.e(TAG, meetings.get(i).getTime()+"\t"+ meetings.get(i).getStatus());
-
+                                if (ids.contains(meetings.get(i).getApp_id()) || getNumberOfDays(meetings.get(i).getTime())>14) {
+                                    modelView.meetinDelete(meetings.get(i));
+                                    continue;
+                                }
+                                ids.add(meetings.get(i).getApp_id());
+                                
+                                
                                 meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
                                 map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
                             }
@@ -187,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             nHealth.setText(String.valueOf(map.getOrDefault("Healthy", 0)));
                             nInfected.setText(String.valueOf(map.getOrDefault("Infected", 0)));
                             nRecovered.setText(String.valueOf(map.getOrDefault("Recovered", 0)));
+                            del_meet = true;
                         }
                     }
                 });
@@ -222,8 +241,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 appInfo = appInfos.get(0);
                 dl_status.setSelection(status2Index.getOrDefault(appInfo.getStatus(), 0));
-                if (requestsModel.counter == 0)
+                if (appInfo.getAppId() == "-1"){
                     requestsModel.requestId();
+                    return;
+                }
+
+//                if (requestsModel.counter == 0)
+//                    requestsModel.requestId();
                 if (requestsModel.counter == 2) {
                     requestsModel.updateStatus();
                     requestsModel.getMeetings();
@@ -355,6 +379,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (s.equals(Utils.KEY_REQUESTING_LOCATION_UPDATES)) {
             sharedPreferences.getBoolean(Utils.KEY_REQUESTING_LOCATION_UPDATES, false);
         }
+    }
+
+    private int getNumberOfDays(String time) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ENGLISH);
+        Log.e(TAG, time+"\t aAAAAAAAAAAAAAAAAAAAAAaaaaaaAAAAAAAAAAAAAAAAAAAAAaaaaa");
+        LocalDateTime now = LocalDateTime.now();
+        String nowString = dtf.format(now).toString();
+        Log.e(TAG, time+"\t"+nowString);
+        Date firstDate = null;
+        Date secondDate = null;
+        try {
+            firstDate = sdf.parse(nowString);
+            secondDate = sdf.parse(time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Log.e(TAG, secondDate+"\t"+firstDate);
+
+        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+        long seconds = diffInMillies / 1000;
+        int day = (int) TimeUnit.SECONDS.toDays(seconds);
+        return day;
+
     }
 
 }
