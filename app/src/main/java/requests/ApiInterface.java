@@ -10,17 +10,16 @@ import retrofit2.http.POST;
 public interface ApiInterface {
 
     @POST("requestid")
-    public Call<RequestId> requestId(@Body RequestId requestId);
+    Call<RequestId> requestId(@Body RequestId requestId);
 
     @POST("updatestatus")
-    public Call<UpdateStatus> updateStatus(@Body UpdateStatus updateStatus);
+    Call<UpdateStatus> updateStatus(@Body UpdateStatus updateStatus);
 
     @POST("sendlocationtime")
-    public Call<RequestId> sendLocationTime(@Body ArrayList<SendLocationTime> sendLocationTime);
+    Call<RequestId> sendLocationTime(@Body ArrayList<SendLocationTime> sendLocationTime);
 
     @POST("getmeetings")
-    public Call<List<GetMeeting>> getMeetings(@Body RequestId requestId);
-
+    Call<List<GetMeeting>> getMeetings(@Body RequestId requestId);
 
 
 }

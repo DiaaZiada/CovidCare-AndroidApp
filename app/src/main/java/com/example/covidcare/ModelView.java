@@ -15,23 +15,27 @@ import table.Meeting;
 
 public class ModelView extends AndroidViewModel {
     private static final String TAG = "ModelView";
-
-    public Repository getRepository() {
-        return repository;
-    }
-
     private Repository repository;
     private LiveData<List<Meeting>> allMeetings;
     private LiveData<List<LocationTime>> allLocationsTimes;
     private LiveData<List<AppInfo>> allAppInfos;
 
+    public ModelView(@NonNull Application application) {
+        super(application);
+        repository = Repository.getInstance(application);
+
+
+        allMeetings = repository.getAllMeetings();
+        allLocationsTimes = repository.getAllLocationsTimes();
+        allAppInfos = repository.getAllAppInfos();
+    }
+
+    public Repository getRepository() {
+        return repository;
+    }
 
     public ServiceConnection getServiceConnection() {
         return repository.getServiceConnection();
-    }
-
-    public LiveData<LocationUpdatesService.LocalBinder> getBinder() {
-        return repository.getBinder();
     }
 
 
@@ -43,15 +47,8 @@ public class ModelView extends AndroidViewModel {
 //        return repository.getBinder();
 //    }
 
-
-    public ModelView(@NonNull Application application) {
-        super(application);
-        repository = Repository.getInstance(application);
-
-
-        allMeetings = repository.getAllMeetings();
-        allLocationsTimes = repository.getAllLocationsTimes();
-        allAppInfos = repository.getAllAppInfos();
+    public LiveData<LocationUpdatesService.LocalBinder> getBinder() {
+        return repository.getBinder();
     }
 
     /* AppInfo */

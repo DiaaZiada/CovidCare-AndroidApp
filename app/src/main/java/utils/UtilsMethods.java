@@ -1,7 +1,5 @@
 package utils;
 
-import android.util.Log;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -12,12 +10,12 @@ import java.util.concurrent.TimeUnit;
 
 public class UtilsMethods {
 
-    private static  DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-    private static SimpleDateFormat  sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ENGLISH);
+    private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ENGLISH);
 
     public static int getNumberOfDays(String time) {
         LocalDateTime now = LocalDateTime.now();
-        String nowString = dtf.format(now).toString();
+        String nowString = dtf.format(now);
         Date firstDate = null;
         Date secondDate = null;
         try {

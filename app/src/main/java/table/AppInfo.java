@@ -16,24 +16,24 @@ public class AppInfo {
         this.status = status;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getAppId() {
         return appId;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
     public void setAppId(String appId) {
         this.appId = appId;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public void setStatus(String status) {

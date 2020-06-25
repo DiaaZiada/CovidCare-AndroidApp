@@ -16,7 +16,6 @@
 
 package com.example.covidcare;
 
-import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -54,47 +53,22 @@ import requests.RequestsModel;
 import table.LocationTime;
 import utils.SharedVars;
 
-/**
- * A bound and started service that is promoted to a foreground service when location updates have
- * been requested and all clients unbind.
- * <p>
- * For apps running in the background on "O" devices, location is computed only once every 10
- * minutes and delivered batched every 30 minutes. This restriction applies even to apps
- * targeting "N" or lower which are run on "O" devices.
- * <p>
- * This sample show how to use a long-running service for location updates. When an activity is
- * bound to this service, frequent location updates are permitted. When the activity is removed
- * from the foreground, the service promotes itself to a foreground service, and location updates
- * continue. When the activity comes back to the foreground, the foreground service stops, and the
- * notification associated with that service is removed.
- */
 
 public class LocationUpdatesService extends LifecycleService {
 
     private static final String PACKAGE_NAME =
             "com.google.android.gms.location.sample.locationupdatesforegroundservice";
-
-    private static final String TAG = LocationUpdatesService.class.getSimpleName();
-
-
-    private static final String CHANNEL_ID = "channel_01";
-
     static final String ACTION_BROADCAST = PACKAGE_NAME + ".broadcast";
-
     static final String EXTRA_LOCATION = PACKAGE_NAME + ".location";
+    private static final String TAG = LocationUpdatesService.class.getSimpleName();
+    private static final String CHANNEL_ID = "channel_01";
     private static final String EXTRA_STARTED_FROM_NOTIFICATION = PACKAGE_NAME +
             ".started_from_notification";
-
-    private final IBinder mBinder = new LocalBinder();
-
-
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
-
     private static final int NOTIFICATION_ID = 12345678;
-
+    private final IBinder mBinder = new LocalBinder();
     private boolean mChangingConfiguration = false;
 
     private NotificationManager mNotificationManager;
@@ -162,13 +136,11 @@ public class LocationUpdatesService extends LifecycleService {
         boolean startedFromNotification = intent.getBooleanExtra(EXTRA_STARTED_FROM_NOTIFICATION,
                 false);
 
-        // We got here because the user decided to remove location updates from the notification.
         if (startedFromNotification) {
             removeLocationUpdates();
             stopSelf();
         }
         setObserver();
-        // Tells the system to not try to recreate the service after it has been killed.
         return START_NOT_STICKY;
     }
 
@@ -301,11 +273,9 @@ public class LocationUpdatesService extends LifecycleService {
         LocationTime locationTime = new LocationTime(Utils.getTime(), location.getLatitude(), location.getLongitude());
         Log.e(TAG, locationTime.getTime() + "\t" + locationTime.getLatitude() + "\t" + locationTime.getLongitude());
         repository.locationTimeInsert(locationTime);
-        // Notify anyone listening for broadcasts about the new location.
         Intent intent = new Intent(ACTION_BROADCAST);
         intent.putExtra(EXTRA_LOCATION, location);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-        // Update notification content if running as a foreground service.
         if (serviceIsRunningInForeground(this)) {
             mNotificationManager.notify(NOTIFICATION_ID, getNotification());
         }
@@ -321,13 +291,6 @@ public class LocationUpdatesService extends LifecycleService {
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    public class LocalBinder extends Binder {
-        LocationUpdatesService getService() {
-            return LocationUpdatesService.this;
-        }
-    }
-
-
     public boolean serviceIsRunningInForeground(Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(
                 Context.ACTIVITY_SERVICE);
@@ -341,7 +304,6 @@ public class LocationUpdatesService extends LifecycleService {
         }
         return false;
     }
-
 
     private void setObserver() {
         repository.getAllLocationsTimes().observe(this, new Observer<List<LocationTime>>() {
@@ -360,5 +322,11 @@ public class LocationUpdatesService extends LifecycleService {
 
     public boolean isRequestingLocation() {
         return isRequestingLocation;
+    }
+
+    public class LocalBinder extends Binder {
+        LocationUpdatesService getService() {
+            return LocationUpdatesService.this;
+        }
     }
 }

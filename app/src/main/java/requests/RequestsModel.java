@@ -2,9 +2,7 @@ package requests;
 
 import android.util.Log;
 
-import com.example.covidcare.MainActivity;
 import com.example.covidcare.Repository;
-import utils.SharedVars;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +14,14 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import table.LocationTime;
 import table.Meeting;
+import utils.SharedVars;
 
 public class RequestsModel {
     private static final String TAG = "RequestsModel";
     private static final String BASE_URL = "http://192.168.1.108:5000/";
-    private ApiInterface apiInterface;
     private static RequestsModel instance;
     private static Repository repository = Repository.getInstance();
+    private ApiInterface apiInterface;
 
     private RequestsModel() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -95,11 +94,11 @@ public class RequestsModel {
 
 
     public void sendLocationTime(List<LocationTime> locationTimes) {
-        Log.e(TAG, locationTimes.size()+"AAAAA");
+        Log.e(TAG, locationTimes.size() + "AAAAA");
 
-        if (SharedVars.appInfo.getAppId().equals("-1") || locationTimes.size()==0)
+        if (SharedVars.appInfo.getAppId().equals("-1") || locationTimes.size() == 0)
             return;
-        Log.e(TAG, locationTimes.size()+"");
+        Log.e(TAG, locationTimes.size() + "");
         Log.e(TAG, "sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime ");
         SharedVars.sendLocationTimeFinished = false;
         ArrayList<SendLocationTime> sendLocationTimes = new ArrayList<>();
@@ -122,7 +121,7 @@ public class RequestsModel {
         });
 //        SharedVars.sendLocationTimeFinished =true;
 
-}
+    }
 
 
     public void getMeetings() {
@@ -152,7 +151,7 @@ public class RequestsModel {
 
                 }
                 SharedVars.getMeetingsFinished = true;
-                Meeting fake = new Meeting("-1", "", "",.1,.1);
+                Meeting fake = new Meeting("-1", "", "", .1, .1);
                 repository.meetingInsert(fake);
 
             }
@@ -161,7 +160,7 @@ public class RequestsModel {
             public void onFailure(Call<List<GetMeeting>> call, Throwable t) {
                 SharedVars.getMeetingsFinished = true;
 
-                Meeting fake = new Meeting("-1", "", "",.1,.1);
+                Meeting fake = new Meeting("-1", "", "", .1, .1);
                 repository.meetingInsert(fake);
 
             }

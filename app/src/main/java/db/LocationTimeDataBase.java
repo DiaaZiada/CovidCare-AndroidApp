@@ -9,7 +9,6 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-
 import dao.LocationTimeDao;
 import table.LocationTime;
 
@@ -18,8 +17,13 @@ import table.LocationTime;
 public abstract class LocationTimeDataBase extends RoomDatabase {
 
     private static LocationTimeDataBase instance;
-
-    public abstract LocationTimeDao locationTimeDao();
+    private static Callback roomCallback = new Callback() {
+        @Override
+        public void onCreate(@NonNull SupportSQLiteDatabase db) {
+            super.onCreate(db);
+            new PopulateDbAsyncTask(instance).execute();
+        }
+    };
 
     public static synchronized LocationTimeDataBase getInstance(Context context) {
         if (instance == null) {
@@ -32,13 +36,7 @@ public abstract class LocationTimeDataBase extends RoomDatabase {
         return instance;
     }
 
-    private static Callback roomCallback = new Callback() {
-        @Override
-        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-            super.onCreate(db);
-            new PopulateDbAsyncTask(instance).execute();
-        }
-    };
+    public abstract LocationTimeDao locationTimeDao();
 
     private static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void> {
         private LocationTimeDao locationTimeDao;

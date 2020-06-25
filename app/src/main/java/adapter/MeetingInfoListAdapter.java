@@ -1,7 +1,6 @@
 package adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,13 +37,6 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ENGLISH);
     private LocalDateTime now;
     private int counter = 0;
-
-    private static class ViewHolder {
-        TextView time;
-        TextView status;
-        Button locaton;
-        ImageView imageView;
-    }
 
     public MeetingInfoListAdapter(Context context, int resource, ArrayList<MeetingInfo> objects) {
         super(context, resource, objects);
@@ -128,7 +120,7 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
     private String getNumberOfDays(String time) {
 //        Log.e(TAG, time+"\t aAAAAAAAAAAAAAAAAAAAAAaaaaaaAAAAAAAAAAAAAAAAAAAAAaaaaa");
         now = LocalDateTime.now();
-        String nowString = dtf.format(now).toString();
+        String nowString = dtf.format(now);
 //        Log.e(TAG, time+"\t"+nowString);
         Date firstDate = null;
         Date secondDate = null;
@@ -147,8 +139,15 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
 
 
-        return "From " + String.valueOf(day) + " day: " + String.valueOf(hours) + " hours ago";
+        return "From " + day + " day: " + hours + " hours ago";
 
+    }
+
+    private static class ViewHolder {
+        TextView time;
+        TextView status;
+        Button locaton;
+        ImageView imageView;
     }
 
 }

@@ -1,8 +1,8 @@
 package requests;
 
 public class UpdateStatus {
-   private String appId;
-   private String status;
+    private String appId;
+    private String status;
 
     public UpdateStatus(String userId, String status) {
         this.appId = userId;

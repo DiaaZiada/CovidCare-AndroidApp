@@ -24,32 +24,33 @@ import table.Meeting;
 
 public class Repository {
     private static final String TAG = "DeviceRepository";
-
-
+    private static boolean bound;
+    private static Repository instance;
     private MeetingDao meetingDao;
     private LocationTimeDao locationTimeDao;
     private AppInfoDao appInfoDao;
-
     private LiveData<List<Meeting>> allMeetings;
     private LiveData<List<LocationTime>> allLocationsTimes;
     private LiveData<List<AppInfo>> allAppInfos;
-
-    private static boolean bound;
-//    private MutableLiveData<MyService.MyBinder> mBinder = new MutableLiveData<>();
+    //    private MutableLiveData<MyService.MyBinder> mBinder = new MutableLiveData<>();
     private MutableLiveData<LocationUpdatesService.LocalBinder> mBinder = new MutableLiveData<>();
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder iBinder) {
+            Log.d(TAG, "ServiceConnection: connected to service.");
+            // We've bound to MyService, cast the IBinder and get MyBinder instance
+            LocationUpdatesService.LocalBinder binder = (LocationUpdatesService.LocalBinder) iBinder;
+            mBinder.postValue(binder);
+            bound = true;
+        }
 
-    private static Repository instance;
-
-    public static Repository getInstance(Application application) {
-        if (instance == null)
-            instance = new Repository(application);
-        return instance;
-    }
-
-    public static Repository getInstance() {
-        return instance;
-    }
-
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.d(TAG, "ServiceConnection: disconnected from service.");
+            mBinder.postValue(null);
+            bound = false;
+        }
+    };
 
     private Repository(Application application) {
 
@@ -71,7 +72,17 @@ public class Repository {
 
     }
 
+    public static Repository getInstance(Application application) {
+        if (instance == null)
+            instance = new Repository(application);
+        return instance;
+    }
+
     /*AppInfo DataBase*/
+
+    public static Repository getInstance() {
+        return instance;
+    }
 
     public void appInfoInsert(AppInfo appInfo) {
         new InsertAppInfoAsyncTask(appInfoDao).execute(appInfo);
@@ -91,6 +102,69 @@ public class Repository {
 
     public LiveData<List<AppInfo>> getAllAppInfos() {
         return allAppInfos;
+    }
+
+    /*LocationTime DataBase*/
+    public void locationTimeInsert(LocationTime locationTime) {
+        new InsertLocationTimeAsyncTask(locationTimeDao).execute(locationTime);
+    }
+
+    public void locationTimeUpdate(LocationTime locationTime) {
+        new UpdateLocationTimeAsyncTask(locationTimeDao).execute(locationTime);
+    }
+
+    public void locationTimeDelete(LocationTime locationTime) {
+        new DeleteLocationTimeAsyncTask(locationTimeDao).execute(locationTime);
+    }
+
+    /*End AppInfo DataBase*/
+
+    public void deleteAllLocationsTimes() {
+        new DeleteAllLocationsTimesAsyncTask(locationTimeDao).execute();
+    }
+
+    public LiveData<List<LocationTime>> getAllLocationsTimes() {
+        return allLocationsTimes;
+    }
+
+    /*Meeting DataBase*/
+    public void meetingInsert(Meeting meeting) {
+        new InsertMeetingAsyncTask(meetingDao).execute(meeting);
+    }
+
+    public void meetingUpdate(Meeting meeting) {
+        new UpdateMeetingAsyncTask(meetingDao).execute(meeting);
+    }
+
+    public void meetingDelete(Meeting meeting) {
+        new DeleteMeetingAsyncTask(meetingDao).execute(meeting);
+    }
+
+    public void deleteAllMeetings() {
+        new DeleteAllMeetingsAsyncTask(meetingDao).execute();
+    }
+
+    public LiveData<List<Meeting>> getAllMeetings() {
+        return allMeetings;
+    }
+
+    public ServiceConnection getServiceConnection() {
+        return serviceConnection;
+    }
+
+    public LiveData<LocationUpdatesService.LocalBinder> getBinder() {
+        return mBinder;
+    }
+
+
+    /*End LocationTime DataBase*/
+
+    public boolean isBound() {
+        return bound;
+    }
+
+    public void setBound(boolean bound) {
+        Repository.bound = bound;
     }
 
     private static class InsertAppInfoAsyncTask extends AsyncTask<AppInfo, Void, Void> {
@@ -149,29 +223,6 @@ public class Repository {
         }
     }
 
-    /*End AppInfo DataBase*/
-
-    /*LocationTime DataBase*/
-    public void locationTimeInsert(LocationTime locationTime) {
-        new InsertLocationTimeAsyncTask(locationTimeDao).execute(locationTime);
-    }
-
-    public void locationTimeUpdate(LocationTime locationTime) {
-        new UpdateLocationTimeAsyncTask(locationTimeDao).execute(locationTime);
-    }
-
-    public void locationTimeDelete(LocationTime locationTime) {
-        new DeleteLocationTimeAsyncTask(locationTimeDao).execute(locationTime);
-    }
-
-    public void deleteAllLocationsTimes() {
-        new DeleteAllLocationsTimesAsyncTask(locationTimeDao).execute();
-    }
-
-    public LiveData<List<LocationTime>> getAllLocationsTimes() {
-        return allLocationsTimes;
-    }
-
     private static class InsertLocationTimeAsyncTask extends AsyncTask<LocationTime, Void, Void> {
         private LocationTimeDao locationTimeDao;
 
@@ -214,6 +265,15 @@ public class Repository {
         }
     }
 
+
+    /*End Meeting DataBase*/
+
+
+
+
+
+    /* Location Service*/
+
     private static class DeleteAllLocationsTimesAsyncTask extends AsyncTask<Void, Void, Void> {
         private LocationTimeDao locationTimeDao;
 
@@ -226,32 +286,6 @@ public class Repository {
             locationTimeDao.deleteAllLocationsTimes();
             return null;
         }
-    }
-
-
-    /*End LocationTime DataBase*/
-
-
-
-    /*Meeting DataBase*/
-    public void meetingInsert(Meeting meeting) {
-        new InsertMeetingAsyncTask(meetingDao).execute(meeting);
-    }
-
-    public void meetingUpdate(Meeting meeting) {
-        new UpdateMeetingAsyncTask(meetingDao).execute(meeting);
-    }
-
-    public void meetingDelete(Meeting meeting) {
-        new DeleteMeetingAsyncTask(meetingDao).execute(meeting);
-    }
-
-    public void deleteAllMeetings() {
-        new DeleteAllMeetingsAsyncTask(meetingDao).execute();
-    }
-
-    public LiveData<List<Meeting>> getAllMeetings() {
-        return allMeetings;
     }
 
     private static class InsertMeetingAsyncTask extends AsyncTask<Meeting, Void, Void> {
@@ -282,6 +316,8 @@ public class Repository {
         }
     }
 
+    /* End Location Service*/
+
     private static class DeleteMeetingAsyncTask extends AsyncTask<Meeting, Void, Void> {
         private MeetingDao meetingDao;
 
@@ -308,51 +344,5 @@ public class Repository {
             meetingDao.deleteAllMeetings();
             return null;
         }
-    }
-
-
-    /*End Meeting DataBase*/
-
-
-
-
-
-    /* Location Service*/
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder iBinder) {
-            Log.d(TAG, "ServiceConnection: connected to service.");
-            // We've bound to MyService, cast the IBinder and get MyBinder instance
-            LocationUpdatesService.LocalBinder binder = (LocationUpdatesService.LocalBinder) iBinder;
-            mBinder.postValue(binder);
-            bound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            Log.d(TAG, "ServiceConnection: disconnected from service.");
-            mBinder.postValue(null);
-            bound = false;
-        }
-    };
-
-    public ServiceConnection getServiceConnection() {
-        return serviceConnection;
-    }
-
-    public LiveData<LocationUpdatesService.LocalBinder> getBinder() {
-        return mBinder;
-    }
-
-    /* End Location Service*/
-
-
-    public boolean isBound() {
-        return bound;
-    }
-
-    public void setBound(boolean bound) {
-        this.bound = bound;
     }
 }

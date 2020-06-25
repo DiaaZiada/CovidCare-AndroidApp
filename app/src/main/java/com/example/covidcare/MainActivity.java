@@ -31,19 +31,12 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import adapter.MeetingInfoListAdapter;
 import requests.RequestsModel;
@@ -53,8 +46,6 @@ import utils.Codes;
 import utils.MeetingInfo;
 import utils.SharedVars;
 import utils.UtilsMethods;
-
-import static utils.UtilsMethods.getNumberOfDays;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -127,9 +118,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
                 Context.BIND_AUTO_CREATE);
 //        requestsModel.counter = 0;
-        SharedVars.getMeetingsFinished=false;
+        SharedVars.getMeetingsFinished = false;
         SharedVars.requestedMeetingStatus = true;
-        SharedVars.deletingFakeOldMeeetingFinished=true;
+        SharedVars.deletingFakeOldMeeetingFinished = true;
         setObservers();
 
 
@@ -168,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 observe(this, new Observer<List<Meeting>>() {
                     @Override
                     public void onChanged(@Nullable List<Meeting> meetings) {
-                        Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"+SharedVars.getMeetingsFinished+SharedVars.deletingFakeOldMeeetingFinished+"\t");
+                        Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + SharedVars.getMeetingsFinished + SharedVars.deletingFakeOldMeeetingFinished + "\t");
                         if (SharedVars.getMeetingsFinished && SharedVars.deletingFakeOldMeeetingFinished) {
                             Log.i(TAG, "VVVVVVVVVVVVVVVVVVVVVVVV");
 
@@ -234,10 +225,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     return;
                 }
 //                Log.e(TAG, requestsModel.counter+"");
-                if( SharedVars.requestedMeetingStatus) {
+                if (SharedVars.requestedMeetingStatus) {
                     requestsModel.updateStatus();
                     requestsModel.getMeetings();
-                    SharedVars.requestedMeetingStatus=false;
+                    SharedVars.requestedMeetingStatus = false;
                 }
 
             }
@@ -367,7 +358,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             sharedPreferences.getBoolean(Utils.KEY_REQUESTING_LOCATION_UPDATES, false);
         }
     }
-
 
 
 }

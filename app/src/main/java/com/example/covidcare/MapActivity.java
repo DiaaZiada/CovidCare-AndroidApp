@@ -60,7 +60,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +74,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Intent intent = getIntent();
         double latitude = intent.getIntExtra(SharedVars.EXTRA_LATITUDE, 0) / 10000000.;
         double longitue = intent.getIntExtra(SharedVars.EXTRA_LONGITUDE, 0) / 10000000.;
-        Log.e(TAG, String.valueOf(longitue) + "  " + String.valueOf(latitude));
+        Log.e(TAG, longitue + "  " + latitude);
         moveCamera(new LatLng(latitude, longitue),
                 Codes.DEFAULT_ZOOM,
                 "My Location");

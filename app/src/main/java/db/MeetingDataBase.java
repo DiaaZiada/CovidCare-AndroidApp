@@ -15,8 +15,13 @@ import table.Meeting;
 @Database(entities = {Meeting.class}, version = 4)
 public abstract class MeetingDataBase extends RoomDatabase {
     private static MeetingDataBase instance;
-
-    public abstract MeetingDao meetingDao();
+    private static Callback roomCallback = new Callback() {
+        @Override
+        public void onCreate(@NonNull SupportSQLiteDatabase db) {
+            super.onCreate(db);
+            new PopulateDbAsyncTask(instance).execute();
+        }
+    };
 
     public static synchronized MeetingDataBase getInstance(Context context) {
         if (instance == null) {
@@ -29,13 +34,7 @@ public abstract class MeetingDataBase extends RoomDatabase {
         return instance;
     }
 
-    private static Callback roomCallback = new Callback() {
-        @Override
-        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-            super.onCreate(db);
-            new PopulateDbAsyncTask(instance).execute();
-        }
-    };
+    public abstract MeetingDao meetingDao();
 
     private static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void> {
         private MeetingDao meetingDao;

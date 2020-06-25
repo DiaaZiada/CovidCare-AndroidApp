@@ -20,8 +20,6 @@ package com.example.covidcare;
 import android.content.Context;
 import android.location.Location;
 import android.preference.PreferenceManager;
-import android.util.Log;
-
 
 import java.text.DateFormat;
 import java.time.LocalDateTime;
@@ -45,6 +43,7 @@ class Utils {
 
     /**
      * Stores the location updates state in SharedPreferences.
+     *
      * @param requestingLocationUpdates The location updates state.
      */
     static void setRequestingLocationUpdates(Context context, boolean requestingLocationUpdates) {
@@ -56,7 +55,8 @@ class Utils {
 
     /**
      * Returns the {@code location} object as a human readable string.
-     * @param location  The {@link Location}.
+     *
+     * @param location The {@link Location}.
      */
     static String getLocationText(Location location) {
         return location == null ? "Unknown location" :
@@ -71,6 +71,6 @@ class Utils {
     static String getTime() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
-        return dtf.format(now).toString();
+        return dtf.format(now);
     }
 }

@@ -15,8 +15,13 @@ import table.AppInfo;
 @Database(entities = {AppInfo.class}, version = 2)
 public abstract class AppInfoDataBase extends RoomDatabase {
     private static AppInfoDataBase instance;
-
-    public abstract AppInfoDao appInfoDao();
+    private static Callback roomCallback = new Callback() {
+        @Override
+        public void onCreate(@NonNull SupportSQLiteDatabase db) {
+            super.onCreate(db);
+            new PopulateDbAsyncTask(instance).execute();
+        }
+    };
 
     public static synchronized AppInfoDataBase getInstance(Context context) {
         if (instance == null) {
@@ -29,13 +34,7 @@ public abstract class AppInfoDataBase extends RoomDatabase {
         return instance;
     }
 
-    private static Callback roomCallback = new Callback() {
-        @Override
-        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-            super.onCreate(db);
-            new PopulateDbAsyncTask(instance).execute();
-        }
-    };
+    public abstract AppInfoDao appInfoDao();
 
     private static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void> {
         private AppInfoDao appInfoDao;
