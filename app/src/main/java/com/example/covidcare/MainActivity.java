@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     private LocationUpdatesService mService = null;
+    private  boolean b;
 
     private ServiceConnection mServiceConnection;
     private boolean first;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         first = true;
 
+        b = true;
         if (Utils.requestingLocationUpdates(this)) {
             if (!checkPermissions()) {
                 requestPermissions();
@@ -140,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         requestsModel.counter = 0;
         setObservers();
         requestsModel.getMeetingsFinished=false;
+        b=true;
 
 
     }
@@ -249,10 +252,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     return;
                 }
                 Log.e(TAG, requestsModel.counter+"");
-                if(requestsModel.counter < 2) {
+                if(b) {
                     Log.e(TAG,"CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL ");
                     requestsModel.updateStatus();
                     requestsModel.getMeetings();
+                    b=false;
                 }
 
             }
