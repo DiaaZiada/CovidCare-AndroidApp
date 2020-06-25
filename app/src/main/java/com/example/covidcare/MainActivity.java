@@ -15,8 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,7 +23,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -53,44 +50,44 @@ import requests.RequestsModel;
 import table.AppInfo;
 import table.Meeting;
 import utils.MeetingInfo;
+import utils.SharedVars;
+import utils.UtilsMethods;
+
+import static utils.UtilsMethods.getNumberOfDays;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = "MainActivity";
     public static final String EXTRA_LATITUDE = "com.example.covidcare.MainActivity.EXTRA_LATITUDE";
     public static final String EXTRA_LONGITUDE = "com.example.covidcare.MainActivity.EXTRA_LONGITUDE";
-
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
-    public static AppInfo appInfo;
 
+    public static AppInfo appInfo;
     private ModelView modelView;
     private RequestsModel requestsModel;
-
     private ListView mListView;
     private TextView nHealth, nInfected, nRecovered;
     private Spinner dl_status;
-
     private Map<String, Integer> status2Index;
     private Map<Integer, String> index2Status;
     private ArrayList<MeetingInfo> meetingsInfo;
-    private boolean del_meet = true;
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     private LocationUpdatesService mService = null;
-    private  boolean b;
+//    private  boolean b;
 
     private ServiceConnection mServiceConnection;
-    private boolean first;
+//    private boolean first;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        first = true;
+//        first = true;
 
-        b = true;
+//        b = true;
         if (Utils.requestingLocationUpdates(this)) {
             if (!checkPermissions()) {
                 requestPermissions();
@@ -139,10 +136,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
                 Context.BIND_AUTO_CREATE);
-        requestsModel.counter = 0;
+//        requestsModel.counter = 0;
+        SharedVars.getMeetingsFinished=false;
+        SharedVars.requestedMeetingStatus = true;
+        SharedVars.deletingFakeOldMeeetingFinished=true;
         setObservers();
-        requestsModel.getMeetingsFinished=false;
-        b=true;
 
 
     }
@@ -168,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d(TAG, "isServicesOK: an error occured but we can fix it");
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
-        } else {
         }
         return false;
     }
@@ -181,22 +178,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 observe(this, new Observer<List<Meeting>>() {
                     @Override
                     public void onChanged(@Nullable List<Meeting> meetings) {
-                        Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"+requestsModel.getMeetingsFinished+del_meet+"\t"+requestsModel.aaa);
-                        if (requestsModel.getMeetingsFinished && del_meet) {
+                        Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"+SharedVars.getMeetingsFinished+SharedVars.deletingFakeOldMeeetingFinished+"\t");
+                        if (SharedVars.getMeetingsFinished && SharedVars.deletingFakeOldMeeetingFinished) {
                             Log.i(TAG, "VVVVVVVVVVVVVVVVVVVVVVVV");
 
-                            del_meet = false;
-                            first = false;
+                            SharedVars.deletingFakeOldMeeetingFinished = false;
                             meetingsInfo.clear();
                             Map<String, Integer> map = new HashMap<>();
                             Set<String> ids = new HashSet<String>();
-//                            Log.i(TAG, "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd");
-
                             for (int i = 0; i < meetings.size(); i++) {
-//                                Log.i(TAG, "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
 
-//                                Log.e(TAG, meetings.get(i).getTime() + "\t" + meetings.get(i).getStatus());
-                                if (ids.contains(meetings.get(i).getApp_id()) || meetings.get(i).getApp_id().equals("-1") || getNumberOfDays(meetings.get(i).getTime()) > 14) {
+                                if (ids.contains(meetings.get(i).getApp_id()) || meetings.get(i).getApp_id().equals("-1") || UtilsMethods.getNumberOfDays(meetings.get(i).getTime()) > 14) {
                                     modelView.meetinDelete(meetings.get(i));
                                     continue;
                                 }
@@ -211,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             nHealth.setText(String.valueOf(map.getOrDefault("Healthy", 0)));
                             nInfected.setText(String.valueOf(map.getOrDefault("Infected", 0)));
                             nRecovered.setText(String.valueOf(map.getOrDefault("Recovered", 0)));
-                            del_meet = true;
+                            SharedVars.deletingFakeOldMeeetingFinished = true;
                         }
                     }
                 });
@@ -251,12 +243,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     requestsModel.requestId();
                     return;
                 }
-                Log.e(TAG, requestsModel.counter+"");
-                if(b) {
-                    Log.e(TAG,"CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL ");
+//                Log.e(TAG, requestsModel.counter+"");
+                if( SharedVars.requestedMeetingStatus) {
                     requestsModel.updateStatus();
                     requestsModel.getMeetings();
-                    b=false;
+                    SharedVars.requestedMeetingStatus=false;
                 }
 
             }
@@ -387,27 +378,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private int getNumberOfDays(String time) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ENGLISH);
-        LocalDateTime now = LocalDateTime.now();
-        String nowString = dtf.format(now).toString();
-        Log.e(TAG, time + "\t" + nowString);
-        Date firstDate = null;
-        Date secondDate = null;
-        try {
-            firstDate = sdf.parse(nowString);
-            secondDate = sdf.parse(time);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
-        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
-        long seconds = diffInMillies / 1000;
-        int day = (int) TimeUnit.SECONDS.toDays(seconds);
-        return day;
-
-    }
 
 }
 

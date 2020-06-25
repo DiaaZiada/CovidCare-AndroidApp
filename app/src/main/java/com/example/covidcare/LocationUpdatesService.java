@@ -16,7 +16,6 @@
 
 package com.example.covidcare;
 
-import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -50,9 +49,9 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
-import okhttp3.internal.Util;
 import requests.RequestsModel;
 import table.LocationTime;
+import utils.SharedVars;
 
 /**
  * A bound and started service that is promoted to a foreground service when location updates have
@@ -410,7 +409,7 @@ public class LocationUpdatesService extends LifecycleService {
             @Override
             public void onChanged(List<LocationTime> locationTimes) {
                 Log.e(TAG, "LOCTIM");
-                if (requestsModel.sendLocationTimeFinished)
+                if (SharedVars.sendLocationTimeFinished)
                     requestsModel.sendLocationTime(locationTimes);
             }
         });

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.covidcare.MainActivity;
 import com.example.covidcare.Repository;
+import utils.SharedVars;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,19 +14,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import table.AppInfo;
 import table.LocationTime;
 import table.Meeting;
 
 public class RequestsModel {
     private static final String TAG = "RequestsModel";
     private static final String BASE_URL = "http://192.168.1.108:5000/";
-    public static boolean getMeetingsFinished;
-    public static boolean sendLocationTimeFinished;
-    public static boolean getedId;
-    public static int counter;
-    public int aaa=0;
-
     private ApiInterface apiInterface;
     private static RequestsModel instance;
     private static Repository repository = Repository.getInstance();
@@ -36,10 +30,10 @@ public class RequestsModel {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiInterface = retrofit.create(ApiInterface.class);
-        getMeetingsFinished = false;
-        sendLocationTimeFinished = true;
-        getedId = false;
-        counter = 0;
+        SharedVars.getMeetingsFinished = false;
+        SharedVars.sendLocationTimeFinished = true;
+//        getedId = false;
+//        counter = 0;
     }
 
     public static RequestsModel getInstance() {
@@ -57,7 +51,7 @@ public class RequestsModel {
             @Override
             public void onResponse(Call<RequestId> call, Response<RequestId> response) {
                 Log.i(TAG, "requestId" + "\t" + response.body().getAppId() + "\t" + MainActivity.appInfo.getAppId() + "\t" + requestId.getAppId());
-                getedId = true;
+//                getedId = true;
 //                counter++;
                 MainActivity.appInfo.setAppId(response.body().getAppId());
                 repository.appInfoUpdate(MainActivity.appInfo);
@@ -75,7 +69,7 @@ public class RequestsModel {
 
         if (MainActivity.appInfo.getAppId().equals("-1"))
             return;
-        counter++;
+//        counter++;
         UpdateStatus updateStatus = new UpdateStatus(MainActivity.appInfo.getAppId(), MainActivity.appInfo.getStatus());
         Call<UpdateStatus> call = apiInterface.updateStatus(updateStatus);
         call.enqueue(new Callback<UpdateStatus>() {
@@ -104,7 +98,7 @@ public class RequestsModel {
         if (MainActivity.appInfo.getAppId().equals("-1") || locationTimes.size()==0)
             return;
         Log.e(TAG, "sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime ");
-        sendLocationTimeFinished = false;
+        SharedVars.sendLocationTimeFinished = false;
         ArrayList<SendLocationTime> sendLocationTimes = new ArrayList<>();
         for (LocationTime locationTime : locationTimes) {
             SendLocationTime sendLocationTime = new SendLocationTime(MainActivity.appInfo.getAppId(), locationTime.getTime(), locationTime.getLatitude(), locationTime.getLongitude());
@@ -123,7 +117,7 @@ public class RequestsModel {
 
             }
         });
-    sendLocationTimeFinished =false;
+        SharedVars.sendLocationTimeFinished =false;
 
 }
 
@@ -133,7 +127,7 @@ public class RequestsModel {
             Log.e(TAG, "NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID ");
             return;
         }
-        counter++;
+//        counter++;
         Log.e(TAG, "getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings ");
 
         RequestId requestId = new RequestId(MainActivity.appInfo.getAppId());
@@ -143,9 +137,9 @@ public class RequestsModel {
             @Override
             public void onResponse(Call<List<GetMeeting>> call, Response<List<GetMeeting>> response) {
                 Log.i(TAG, "getMeetings" + "\t" + MainActivity.appInfo.getAppId() + "\t" + requestId.getAppId());
-                getMeetingsFinished = false;
+                SharedVars.getMeetingsFinished = false;
                 for (GetMeeting getMeeting : response.body()) {
-                    aaa++;
+//                    aaa++;
                     String status = getMeeting.getStatus();
                     String id = getMeeting.getId();
                     String hash = getMeeting.getHash();
@@ -154,7 +148,7 @@ public class RequestsModel {
                     repository.meetingInsert(meeting);
 
                 }
-                getMeetingsFinished = true;
+                SharedVars.getMeetingsFinished = true;
                 Meeting fake = new Meeting("-1", "", "",.1,.1);
                 repository.meetingInsert(fake);
 
@@ -162,7 +156,7 @@ public class RequestsModel {
 
             @Override
             public void onFailure(Call<List<GetMeeting>> call, Throwable t) {
-                getMeetingsFinished = true;
+                SharedVars.getMeetingsFinished = true;
 
                 Meeting fake = new Meeting("-1", "", "",.1,.1);
                 repository.meetingInsert(fake);
