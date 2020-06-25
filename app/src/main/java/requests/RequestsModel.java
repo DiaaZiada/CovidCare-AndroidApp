@@ -44,17 +44,17 @@ public class RequestsModel {
 
     public void requestId() {
         Log.e(TAG, "requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId ");
-        RequestId requestId = new RequestId(MainActivity.appInfo.getAppId());
+        RequestId requestId = new RequestId(SharedVars.appInfo.getAppId());
         Call<RequestId> call = apiInterface.requestId(requestId);
 //        counter++;
         call.enqueue(new Callback<RequestId>() {
             @Override
             public void onResponse(Call<RequestId> call, Response<RequestId> response) {
-                Log.i(TAG, "requestId" + "\t" + response.body().getAppId() + "\t" + MainActivity.appInfo.getAppId() + "\t" + requestId.getAppId());
+                Log.i(TAG, "requestId" + "\t" + response.body().getAppId() + "\t" + SharedVars.appInfo.getAppId() + "\t" + requestId.getAppId());
 //                getedId = true;
 //                counter++;
-                MainActivity.appInfo.setAppId(response.body().getAppId());
-                repository.appInfoUpdate(MainActivity.appInfo);
+                SharedVars.appInfo.setAppId(response.body().getAppId());
+                repository.appInfoUpdate(SharedVars.appInfo);
             }
 
             @Override
@@ -67,21 +67,21 @@ public class RequestsModel {
     public void updateStatus() {
         Log.e(TAG, "updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus ");
 
-        if (MainActivity.appInfo.getAppId().equals("-1"))
+        if (SharedVars.appInfo.getAppId().equals("-1"))
             return;
 //        counter++;
-        UpdateStatus updateStatus = new UpdateStatus(MainActivity.appInfo.getAppId(), MainActivity.appInfo.getStatus());
+        UpdateStatus updateStatus = new UpdateStatus(SharedVars.appInfo.getAppId(), SharedVars.appInfo.getStatus());
         Call<UpdateStatus> call = apiInterface.updateStatus(updateStatus);
         call.enqueue(new Callback<UpdateStatus>() {
             @Override
             public void onResponse(Call<UpdateStatus> call, Response<UpdateStatus> response) {
 
-                Log.i(TAG, "updateStatus" + "\t" + response.body().getAppId() + "\t" + MainActivity.appInfo.getAppId() + "\t" + updateStatus.getAppId());
+                Log.i(TAG, "updateStatus" + "\t" + response.body().getAppId() + "\t" + SharedVars.appInfo.getAppId() + "\t" + updateStatus.getAppId());
 
-                if (response.body().getAppId().equals(MainActivity.appInfo.getAppId()))
+                if (response.body().getAppId().equals(SharedVars.appInfo.getAppId()))
                     return;
-                MainActivity.appInfo.setAppId(response.body().getAppId());
-                repository.appInfoUpdate(MainActivity.appInfo);
+                SharedVars.appInfo.setAppId(response.body().getAppId());
+                repository.appInfoUpdate(SharedVars.appInfo);
 
             }
 
@@ -95,13 +95,13 @@ public class RequestsModel {
 
 
     public void sendLocationTime(List<LocationTime> locationTimes) {
-        if (MainActivity.appInfo.getAppId().equals("-1") || locationTimes.size()==0)
+        if (SharedVars.appInfo.getAppId().equals("-1") || locationTimes.size()==0)
             return;
         Log.e(TAG, "sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime ");
         SharedVars.sendLocationTimeFinished = false;
         ArrayList<SendLocationTime> sendLocationTimes = new ArrayList<>();
         for (LocationTime locationTime : locationTimes) {
-            SendLocationTime sendLocationTime = new SendLocationTime(MainActivity.appInfo.getAppId(), locationTime.getTime(), locationTime.getLatitude(), locationTime.getLongitude());
+            SendLocationTime sendLocationTime = new SendLocationTime(SharedVars.appInfo.getAppId(), locationTime.getTime(), locationTime.getLatitude(), locationTime.getLongitude());
             sendLocationTimes.add(sendLocationTime);
         }
         Call<RequestId> call = apiInterface.sendLocationTime(sendLocationTimes);
@@ -123,20 +123,20 @@ public class RequestsModel {
 
 
     public void getMeetings() {
-        if (MainActivity.appInfo.getAppId().equals("-1")) {
+        if (SharedVars.appInfo.getAppId().equals("-1")) {
             Log.e(TAG, "NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID ");
             return;
         }
 //        counter++;
         Log.e(TAG, "getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings ");
 
-        RequestId requestId = new RequestId(MainActivity.appInfo.getAppId());
+        RequestId requestId = new RequestId(SharedVars.appInfo.getAppId());
 
         Call<List<GetMeeting>> call = apiInterface.getMeetings(requestId);
         call.enqueue(new Callback<List<GetMeeting>>() {
             @Override
             public void onResponse(Call<List<GetMeeting>> call, Response<List<GetMeeting>> response) {
-                Log.i(TAG, "getMeetings" + "\t" + MainActivity.appInfo.getAppId() + "\t" + requestId.getAppId());
+                Log.i(TAG, "getMeetings" + "\t" + SharedVars.appInfo.getAppId() + "\t" + requestId.getAppId());
                 SharedVars.getMeetingsFinished = false;
                 for (GetMeeting getMeeting : response.body()) {
 //                    aaa++;

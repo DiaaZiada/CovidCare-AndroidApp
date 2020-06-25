@@ -22,9 +22,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import utils.Codes;
+import utils.SharedVars;
+
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener {
+
+    private static final String TAG = "MapActivity";
+
+    private Boolean mLocationPermissionsGranted = false;
+    private GoogleMap mMap;
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -51,14 +59,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private static final String TAG = "MapActivity";
 
-    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
-    private static final float DEFAULT_ZOOM = 15f;
-    private Boolean mLocationPermissionsGranted = false;
-    private GoogleMap mMap;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,11 +73,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void getDeviceLocation() {
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
         Intent intent = getIntent();
-        double latitude = intent.getIntExtra(MainActivity.EXTRA_LATITUDE, 0) / 10000000.;
-        double longitue = intent.getIntExtra(MainActivity.EXTRA_LONGITUDE, 0) / 10000000.;
+        double latitude = intent.getIntExtra(SharedVars.EXTRA_LATITUDE, 0) / 10000000.;
+        double longitue = intent.getIntExtra(SharedVars.EXTRA_LONGITUDE, 0) / 10000000.;
         Log.e(TAG, String.valueOf(longitue) + "  " + String.valueOf(latitude));
         moveCamera(new LatLng(latitude, longitue),
-                DEFAULT_ZOOM,
+                Codes.DEFAULT_ZOOM,
                 "My Location");
     }
 
@@ -105,20 +106,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Manifest.permission.ACCESS_COARSE_LOCATION};
 
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                Codes.FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    Codes.COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionsGranted = true;
                 initMap();
             } else {
                 ActivityCompat.requestPermissions(this,
                         permissions,
-                        LOCATION_PERMISSION_REQUEST_CODE);
+                        Codes.LOCATION_PERMISSION_REQUEST_CODE);
             }
         } else {
             ActivityCompat.requestPermissions(this,
                     permissions,
-                    LOCATION_PERMISSION_REQUEST_CODE);
+                    Codes.LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 
@@ -128,7 +129,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mLocationPermissionsGranted = false;
 
         switch (requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE: {
+            case Codes.LOCATION_PERMISSION_REQUEST_CODE: {
                 if (grantResults.length > 0) {
                     for (int i = 0; i < grantResults.length; i++) {
                         if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {

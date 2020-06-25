@@ -49,6 +49,7 @@ import adapter.MeetingInfoListAdapter;
 import requests.RequestsModel;
 import table.AppInfo;
 import table.Meeting;
+import utils.Codes;
 import utils.MeetingInfo;
 import utils.SharedVars;
 import utils.UtilsMethods;
@@ -58,12 +59,7 @@ import static utils.UtilsMethods.getNumberOfDays;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = "MainActivity";
-    public static final String EXTRA_LATITUDE = "com.example.covidcare.MainActivity.EXTRA_LATITUDE";
-    public static final String EXTRA_LONGITUDE = "com.example.covidcare.MainActivity.EXTRA_LONGITUDE";
-    private static final int ERROR_DIALOG_REQUEST = 9001;
 
-
-    public static AppInfo appInfo;
     private ModelView modelView;
     private RequestsModel requestsModel;
     private ListView mListView;
@@ -73,21 +69,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Map<Integer, String> index2Status;
     private ArrayList<MeetingInfo> meetingsInfo;
 
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     private LocationUpdatesService mService = null;
-//    private  boolean b;
-
     private ServiceConnection mServiceConnection;
-//    private boolean first;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        first = true;
 
-//        b = true;
         if (Utils.requestingLocationUpdates(this)) {
             if (!checkPermissions()) {
                 requestPermissions();
@@ -148,8 +138,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         Toast.makeText(this, "Loading map", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(MainActivity.this, MapActivity.class);
-        intent.putExtra(EXTRA_LATITUDE, (int) (meetingsInfo.get(v.getId()).getLatitude() * 10000000));
-        intent.putExtra(EXTRA_LONGITUDE, (int) (meetingsInfo.get(v.getId()).getLogitude() * 10000000));
+        intent.putExtra(SharedVars.EXTRA_LATITUDE, (int) (meetingsInfo.get(v.getId()).getLatitude() * 10000000));
+        intent.putExtra(SharedVars.EXTRA_LONGITUDE, (int) (meetingsInfo.get(v.getId()).getLogitude() * 10000000));
         startActivityForResult(intent, 1);
     }
 
@@ -164,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
             //an error occured but we can resolve it
             Log.d(TAG, "isServicesOK: an error occured but we can fix it");
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, Codes.ERROR_DIALOG_REQUEST);
             dialog.show();
         }
         return false;
@@ -233,13 +223,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onChanged(List<AppInfo> appInfos) {
                 Log.e(TAG, "getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos ");
                 if (appInfos.size() == 0) {
-                    appInfo = new AppInfo("-1", "Healthy");
-                    modelView.appInfoInsert(appInfo);
+                    SharedVars.appInfo = new AppInfo("-1", "Healthy");
+                    modelView.appInfoInsert(SharedVars.appInfo);
                     return;
                 }
-                appInfo = appInfos.get(0);
-                dl_status.setSelection(status2Index.getOrDefault(appInfo.getStatus(), 0));
-                if (appInfo.getAppId().equals("-1")) {
+                SharedVars.appInfo = appInfos.get(0);
+                dl_status.setSelection(status2Index.getOrDefault(SharedVars.appInfo.getStatus(), 0));
+                if (SharedVars.appInfo.getAppId().equals("-1")) {
                     requestsModel.requestId();
                     return;
                 }
@@ -286,12 +276,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (appInfo == null)
+        if (SharedVars.appInfo == null)
             return;
         String text = parent.getItemAtPosition(position).toString();
-        appInfo.setStatus(text);
-        modelView.appInfoUpdate(appInfo);
-        Log.e(TAG, appInfo.getStatus() + "\t" + text);
+        SharedVars.appInfo.setStatus(text);
+        modelView.appInfoUpdate(SharedVars.appInfo);
+        Log.e(TAG, SharedVars.appInfo.getStatus() + "\t" + text);
         requestsModel.updateStatus();
         dl_status.setScrollBarDefaultDelayBeforeFade(1);
 
@@ -324,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             // Request permission
                             ActivityCompat.requestPermissions(MainActivity.this,
                                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                    REQUEST_PERMISSIONS_REQUEST_CODE);
+                                    Codes.REQUEST_PERMISSIONS_REQUEST_CODE);
                         }
                     })
                     .show();
@@ -332,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.i(TAG, "Requesting permission");
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_PERMISSIONS_REQUEST_CODE);
+                    Codes.REQUEST_PERMISSIONS_REQUEST_CODE);
         }
     }
 
@@ -340,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         Log.i(TAG, "onRequestPermissionResult");
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+        if (requestCode == Codes.REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length <= 0) {
                 Log.i(TAG, "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {

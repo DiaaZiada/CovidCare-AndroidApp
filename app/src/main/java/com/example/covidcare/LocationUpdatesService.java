@@ -73,7 +73,8 @@ public class LocationUpdatesService extends LifecycleService {
     private static final String PACKAGE_NAME =
             "com.google.android.gms.location.sample.locationupdatesforegroundservice";
 
-    private static final String TAG = LocationUpdatesService.class.getSimpleName();
+    private static final String TAG = "LocationUpdatesService";
+//    private static final String TAG = LocationUpdatesService.class.getSimpleName();
 
     /**
      * The name of the channel for notifications.
