@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Map<String, Integer> status2Index;
     private Map<Integer, String> index2Status;
     private ArrayList<MeetingInfo> meetingsInfo;
-    private  boolean del_meet = true;
+    private boolean del_meet = true;
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
@@ -137,8 +137,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
                 Context.BIND_AUTO_CREATE);
-        requestsModel.counter=0;
+        requestsModel.counter = 0;
         setObservers();
+        requestsModel.getMeetingsFinished=false;
 
 
     }
@@ -177,26 +178,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 observe(this, new Observer<List<Meeting>>() {
                     @Override
                     public void onChanged(@Nullable List<Meeting> meetings) {
-                        Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                        if ((requestsModel.getMeetingsFinished || first)&& del_meet) {
+                        Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"+requestsModel.getMeetingsFinished+del_meet+"\t"+requestsModel.aaa);
+                        if (requestsModel.getMeetingsFinished && del_meet) {
+                            Log.i(TAG, "VVVVVVVVVVVVVVVVVVVVVVVV");
+
                             del_meet = false;
                             first = false;
                             meetingsInfo.clear();
                             Map<String, Integer> map = new HashMap<>();
                             Set<String> ids = new HashSet<String>();
-                            Log.i(TAG, "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd");
+//                            Log.i(TAG, "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd");
 
                             for (int i = 0; i < meetings.size(); i++) {
-                                Log.i(TAG, "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+//                                Log.i(TAG, "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
 
-                                Log.e(TAG, meetings.get(i).getTime()+"\t"+ meetings.get(i).getStatus());
-                                if (ids.contains(meetings.get(i).getApp_id()) || getNumberOfDays(meetings.get(i).getTime())>14) {
+//                                Log.e(TAG, meetings.get(i).getTime() + "\t" + meetings.get(i).getStatus());
+                                if (ids.contains(meetings.get(i).getApp_id()) || meetings.get(i).getApp_id().equals("-1") || getNumberOfDays(meetings.get(i).getTime()) > 14) {
                                     modelView.meetinDelete(meetings.get(i));
                                     continue;
                                 }
                                 ids.add(meetings.get(i).getApp_id());
-                                
-                                
+
+
                                 meetingsInfo.add(new MeetingInfo(meetings.get(i).getTime(), meetings.get(i).getStatus(), meetings.get(i).getLatitude(), meetings.get(i).getLongitude()));
                                 map.put(meetings.get(i).getStatus(), map.getOrDefault(meetings.get(i).getStatus(), 0) + 1);
                             }
@@ -241,18 +244,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 appInfo = appInfos.get(0);
                 dl_status.setSelection(status2Index.getOrDefault(appInfo.getStatus(), 0));
-                if (appInfo.getAppId() == "-1"){
+                if (appInfo.getAppId().equals("-1")) {
                     requestsModel.requestId();
                     return;
                 }
-
-//                if (requestsModel.counter == 0)
-//                    requestsModel.requestId();
-                if (requestsModel.counter == 2) {
+                Log.e(TAG, requestsModel.counter+"");
+                if(requestsModel.counter < 2) {
+                    Log.e(TAG,"CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL CALL ");
                     requestsModel.updateStatus();
                     requestsModel.getMeetings();
-                    requestsModel.counter++;
                 }
+
             }
 
         });
@@ -384,10 +386,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int getNumberOfDays(String time) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ENGLISH);
-        Log.e(TAG, time+"\t aAAAAAAAAAAAAAAAAAAAAAaaaaaaAAAAAAAAAAAAAAAAAAAAAaaaaa");
         LocalDateTime now = LocalDateTime.now();
         String nowString = dtf.format(now).toString();
-        Log.e(TAG, time+"\t"+nowString);
+        Log.e(TAG, time + "\t" + nowString);
         Date firstDate = null;
         Date secondDate = null;
         try {
@@ -396,7 +397,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        Log.e(TAG, secondDate+"\t"+firstDate);
 
         long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
         long seconds = diffInMillies / 1000;

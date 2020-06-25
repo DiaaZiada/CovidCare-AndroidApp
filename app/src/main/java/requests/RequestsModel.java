@@ -24,6 +24,7 @@ public class RequestsModel {
     public static boolean sendLocationTimeFinished;
     public static boolean getedId;
     public static int counter;
+    public int aaa=0;
 
     private ApiInterface apiInterface;
     private static RequestsModel instance;
@@ -35,7 +36,7 @@ public class RequestsModel {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiInterface = retrofit.create(ApiInterface.class);
-        getMeetingsFinished = true;
+        getMeetingsFinished = false;
         sendLocationTimeFinished = true;
         getedId = false;
         counter = 0;
@@ -51,13 +52,13 @@ public class RequestsModel {
         Log.e(TAG, "requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId requestId ");
         RequestId requestId = new RequestId(MainActivity.appInfo.getAppId());
         Call<RequestId> call = apiInterface.requestId(requestId);
-        counter++;
+//        counter++;
         call.enqueue(new Callback<RequestId>() {
             @Override
             public void onResponse(Call<RequestId> call, Response<RequestId> response) {
                 Log.i(TAG, "requestId" + "\t" + response.body().getAppId() + "\t" + MainActivity.appInfo.getAppId() + "\t" + requestId.getAppId());
                 getedId = true;
-                counter++;
+//                counter++;
                 MainActivity.appInfo.setAppId(response.body().getAppId());
                 repository.appInfoUpdate(MainActivity.appInfo);
             }
@@ -72,8 +73,9 @@ public class RequestsModel {
     public void updateStatus() {
         Log.e(TAG, "updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus updateStatus ");
 
-        if (!getedId)
+        if (MainActivity.appInfo.getAppId().equals("-1"))
             return;
+        counter++;
         UpdateStatus updateStatus = new UpdateStatus(MainActivity.appInfo.getAppId(), MainActivity.appInfo.getStatus());
         Call<UpdateStatus> call = apiInterface.updateStatus(updateStatus);
         call.enqueue(new Callback<UpdateStatus>() {
@@ -82,7 +84,7 @@ public class RequestsModel {
 
                 Log.i(TAG, "updateStatus" + "\t" + response.body().getAppId() + "\t" + MainActivity.appInfo.getAppId() + "\t" + updateStatus.getAppId());
 
-                if (response.body().getAppId() == MainActivity.appInfo.getAppId())
+                if (response.body().getAppId().equals(MainActivity.appInfo.getAppId()))
                     return;
                 MainActivity.appInfo.setAppId(response.body().getAppId());
                 repository.appInfoUpdate(MainActivity.appInfo);
@@ -99,7 +101,7 @@ public class RequestsModel {
 
 
     public void sendLocationTime(List<LocationTime> locationTimes) {
-        if (!getedId || locationTimes.size()==0)
+        if (MainActivity.appInfo.getAppId().equals("-1") || locationTimes.size()==0)
             return;
         Log.e(TAG, "sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime sendLocationTime ");
         sendLocationTimeFinished = false;
@@ -121,17 +123,17 @@ public class RequestsModel {
 
             }
         });
-    sendLocationTimeFinished =true;
+    sendLocationTimeFinished =false;
 
 }
 
 
     public void getMeetings() {
-        if (!getedId) {
+        if (MainActivity.appInfo.getAppId().equals("-1")) {
             Log.e(TAG, "NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID NOT ID ");
             return;
         }
-
+        counter++;
         Log.e(TAG, "getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings getMeetings ");
 
         RequestId requestId = new RequestId(MainActivity.appInfo.getAppId());
@@ -143,22 +145,28 @@ public class RequestsModel {
                 Log.i(TAG, "getMeetings" + "\t" + MainActivity.appInfo.getAppId() + "\t" + requestId.getAppId());
                 getMeetingsFinished = false;
                 for (GetMeeting getMeeting : response.body()) {
+                    aaa++;
                     String status = getMeeting.getStatus();
                     String id = getMeeting.getId();
                     String hash = getMeeting.getHash();
                     String[] locationTime = hash.split(",");
                     Meeting meeting = new Meeting(id, status, dash2SlashSDate(locationTime[2]), Double.valueOf(locationTime[0]), Double.valueOf(locationTime[1]));
-
-                    if (getMeeting.hashCode() == response.body().get(response.body().size() - 1).hashCode())
-                        getMeetingsFinished = true;
-
                     repository.meetingInsert(meeting);
+
                 }
+                getMeetingsFinished = true;
+                Meeting fake = new Meeting("-1", "", "",.1,.1);
+                repository.meetingInsert(fake);
+
             }
 
             @Override
             public void onFailure(Call<List<GetMeeting>> call, Throwable t) {
                 getMeetingsFinished = true;
+
+                Meeting fake = new Meeting("-1", "", "",.1,.1);
+                repository.meetingInsert(fake);
+
             }
         });
     }
