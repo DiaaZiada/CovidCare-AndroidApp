@@ -117,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
                 Context.BIND_AUTO_CREATE);
-//        requestsModel.counter = 0;
         SharedVars.getMeetingsFinished = false;
         SharedVars.requestedMeetingStatus = true;
         SharedVars.deletingFakeOldMeeetingFinished = true;
@@ -159,10 +158,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 observe(this, new Observer<List<Meeting>>() {
                     @Override
                     public void onChanged(@Nullable List<Meeting> meetings) {
-                        Log.i(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + SharedVars.getMeetingsFinished + SharedVars.deletingFakeOldMeeetingFinished + "\t");
                         if (SharedVars.getMeetingsFinished && SharedVars.deletingFakeOldMeeetingFinished) {
-                            Log.i(TAG, "VVVVVVVVVVVVVVVVVVVVVVVV");
-
                             SharedVars.deletingFakeOldMeeetingFinished = false;
                             meetingsInfo.clear();
                             Map<String, Integer> map = new HashMap<>();
@@ -212,7 +208,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onChanged(List<AppInfo> appInfos) {
-                Log.e(TAG, "getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos getAllappInfos ");
                 if (appInfos.size() == 0) {
                     SharedVars.appInfo = new AppInfo("-1", "Healthy");
                     modelView.appInfoInsert(SharedVars.appInfo);
@@ -224,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     requestsModel.requestId();
                     return;
                 }
-//                Log.e(TAG, requestsModel.counter+"");
                 if (SharedVars.requestedMeetingStatus) {
                     requestsModel.updateStatus();
                     requestsModel.getMeetings();
@@ -272,7 +266,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String text = parent.getItemAtPosition(position).toString();
         SharedVars.appInfo.setStatus(text);
         modelView.appInfoUpdate(SharedVars.appInfo);
-        Log.e(TAG, SharedVars.appInfo.getStatus() + "\t" + text);
         requestsModel.updateStatus();
         dl_status.setScrollBarDefaultDelayBeforeFade(1);
 

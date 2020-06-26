@@ -271,7 +271,6 @@ public class LocationUpdatesService extends LifecycleService {
         mLocation = location;
 
         LocationTime locationTime = new LocationTime(Utils.getTime(), location.getLatitude(), location.getLongitude());
-        Log.e(TAG, locationTime.getTime() + "\t" + locationTime.getLatitude() + "\t" + locationTime.getLongitude());
         repository.locationTimeInsert(locationTime);
         Intent intent = new Intent(ACTION_BROADCAST);
         intent.putExtra(EXTRA_LOCATION, location);

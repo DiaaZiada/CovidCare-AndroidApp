@@ -52,8 +52,6 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         double latitude = getItem(position).getLatitude();
         double longitude = getItem(position).getLogitude();
 
-//        Log.e(TAG, time+"ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
-
         time = getNumberOfDays(time);
 
 
@@ -87,7 +85,6 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
                 (position > lastPosition) ? R.anim.load_down_anim : R.anim.load_up_anim);
         result.startAnimation(animation);
         lastPosition = position;
-//        Log.i(TAG, status);
         switch (status) {
             case "Healthy":
                 holder.imageView.setBackgroundResource(R.drawable.healthy_background);
@@ -118,10 +115,8 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
     }
 
     private String getNumberOfDays(String time) {
-//        Log.e(TAG, time+"\t aAAAAAAAAAAAAAAAAAAAAAaaaaaaAAAAAAAAAAAAAAAAAAAAAaaaaa");
         now = LocalDateTime.now();
         String nowString = dtf.format(now);
-//        Log.e(TAG, time+"\t"+nowString);
         Date firstDate = null;
         Date secondDate = null;
         try {
@@ -130,8 +125,6 @@ public class MeetingInfoListAdapter extends ArrayAdapter<MeetingInfo> {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-//        Log.e(TAG, secondDate+"\t"+firstDate);
-
         long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
         long seconds = diffInMillies / 1000;
         int day = (int) TimeUnit.SECONDS.toDays(seconds);
