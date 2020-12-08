@@ -35,8 +35,16 @@ at each meeting you will find the location button to find the location of the me
 
 ![map](https://github.com/DiaaZiada/CovidCare-AndroidApp/blob/master/images/Screenshot_2020-12-08-15-02-06-101_com.example.covidcare.jpg)
 
-# DEMO
+### Foreground Serivce
+When you close the app or clear all app from memory the will still working in the backgourd using a foreground service with notificatin.
+the notification gives two options 
+* launch activit to reopen the app
+* stop service to stop service from the working in background
 
+![foreground serice](https://github.com/DiaaZiada/CovidCare-AndroidApp/blob/master/images/IMG_20201208_155519.jpg)
+
+
+# DEMO
 ![demo](https://github.com/DiaaZiada/CovidCare-AndroidApp/blob/master/images/gifout.gif)
 
 
