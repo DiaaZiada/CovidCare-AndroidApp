@@ -1,5 +1,6 @@
 # CovidCare
 CovidCare is an attempt to helping to contain the disease (Covid-19) by finding out the Covid-19 status of people you have met along your days and the location of this meeting
+
 ![Logo](https://github.com/DiaaZiada/CovidCare-AndroidApp/blob/master/images/Screenshot%20from%202020-12-08%2015-04-29.png)
 
 CovidCare System is consists of to part
@@ -35,6 +36,7 @@ at each meeting you will find the location button to find the location of the me
 ![map](https://github.com/DiaaZiada/CovidCare-AndroidApp/blob/master/images/Screenshot_2020-12-08-15-02-06-101_com.example.covidcare.jpg)
 
 # DEMO
+
 ![demo](https://github.com/DiaaZiada/CovidCare-AndroidApp/blob/master/images/gifout.gif)
 
 
